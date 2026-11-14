@@ -145,8 +145,10 @@ Klaar (als werkend ontwerp met voorbeeldgegevens, nog zonder database):
   bepaalt wie de e-mail bij een gevaarlijke melding krijgt.
 - SQL in de map database/: 01_tabellen.sql (tabellen, regels, rijbeveiliging aan,
   views meldingen_met_status en gebruikers_weergave) en 02_startgegevens.sql
-  (werkgroepen en plekken). Nog NIET getest: er is nog geen Supabase-project.
-  Volgende: 03_rechten.sql (wie mag wat), daarna 04_fotos.sql.
+  (werkgroepen en plekken). Beide uitgevoerd in het Supabase-testproject
+  "vrijwilligersapp-test" (organisatie Park de Stadshoeve, Frankfurt, Free, zonder
+  GitHub-koppeling; alleen verzonnen gegevens). test_01_regels.sql controleert de
+  regels. Volgende: 03_rechten.sql (wie mag wat), daarna 04_fotos.sql.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst). De demo in app.js bevat nog

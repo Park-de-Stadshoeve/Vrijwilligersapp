@@ -6,10 +6,18 @@ database opbouwt en bevraagt. Het ontwerp in gewone taal staat in `../DATABASE.m
 ## Bestanden (in deze volgorde uitvoeren)
 | Bestand | Wat het doet | Status |
 |---|---|---|
-| `01_tabellen.sql` | Maakt de zeven tabellen met hun regels, en de overzichten "meldingen met status" en "naam die de app laat zien" | klaar, nog niet getest |
-| `02_startgegevens.sql` | Vult de werkgroepen en plekken | klaar, nog niet getest |
+| `01_tabellen.sql` | Maakt de zeven tabellen met hun regels, en de overzichten "meldingen met status" en "naam die de app laat zien" | uitgevoerd in testproject |
+| `02_startgegevens.sql` | Vult de werkgroepen en plekken | uitgevoerd in testproject |
 | `03_rechten.sql` | Wie wat mag zien en doen | volgende stap |
 | `04_fotos.sql` | Foto-opslag en wie welke foto mag zien | later |
+
+## Testbestanden
+Deze mag je zo vaak uitvoeren als je wilt. Ze ruimen hun eigen testgegevens op.
+Gebruik ze na een wijziging, om te zien of alles nog werkt.
+
+| Bestand | Wat het controleert |
+|---|---|
+| `test_01_regels.sql` | De regels uit `01_tabellen.sql` (12 tests). In de kolom "goed" moet overal "goed" staan. |
 
 ## Zo voer je een bestand uit (Supabase)
 1. Log in op supabase.com en open het project.
