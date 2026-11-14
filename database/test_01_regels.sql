@@ -144,6 +144,10 @@ begin
   end;
 
   -- ===== Test 10: twee keer Piet → "Piet P." en "Piet V." =====
+  -- Na 03_rechten.sql laat dit overzicht alleen iets zien aan een
+  -- ingelogde, actieve gebruiker. Daarom doen we even alsof piet1 is
+  -- ingelogd (dit geldt alleen binnen deze test).
+  perform set_config('request.jwt.claims', json_build_object('sub', piet1)::text, true);
   select string_agg(naam, ', ' order by naam) into tekst
   from gebruikers_weergave where id in (piet1, piet2);
   insert into testuitslag values (10, 'Naam bij dubbele voornaam', 'Piet P., Piet V.', tekst,

@@ -217,6 +217,17 @@ de app omzeilt, krijgt niets te zien wat niet mag.
 | Melding doen | ja | ja |
 | Meldingen zien | eigen meldingen, en meldingen waar een taak van is gemaakt die hij/zij mag zien | alle |
 | Melding afhandelen (taak maken, geen actie) | nee | ja |
+| Namen van andere gebruikers zien ("Piet P.") | ja, van iedereen | ja |
+| Rol en vinkjes van anderen zien | nee, alleen van zichzelf | alleen beheerders |
+| Eigen melding intrekken | zolang de status "Nieuw" is | ja, altijd |
+
+
+**Vaste acties voor vrijwilligers.** Vrijwilligers wijzigen een taak nooit rechtstreeks,
+maar alleen via vaste acties: Ik doe dit, Teruggeven, Gereed melden, Weer openen en
+Foto aanpassen. Elke actie controleert eerst of het mag en verandert alleen wat bij die
+actie hoort. Zo kan een vrijwilliger nooit de titel of de deadline van een taak wijzigen.
+"Ongedaan maken" gebruikt de tegenovergestelde actie. Bij "Weer openen" wordt de foto na
+afloop losgekoppeld; "Ongedaan maken" zet hem terug.
 
 **Foto's:** wie een melding of taak mag zien, mag ook de foto's erbij zien. Er is geen
 aparte regel voor foto's.
@@ -263,3 +274,5 @@ voorstel is geen juridisch advies.
 5. Plekken hebben twee lagen: plek en onderdeel. Het onderdeel is niet verplicht.
 6. Beheerder is een vinkje, geen rol. Alleen beheerders gebruiken het beheerscherm.
 7. Bij een dubbele voornaam toont de app de letter van de achternaam: "Piet P.".
+8. Iedere ingelogde gebruiker ziet de namen van alle gebruikers (niet hun rol).
+9. De melder mag een melding intrekken zolang de status "Nieuw" is.

@@ -8,7 +8,7 @@ database opbouwt en bevraagt. Het ontwerp in gewone taal staat in `../DATABASE.m
 |---|---|---|
 | `01_tabellen.sql` | Maakt de zeven tabellen met hun regels, en de overzichten "meldingen met status" en "naam die de app laat zien" | uitgevoerd in testproject |
 | `02_startgegevens.sql` | Vult de werkgroepen en plekken | uitgevoerd in testproject |
-| `03_rechten.sql` | Wie wat mag zien en doen | volgende stap |
+| `03_rechten.sql` | Wie wat mag zien en doen: regels per tabel en vaste acties voor taken | klaar, nog niet uitgevoerd |
 | `04_fotos.sql` | Foto-opslag en wie welke foto mag zien | later |
 
 ## Testbestanden
@@ -17,7 +17,8 @@ Gebruik ze na een wijziging, om te zien of alles nog werkt.
 
 | Bestand | Wat het controleert |
 |---|---|
-| `test_01_regels.sql` | De regels uit `01_tabellen.sql` (12 tests). In de kolom "goed" moet overal "goed" staan. |
+| `test_01_regels.sql` | De regels uit `01_tabellen.sql` (12 tests). In de kolom "goed" moet overal "goed" staan. Getest: alles goed. |
+| `test_03_rechten.sql` | Wie wat mag uit `03_rechten.sql` (24 tests), met vijf verzonnen gebruikers. |
 
 ## Zo voer je een bestand uit (Supabase)
 1. Log in op supabase.com en open het project.

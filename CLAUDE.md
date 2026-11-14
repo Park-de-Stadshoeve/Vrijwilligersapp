@@ -147,8 +147,11 @@ Klaar (als werkend ontwerp met voorbeeldgegevens, nog zonder database):
   views meldingen_met_status en gebruikers_weergave) en 02_startgegevens.sql
   (werkgroepen en plekken). Beide uitgevoerd in het Supabase-testproject
   "vrijwilligersapp-test" (organisatie Park de Stadshoeve, Frankfurt, Free, zonder
-  GitHub-koppeling; alleen verzonnen gegevens). test_01_regels.sql controleert de
-  regels. Volgende: 03_rechten.sql (wie mag wat), daarna 04_fotos.sql.
+  GitHub-koppeling; alleen verzonnen gegevens). test_01_regels.sql: alles goed.
+- 03_rechten.sql geschreven (regels per tabel, vaste acties taak_oppakken,
+  taak_teruggeven, taak_gereed_melden, taak_heropenen, taak_foto_zetten,
+  melding_status) met test_03_rechten.sql. Nog niet uitgevoerd.
+  Daarna: 04_fotos.sql.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst). De demo in app.js bevat nog
