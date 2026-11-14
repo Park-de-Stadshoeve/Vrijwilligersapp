@@ -12,5 +12,6 @@
 // Zet hier NOOIT de "secret" of "service_role" sleutel. Die mag alles en
 // hoort alleen in het dashboard van Supabase.
 
-const SUPABASE_ADRES = "VUL-HIER-DE-PROJECT-URL-IN";
-const SUPABASE_SLEUTEL = "VUL-HIER-DE-PUBLISHABLE-SLEUTEL-IN";
+// Nu gekoppeld aan: het TESTPROJECT "vrijwilligersapp-test" (alleen testgegevens).
+const SUPABASE_ADRES = "https://easnkzwkclwqxakrwlbj.supabase.co";
+const SUPABASE_SLEUTEL = "sb_publishable_1N4--jn_whFQGFXwrUyqAw_h69B2TV9";

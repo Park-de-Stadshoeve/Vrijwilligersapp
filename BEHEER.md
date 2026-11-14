@@ -45,6 +45,17 @@ de app op het beginscherm. Je zou dan in de app niet ingelogd zijn. Een code wer
 
 Alleen e-mailadressen die de beheerder heeft toegevoegd kunnen inloggen.
 
+## Instellingen in Supabase voor inloggen
+Eenmalig, bij een nieuw project:
+- **Authentication** > **Sign In / Providers**: **Allow new users to sign up** uit.
+  Bij **Email**: **Email OTP Length** = 6.
+- **Authentication** > **URL Configuration**: **Site URL** en bij **Redirect URLs**:
+  `https://park-de-stadshoeve.github.io/Vrijwilligersapp/`
+- **Mail met code:** de tekst van de mail (template "Magic Link") kan pas worden
+  aangepast met een eigen e-maildienst (Brevo, nog te regelen). Tot die tijd bevat de
+  mail een link in plaats van een code. Die link werkt op een computer en in Chrome op
+  Android, maar niet in de app op het beginscherm van een iPhone.
+
 ## Iemand toevoegen (tijdelijk, tot het beheerscherm er is)
 1. Supabase > **Authentication** > **Users** > **Add user** > **Create new user**.
    Vul het e-mailadres in, kies een willekeurig lang wachtwoord (dat wordt nooit

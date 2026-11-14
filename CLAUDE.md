@@ -132,8 +132,13 @@ Klaar (de schermen werken nog met voorbeeldgegevens; inloggen werkt met de datab
   Profiel (voornaam, rol, werkgroepen) uit de database, bewaard op het toestel voor
   slecht bereik. startApp(profiel) in app.js start de schermen. "?rol=bestuur" is weg.
   supabase-js 2.45.4 via jsdelivr, ook bewaard door de service worker.
-  Getest in de browser zonder database (schermen, foutteksten, startApp); echt
-  inloggen nog niet getest.
+  instellingen.js gekoppeld aan het testproject. Getest: niet-ingelogd wordt overal
+  geweigerd (tabellen, acties, foto's); onbekend e-mailadres geeft de juiste melding.
+  Supabase laat de mailtekst niet aanpassen zonder eigen SMTP: de mail bevat nu een
+  link (emailRedirectTo = de app), nog geen code. Echt inloggen nog niet getest.
+- Domein: DNS bij Digiworks (beheerder nog onbekend), mail via Microsoft 365, SPF
+  staat alleen Microsoft toe. Brevo heeft DNS-regels nodig. Afzender voor de test:
+  jerome@; voor echt gebruik een algemeen adres (bijv. gedeelde mailbox app@).
 - Menu onderaan: Mijn taken, Werkgroep, Melden, Meldingen.
 - Elke actie heeft "Ongedaan maken" (6 seconden).
 - De status van een melding wordt afgeleid van de gekoppelde taak (taakId), niet

@@ -85,10 +85,16 @@ function toonEmailScherm(fouttekst) {
     knop.textContent = "Code versturen…";
     fout.textContent = "";
 
-    // shouldCreateUser: false = alleen bestaande gebruikers, nooit een nieuw account
+    // shouldCreateUser: false = alleen bestaande gebruikers, nooit een nieuw account.
+    // emailRedirectTo: staat er (ook) een link in de mail, dan komt die terug op
+    // deze app. (Nu nog nodig: zolang Supabase de standaardmail gebruikt, staat
+    // er een link in plaats van een code.)
     const { error } = await database.auth.signInWithOtp({
       email,
-      options: { shouldCreateUser: false }
+      options: {
+        shouldCreateUser: false,
+        emailRedirectTo: location.origin + location.pathname
+      }
     });
 
     if (error) {
@@ -191,6 +197,7 @@ async function haalProfielEnStart(gebruikerId) {
     return;
   }
 
+  verwijderOpslag(OPSLAG_WACHT_OP_CODE);   // ingelogd, dus er wacht geen code meer
   document.getElementById("knop-uitloggen").hidden = false;
   document.querySelector("nav").hidden = false;
   startApp(profiel);   // staat in app.js
