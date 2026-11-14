@@ -194,8 +194,16 @@ de foto van de melding.
 Foto's staan in de foto-opslag van Supabase, niet in de tabellen. Ze zijn al verkleind
 en zonder locatiegegevens (zie BEHEER.md).
 
-- **Map `meldingen/`:** foto's van gebreken.
-- **Map `taken/`:** foto's na afloop.
+- **Eén afgesloten fotomap `fotos`:** er is geen openbare link. De app vraagt per foto
+  een tijdelijke link aan, die na een uur verloopt.
+- **Naam van een foto:** `<nummer van de gebruiker>/<willekeurige code>.jpg`. Iedereen
+  heeft een eigen map; neerzetten mag alleen in je eigen map. De code kun je niet raden.
+- **Grenzen:** alleen JPEG, hooguit 2 MB per foto.
+- **Een melding** mag alleen een foto uit de eigen map van de melder gebruiken.
+- **Opruimen:** een foto die nergens meer bij hoort (ingetrokken melding, vervangen
+  foto) blijft 7 dagen staan, zodat "Ongedaan maken" werkt. Het overzicht
+  `fotos_zonder_koppeling` laat zien welke foto's daarna weg mogen. Verwijderen gaat via
+  Storage in het dashboard van Supabase (later automatisch).
 - **Bewaartermijn:** 12 maanden (besloten). Zie "Bewaren en verwijderen" hieronder.
 
 ---

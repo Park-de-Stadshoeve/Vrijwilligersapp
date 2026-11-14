@@ -151,7 +151,11 @@ Klaar (als werkend ontwerp met voorbeeldgegevens, nog zonder database):
 - 03_rechten.sql geschreven (regels per tabel, vaste acties taak_oppakken,
   taak_teruggeven, taak_gereed_melden, taak_heropenen, taak_foto_zetten,
   melding_status). Uitgevoerd in het testproject; test_03_rechten.sql (24 tests)
-  en test_01_regels.sql: alles goed. Volgende: 04_fotos.sql.
+  en test_01_regels.sql: alles goed.
+- 04_fotos.sql geschreven: afgesloten bucket "fotos" (JPEG, max 2 MB), pad
+  <gebruiker-id>/<uuid>.jpg, zien via melding/taak, melding alleen met eigen foto,
+  view fotos_zonder_koppeling (niet via de app). test_04_fotos.sql draait alles
+  terug. Nog niet uitgevoerd. Uploaden zelf pas te testen als de app gekoppeld is.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst). De demo in app.js bevat nog

@@ -9,7 +9,7 @@ database opbouwt en bevraagt. Het ontwerp in gewone taal staat in `../DATABASE.m
 | `01_tabellen.sql` | Maakt de zeven tabellen met hun regels, en de overzichten "meldingen met status" en "naam die de app laat zien" | uitgevoerd in testproject |
 | `02_startgegevens.sql` | Vult de werkgroepen en plekken | uitgevoerd in testproject |
 | `03_rechten.sql` | Wie wat mag zien en doen: regels per tabel en vaste acties voor taken | uitgevoerd in testproject |
-| `04_fotos.sql` | Foto-opslag en wie welke foto mag zien | later |
+| `04_fotos.sql` | Afgesloten fotomap, wie welke foto mag zien en neerzetten, overzicht van foto's om op te ruimen | klaar, nog niet uitgevoerd |
 
 ## Testbestanden
 Deze mag je zo vaak uitvoeren als je wilt. Ze ruimen hun eigen testgegevens op.
@@ -19,6 +19,12 @@ Gebruik ze na een wijziging, om te zien of alles nog werkt.
 |---|---|
 | `test_01_regels.sql` | De regels uit `01_tabellen.sql` (12 tests). In de kolom "goed" moet overal "goed" staan. Getest: alles goed. |
 | `test_03_rechten.sql` | Wie wat mag uit `03_rechten.sql` (24 tests), met vijf verzonnen gebruikers. Getest: alles goed. |
+| `test_04_fotos.sql` | Wie welke foto mag zien en neerzetten (10 tests). Draait aan het eind alles terug. |
+
+## Foto's opruimen (maandelijks)
+1. Open de **SQL Editor** en voer uit: `select * from fotos_zonder_koppeling;`
+2. Ga naar **Storage** > **fotos** en verwijder de foto's uit dat lijstje.
+   (Met SQL verwijderen kan niet; Supabase staat dat niet toe.)
 
 ## Zo voer je een bestand uit (Supabase)
 1. Log in op supabase.com en open het project.
