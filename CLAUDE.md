@@ -135,6 +135,13 @@ Klaar (als werkend ontwerp met voorbeeldgegevens, nog zonder database):
   PLEK_WERKGROEP.
 - De voorbeeldgegevens gebruiken verzonnen namen (Kirsten, Piet, Fatima, Kees,
   Sanne, Jan).
+- Installeerbaar als app (PWA): manifest.json, iconen/ (logo in 180, 192, 512) en
+  service-worker.js ("eerst internet, na 3 seconden de bewaarde kopie"). Alleen de
+  app zelf wordt bewaard, nog geen taken of meldingen.
+
+In afwachting van het besluit over hosting (zonder database mogelijk):
+- Gebruikstest van de demo met 3 à 4 vrijwilligers van Klussen.
+- Foto's verkleinen en locatiegegevens verwijderen in de browser.
 
 Volgende stappen:
 0. Demo-trucje "?rol=bestuur" verwijderen uit app.js zodra echt inloggen werkt.

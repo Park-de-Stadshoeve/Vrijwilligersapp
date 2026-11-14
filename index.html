@@ -6,6 +6,17 @@
   <title>Stadshoeve Vrijwilligers</title>
   <!-- Het uiterlijk van de app staat in stijl.css -->
   <link rel="stylesheet" href="stijl.css">
+
+  <!-- Installeerbaar maken (app-icoon op het beginscherm) -->
+  <!-- manifest.json: naam, icoon en kleur van de app -->
+  <link rel="manifest" href="manifest.json">
+  <!-- Kleur van de balk bovenin de telefoon (zelfde groen als in stijl.css) -->
+  <meta name="theme-color" content="#2e5d34">
+  <!-- Icoon in het tabblad van de browser -->
+  <link rel="icon" href="iconen/icoon-192.png">
+  <!-- iPhone leest het manifest maar half; daarom deze regels apart -->
+  <link rel="apple-touch-icon" href="iconen/icoon-180.png">
+  <meta name="apple-mobile-web-app-title" content="Stadshoeve">
 </head>
 <body>
   <header><h1 id="titel">Mijn taken</h1></header>

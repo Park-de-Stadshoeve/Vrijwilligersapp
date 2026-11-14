@@ -995,3 +995,10 @@ document.querySelectorAll("nav button").forEach(knop => {
   knop.addEventListener("click", () => toonScherm(knop.dataset.scherm));
 });
 toonMijnTaken();
+
+// Zet de service worker aan: die bewaart de app op de telefoon, zodat hij
+// ook bij slecht bereik opent. Uitleg staat in service-worker.js.
+// Oude browsers kennen dit niet; dan werkt de app gewoon zonder.
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
