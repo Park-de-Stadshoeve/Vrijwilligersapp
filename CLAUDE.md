@@ -194,3 +194,5 @@ Volgende stappen:
    oud zijn: foto's worden pas verwijderd nadat ze zijn geëxporteerd.
 10. Frion toevoegen: rol Frion-begeleider (ziet Dieren, Klussen en Tuinen) en taken
     toewijzen aan "Frion" als groep.
+11. Projecten: taken bundelen in een project of groep (bijv. "Opknappen
+    Speelkasteel") en op project kunnen filteren. Hangt samen met punt 6 (filters).

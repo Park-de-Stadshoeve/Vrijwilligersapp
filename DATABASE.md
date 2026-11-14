@@ -59,9 +59,16 @@ Iedereen die inlogt. Zo min mogelijk gegevens (AVG).
 |---|---|---|
 | id | hetzelfde nummer als in het inlogsysteem | ja |
 | voornaam | wat de anderen in de app zien | ja |
+| achternaam_letter | eerste letter van de achternaam, bijv. "P" (1 tot 3 letters) | ja |
 | rol | `vrijwilliger`, `bestuur` of `coordinator` | ja (standaard vrijwilliger) |
 | krijgt_gevaar_mail | ja/nee: krijgt een e-mail bij een gevaarlijke melding | ja (standaard nee) |
 | actief | ja/nee. Op "nee" = gestopt, kan niet meer inloggen | ja (standaard ja) |
+
+**Welke naam zie je in de app?** Normaal alleen de voornaam: "Piet". Zijn er twee
+actieve gebruikers met dezelfde voornaam, dan laat de app bij hen vanzelf de letter
+van de achternaam zien: "Piet P." en "Piet V.". De beheerder hoeft daar niets voor
+te doen. Hebben ze ook dezelfde letter, dan vult de beheerder bij één van hen twee
+of drie letters in: "Piet Pe.".
 
 Het **e-mailadres** staat niet in deze tabel, maar in het inlogsysteem van Supabase.
 Dat is nodig voor de inloglink en de gevaar-mail. Zo staat het op één plek.
@@ -80,6 +87,22 @@ Wie zit in welke werkgroep. Eén regel per persoon per werkgroep.
 |---|---|---|
 | gebruiker | nummer uit gebruikers | ja |
 | werkgroep | nummer uit werkgroepen | ja |
+
+**Hoe zit iemand in meerdere werkgroepen?** Door meerdere regels. Sanne zit in drie
+werkgroepen, dus heeft ze drie regels:
+
+| gebruiker | werkgroep |
+|---|---|
+| Sanne | Educatie |
+| Sanne | Geschiedenis |
+| Sanne | Avontuurlijk spelen |
+| Kees | Klussen |
+
+(In de echte tabel staan nummers in plaats van namen.)
+
+In het beheerscherm ziet de beheerder dit als een rij vinkjes bij de persoon, één per
+werkgroep. Vinkje aan = er komt een regel bij; vinkje uit = de regel verdwijnt. De
+beheerder ziet de tabel zelf nooit. Dezelfde combinatie kan maar één keer voorkomen.
 
 ## 5. taken
 
