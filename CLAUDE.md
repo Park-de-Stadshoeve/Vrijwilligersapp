@@ -138,8 +138,13 @@ Klaar (als werkend ontwerp met voorbeeldgegevens, nog zonder database):
 
 Volgende stappen:
 0. Demo-trucje "?rol=bestuur" verwijderen uit app.js zodra echt inloggen werkt.
-1. Feedback van het bestuur verwerken.
-2. Database en inloggen koppelen. Daarbij:
+1. Besluit van het bestuur afwachten. Feedback (vergadering 22 oktober 2026): eerst
+   autorisaties en hosting onderzoeken, invoering stap voor stap. Daarvoor is een
+   notitie gemaakt (staat buiten de repository, want het is een intern stuk) met
+   besluitpunten: Supabase gratis in de EU, rechtenoverzicht, foto's (wie ziet ze,
+   12 maanden bewaren), proef van 8 weken met werkgroep Klussen, wie beheerder
+   wordt en wie de verwerkersovereenkomsten afsluit.
+2. Database en inloggen koppelen, eerst voor de proef met Klussen. Daarbij:
    - één tabel gebruikers met per persoon een rol en werkgroepen;
    - rechten afdwingen in de database;
    - foto's verkleinen en locatiegegevens verwijderen voor upload;
@@ -147,11 +152,19 @@ Volgende stappen:
    - vastleggen wie de foto bij een melding mag zien (voorstel: de melder, de
      werkgroep van de taak, bestuur en coördinator);
    - e-mail aan de coördinator bij een gevaarlijke melding;
-   - beheerscherm voor gebruikers, werkgroepen en plekken.
+   - beheerscherm voor gebruikers, werkgroepen en plekken;
+   - eigen e-maildienst voor de inloglinks (de ingebouwde mail van Supabase stuurt
+     maar 2 berichten per uur en alleen naar beheerders);
+   - voorkomen dat het gratis Supabase-project na een week stilte op pauze gaat;
+   - maandelijkse back-up (de gratis versie maakt er geen).
 
 ## Later-lijst
-1. Geschiedenis per taak: wie wat wanneer deed.
-2. Bericht aan de werkgroep als een taak is teruggegeven.
-3. WhatsApp-bericht bij een gevaarlijke melding (afgeraden: kosten, onderhoud, AVG).
-4. Filters op de schermen. Pas bepalen na een paar weken gebruik.
-5. Taken verwijderen (bijvoorbeeld een taak die per ongeluk is aangemaakt).
+1. Terugkerende taken (wens van het bestuur). Voorrang: veel onderhoud uit de
+   jaarplanning komt elk jaar of elke maand terug. Beslissen na de proef.
+2. Rapportage voor het bestuur (wens van het bestuur). Na de proef bepalen welk
+   overzicht echt nodig is.
+3. Geschiedenis per taak: wie wat wanneer deed.
+4. Bericht aan de werkgroep als een taak is teruggegeven.
+5. WhatsApp-bericht bij een gevaarlijke melding (afgeraden: kosten, onderhoud, AVG).
+6. Filters op de schermen. Pas bepalen na een paar weken gebruik.
+7. Taken verwijderen (bijvoorbeeld een taak die per ongeluk is aangemaakt).
