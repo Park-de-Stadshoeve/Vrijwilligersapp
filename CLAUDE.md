@@ -142,8 +142,11 @@ Klaar (als werkend ontwerp met voorbeeldgegevens, nog zonder database):
   JPEG 80%) en verliezen daarbij alle verborgen gegevens, ook gps.
 - Ontwerp van de database in gewone taal: DATABASE.md (zeven tabellen, wie mag wat,
   bewaren en verwijderen, besluiten). Eén rol per persoon; vinkje krijgt_gevaar_mail
-  bepaalt wie de e-mail bij een gevaarlijke melding krijgt. Nog niet in SQL, nog
-  geen account.
+  bepaalt wie de e-mail bij een gevaarlijke melding krijgt.
+- SQL in de map database/: 01_tabellen.sql (tabellen, regels, rijbeveiliging aan,
+  views meldingen_met_status en gebruikers_weergave) en 02_startgegevens.sql
+  (werkgroepen en plekken). Nog NIET getest: er is nog geen Supabase-project.
+  Volgende: 03_rechten.sql (wie mag wat), daarna 04_fotos.sql.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst). De demo in app.js bevat nog
