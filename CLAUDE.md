@@ -150,8 +150,8 @@ Klaar (als werkend ontwerp met voorbeeldgegevens, nog zonder database):
   GitHub-koppeling; alleen verzonnen gegevens). test_01_regels.sql: alles goed.
 - 03_rechten.sql geschreven (regels per tabel, vaste acties taak_oppakken,
   taak_teruggeven, taak_gereed_melden, taak_heropenen, taak_foto_zetten,
-  melding_status) met test_03_rechten.sql. Nog niet uitgevoerd.
-  Daarna: 04_fotos.sql.
+  melding_status). Uitgevoerd in het testproject; test_03_rechten.sql (24 tests)
+  en test_01_regels.sql: alles goed. Volgende: 04_fotos.sql.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst). De demo in app.js bevat nog
