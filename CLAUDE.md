@@ -141,8 +141,8 @@ Klaar (als werkend ontwerp met voorbeeldgegevens, nog zonder database):
 - Foto's worden op de telefoon verkleind (verkleinFoto in app.js: langste kant 1280,
   JPEG 80%) en verliezen daarbij alle verborgen gegevens, ook gps.
 
-In afwachting van het besluit over hosting (zonder database mogelijk):
-- Gebruikstest van de demo met 3 à 4 vrijwilligers van Klussen.
+Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg).
+In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
 Volgende stappen:
 0. Demo-trucje "?rol=bestuur" verwijderen uit app.js zodra echt inloggen werkt.
