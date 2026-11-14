@@ -140,10 +140,18 @@ Klaar (als werkend ontwerp met voorbeeldgegevens, nog zonder database):
   app zelf wordt bewaard, nog geen taken of meldingen.
 - Foto's worden op de telefoon verkleind (verkleinFoto in app.js: langste kant 1280,
   JPEG 80%) en verliezen daarbij alle verborgen gegevens, ook gps.
-
 - Ontwerp van de database in gewone taal: DATABASE.md (zes tabellen, wie mag wat,
-  open punten). Eén rol per persoon; vinkje krijgt_gevaar_mail bepaalt wie de
-  e-mail bij een gevaarlijke melding krijgt. Nog niet in SQL, nog geen account.
+  bewaren en verwijderen, besluiten). Eén rol per persoon; vinkje krijgt_gevaar_mail
+  bepaalt wie de e-mail bij een gevaarlijke melding krijgt. Nog niet in SQL, nog
+  geen account.
+
+Besluiten (november 2026):
+- Frion valt voorlopig buiten de app (zie later-lijst). De demo in app.js bevat nog
+  Frion; dat blijft zo tot de echte database gekoppeld wordt.
+- Foto's: 12 maanden in de app. Wie een melding of taak mag zien, mag ook de foto
+  zien. De werkgroep van een taak ziet ook de melding waar die taak uit komt.
+- Iemand stopt: account en e-mailadres direct weg; voornaam blijft bij taken en
+  meldingen, ook in het archief op SharePoint.
 
 Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg).
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
@@ -159,9 +167,7 @@ Volgende stappen:
 2. Database en inloggen koppelen, eerst voor de proef met Klussen. Daarbij:
    - één tabel gebruikers met per persoon een rol en werkgroepen;
    - rechten afdwingen in de database;
-   - bewaartermijn voor foto's afspreken;
-   - vastleggen wie de foto bij een melding mag zien (voorstel: de melder, de
-     werkgroep van de taak, bestuur en coördinator);
+   - rechten en bewaartermijnen volgens DATABASE.md;
    - e-mail aan de coördinator bij een gevaarlijke melding;
    - beheerscherm voor gebruikers, werkgroepen en plekken;
    - eigen e-maildienst voor de inloglinks (de ingebouwde mail van Supabase stuurt
@@ -182,3 +188,9 @@ Volgende stappen:
 8. Pushbericht op de telefoon bij een gevaarlijke melding, als extra naast de e-mail
    (niet in plaats van: op de iPhone alleen als de app op het beginscherm staat,
    en minder betrouwbaar dan e-mail).
+9. Exporteren en archiveren van taken en meldingen die meer dan 12 maanden geleden
+   zijn afgesloten, met foto's en voornamen, naar SharePoint van de stichting (ter
+   naslag). Daarna uit de app verwijderen. Nodig vóór de eerste foto's 12 maanden
+   oud zijn: foto's worden pas verwijderd nadat ze zijn geëxporteerd.
+10. Frion toevoegen: rol Frion-begeleider (ziet Dieren, Klussen en Tuinen) en taken
+    toewijzen aan "Frion" als groep.

@@ -59,9 +59,9 @@ Iedereen die inlogt. Zo min mogelijk gegevens (AVG).
 |---|---|---|
 | id | hetzelfde nummer als in het inlogsysteem | ja |
 | voornaam | wat de anderen in de app zien | ja |
-| rol | `vrijwilliger`, `bestuur`, `coordinator` of `frion` | ja (standaard vrijwilliger) |
+| rol | `vrijwilliger`, `bestuur` of `coordinator` | ja (standaard vrijwilliger) |
 | krijgt_gevaar_mail | ja/nee: krijgt een e-mail bij een gevaarlijke melding | ja (standaard nee) |
-| actief | ja/nee. Op "nee" = kan niet meer inloggen | ja (standaard ja) |
+| actief | ja/nee. Op "nee" = gestopt, kan niet meer inloggen | ja (standaard ja) |
 
 Het **e-mailadres** staat niet in deze tabel, maar in het inlogsysteem van Supabase.
 Dat is nodig voor de inloglink en de gevaar-mail. Zo staat het op één plek.
@@ -70,6 +70,9 @@ Iedereen heeft precies één rol. Bestuur en coördinator hebben dezelfde rechte
 vinkje `krijgt_gevaar_mail` bepaalt wie de e-mail krijgt. Dat kunnen er ook twee zijn,
 of tijdelijk een vervanger.
 
+Frion valt voorlopig buiten de app (zie later-lijst in CLAUDE.md). Er is dus nog geen
+rol voor Frion-begeleiders en een taak kan nog niet aan Frion worden toegewezen.
+
 ## 4. lidmaatschappen (koppeltabel)
 Wie zit in welke werkgroep. Eén regel per persoon per werkgroep.
 
@@ -77,9 +80,6 @@ Wie zit in welke werkgroep. Eén regel per persoon per werkgroep.
 |---|---|---|
 | gebruiker | nummer uit gebruikers | ja |
 | werkgroep | nummer uit werkgroepen | ja |
-
-Frion-begeleiders worden lid van Dieren, Klussen en Tuinen. Zo bepaalt de beheerder
-welke werkgroepen zij zien, zonder dat dit vastzit in de code.
 
 ## 5. taken
 
@@ -91,7 +91,6 @@ welke werkgroepen zij zien, zonder dat dit vastzit in de code.
 | plek | nummer uit plekken | ja |
 | werkgroep | nummer uit werkgroepen | ja |
 | toegewezen_aan | nummer uit gebruikers | nee |
-| voor_frion | ja/nee: toegewezen aan Frion als groep | ja (standaard nee) |
 | deadline | datum | nee |
 | status | `open` of `gereed` | ja (standaard open) |
 | foto_na_afloop | waar de foto bij het gereed melden staat | nee |
@@ -101,8 +100,8 @@ welke werkgroepen zij zien, zonder dat dit vastzit in de code.
 | aangemaakt_op | datum en tijd (gaat vanzelf) | ja |
 
 **Regels die de database bewaakt**
-- Een taak is óf aan één persoon óf aan Frion toegewezen, nooit allebei.
-- Alleen een toegewezen taak (persoon of Frion) kan op `gereed`.
+- Een taak is aan hooguit één persoon toegewezen.
+- Alleen een toegewezen taak kan op `gereed`.
 - Terug naar `open`: de gereed-gegevens worden leeg gemaakt.
 
 ## 6. meldingen
@@ -145,8 +144,7 @@ en zonder locatiegegevens (zie BEHEER.md).
 
 - **Map `meldingen/`:** foto's van gebreken.
 - **Map `taken/`:** foto's na afloop.
-- **Bewaartermijn (voorstel):** 12 maanden, daarna automatisch verwijderd. De taak of
-  melding zelf blijft bestaan, zonder foto.
+- **Bewaartermijn:** 12 maanden (besloten). Zie "Bewaren en verwijderen" hieronder.
 
 ---
 
@@ -156,28 +154,57 @@ de app omzeilt, krijgt niets te zien wat niet mag.
 
 "Eigen werkgroepen" = de werkgroepen waar iemand lid van is (tabel lidmaatschappen).
 
-| Wat | Vrijwilliger | Frion-begeleider | Bestuur en coördinator |
-|---|---|---|---|
-| Werkgroepen en plekken zien | ja | ja | ja |
-| Werkgroepen, plekken, gebruikers beheren | nee | nee | ja |
-| Taken zien | eigen werkgroepen | eigen werkgroepen | alle |
-| Taak aanmaken of wijzigen | nee | nee | ja |
-| Taak oppakken ("Ik doe dit") of teruggeven | zichzelf, eigen werkgroepen | nee (Frion-taken staan al op Frion) | ja, aan iedereen of Frion |
-| Gereed melden, heropenen, foto aanpassen | eigen werkgroepen of aan hem/haar toegewezen | eigen werkgroepen of Frion-taak | ja |
-| Melding doen | ja | ja | ja |
-| Meldingen zien | alleen eigen | alleen eigen | alle |
-| Melding afhandelen (taak maken, geen actie) | nee | nee | ja |
-| Foto bij melding zien | eigen melding, of als de taak in eigen werkgroep zit | idem | ja |
-| Foto na afloop zien | taken die hij/zij mag zien | idem | ja |
+| Wat | Vrijwilliger | Bestuur en coördinator |
+|---|---|---|
+| Werkgroepen en plekken zien | ja | ja |
+| Werkgroepen, plekken, gebruikers beheren | nee | ja |
+| Taken zien | eigen werkgroepen, en taken die aan hem/haar zijn toegewezen | alle |
+| Taak aanmaken of wijzigen | nee | ja |
+| Taak oppakken ("Ik doe dit") of teruggeven | alleen voor zichzelf, eigen werkgroepen | ja, aan iedereen |
+| Gereed melden, heropenen, foto aanpassen | taken die hij/zij mag zien | ja |
+| Melding doen | ja | ja |
+| Meldingen zien | eigen meldingen, en meldingen waar een taak van is gemaakt die hij/zij mag zien | alle |
+| Melding afhandelen (taak maken, geen actie) | nee | ja |
+
+**Foto's:** wie een melding of taak mag zien, mag ook de foto's erbij zien. Er is geen
+aparte regel voor foto's.
+
+Voorbeeld: Piet (Dieren) meldt een kapot hek. Het bestuur maakt er een taak voor Klussen
+van. Kees (Klussen) ziet nu de taak, de melding van Piet en de foto van het hek. Fatima
+(Tuinen) ziet niets van dit alles.
 
 ---
 
-## Open punten
-Deze punten liggen (deels) bij het bestuur:
-1. **Bewaartermijn foto's:** 12 maanden, of korter?
-2. **Wie mag de foto bij een melding zien:** voorstel hierboven.
-3. **Iemand stopt als vrijwilliger:** voorstel: op "niet actief" zetten. Hij of zij kan
-   dan niet meer inloggen; de voornaam blijft zichtbaar bij oude taken. Na 12 maanden
-   wordt de persoon verwijderd en staat er bij oude taken "oud-vrijwilliger".
-4. **Mag een Frion-begeleider een taak oppakken voor zichzelf** (niet voor de groep)?
-   Voorstel: nee, houd het simpel.
+## Bewaren en verwijderen (AVG)
+De app bewaart persoonsgegevens niet langer dan nodig. Dit zijn de afspraken:
+
+**Taken, meldingen en foto's**
+- Taken en meldingen die meer dan 12 maanden geleden zijn afgesloten (gereed of geen
+  actie nodig), worden geëxporteerd naar het archief op SharePoint van de stichting,
+  inclusief foto's en voornamen. Daarna worden ze uit de app verwijderd.
+- Zolang die exportfunctie er nog niet is (zie later-lijst), blijven ze in de app staan.
+  Foto's worden pas verwijderd nadat ze zijn geëxporteerd, anders ontbreken ze in het
+  archief.
+- In het archief blijven de voornamen staan, zodat je later kunt nalezen wie wat deed.
+  Voor het archief geldt de bewaartermijn die de stichting voor SharePoint afspreekt.
+
+**Iemand stopt als vrijwilliger**
+1. De beheerder zet de persoon op "niet actief". Het inlogaccount en het e-mailadres
+   worden direct verwijderd; inloggen kan niet meer.
+2. De voornaam blijft in de app staan bij taken en meldingen, zolang die nog in de app
+   staan. Zo blijft zichtbaar wie wat deed.
+3. Zodra er geen taken of meldingen meer naar de persoon verwijzen (alles is
+   gearchiveerd), wordt de persoon helemaal uit de app verwijderd.
+
+**Voor het bestuur:** neem deze afspraken op in het verwerkingsregister van de stichting
+(de lijst van welke persoonsgegevens de stichting bewaart, waarom en hoe lang). Dit
+voorstel is geen juridisch advies.
+
+---
+
+## Besluiten
+1. Foto's: 12 maanden in de app, daarna via het archief op SharePoint.
+2. Wie een melding of taak mag zien, mag ook de foto zien. De werkgroep van een taak
+   ziet ook de melding waar de taak uit komt.
+3. Bewaren en verwijderen: zie hierboven. Voornamen blijven bewaard in het archief.
+4. Frion valt voorlopig buiten de app.
