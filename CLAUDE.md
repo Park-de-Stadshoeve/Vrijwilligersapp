@@ -77,7 +77,8 @@ Ik bouw deze app zelf om te leren hoe je een app maakt. Claude schrijft code, ma
   Geen zwaar framework en geen build-stap tenzij er een duidelijke reden is.
 - Backend: beheerde dienst (bijv. Supabase) voor database, login en foto-opslag,
   met dataopslag in de EU. Bouw nooit zelf login of wachtwoordbeheer.
-- Inloggen via een link in de mail (magic link), zonder wachtwoord.
+- Inloggen met een code van 6 cijfers uit de mail, zonder wachtwoord. (Geen link:
+  op de iPhone opent een link in Safari en niet in de app op het beginscherm.)
 - Code staat in GitHub: organisatie park-de-stadshoeve, repository Vrijwilligersapp.
   Hosting via GitHub Pages: https://park-de-stadshoeve.github.io/Vrijwilligersapp/
   Budget: hooguit een paar euro per maand.
@@ -123,10 +124,16 @@ Ik bouw deze app zelf om te leren hoe je een app maakt. Claude schrijft code, ma
 ## Stand van zaken
 Werk deze sectie bij aan het eind van elke stap.
 
-Klaar (als werkend ontwerp met voorbeeldgegevens, nog zonder database):
-- Alle vijf de functies, verdeeld over drie bestanden: index.html (geraamte),
-  stijl.css (uiterlijk) en app.js (logica en voorbeeldgegevens).
-- Demo: "?rol=bestuur" achter de link maakt Kirsten bestuurslid.
+Klaar (de schermen werken nog met voorbeeldgegevens; inloggen werkt met de database):
+- Alle vijf de functies, verdeeld over: index.html (geraamte), stijl.css (uiterlijk),
+  app.js (logica en voorbeeldgegevens), instellingen.js (adres en publishable
+  sleutel van Supabase) en inloggen.js (inloggen met code, uitloggen, profiel).
+- Inloggen: signInWithOtp met shouldCreateUser: false, daarna verifyOtp met de code.
+  Profiel (voornaam, rol, werkgroepen) uit de database, bewaard op het toestel voor
+  slecht bereik. startApp(profiel) in app.js start de schermen. "?rol=bestuur" is weg.
+  supabase-js 2.45.4 via jsdelivr, ook bewaard door de service worker.
+  Getest in de browser zonder database (schermen, foutteksten, startApp); echt
+  inloggen nog niet getest.
 - Menu onderaan: Mijn taken, Werkgroep, Melden, Meldingen.
 - Elke actie heeft "Ongedaan maken" (6 seconden).
 - De status van een melding wordt afgeleid van de gekoppelde taak (taakId), niet
@@ -159,8 +166,12 @@ Klaar (als werkend ontwerp met voorbeeldgegevens, nog zonder database):
   en tijdelijke links pas te testen als de app gekoppeld is.
 
 Besluiten (november 2026):
-- Frion valt voorlopig buiten de app (zie later-lijst). De demo in app.js bevat nog
-  Frion; dat blijft zo tot de echte database gekoppeld wordt.
+- Frion valt voorlopig buiten de app (zie later-lijst). De voorbeeldgegevens in
+  app.js bevatten nog Frion; dat verdwijnt als de taken uit de database komen.
+- Inloggen met een code uit de mail in plaats van een link (iPhone-probleem).
+- Alleen vooraf toegevoegde e-mailadressen kunnen inloggen.
+- Voorlopig de ingebouwde mail van Supabase; eigen e-maildienst (Brevo) vóór de
+  proef met Klussen.
 - Foto's: 12 maanden in de app. Wie een melding of taak mag zien, mag ook de foto
   zien. De werkgroep van een taak ziet ook de melding waar die taak uit komt.
 - Iemand stopt: account en e-mailadres direct weg; voornaam blijft bij taken en
@@ -175,7 +186,8 @@ Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
 Volgende stappen:
-0. Demo-trucje "?rol=bestuur" verwijderen uit app.js zodra echt inloggen werkt.
+0. Inloggen testen op de telefoon met het testproject. Daarna: taken en meldingen
+   uit de database in plaats van voorbeeldgegevens (in kleine stappen).
 1. Besluit van het bestuur afwachten. Feedback (vergadering 22 oktober 2026): eerst
    autorisaties en hosting onderzoeken, invoering stap voor stap. Daarvoor is een
    notitie gemaakt (staat buiten de repository, want het is een intern stuk) met
@@ -189,7 +201,7 @@ Volgende stappen:
    - e-mail aan de coördinator bij een gevaarlijke melding;
    - beheerscherm voor gebruikers, werkgroepen, plekken en onderdelen (alleen voor
      beheerders);
-   - eigen e-maildienst voor de inloglinks (de ingebouwde mail van Supabase stuurt
+   - eigen e-maildienst voor de inlogcodes (de ingebouwde mail van Supabase stuurt
      maar 2 berichten per uur en alleen naar beheerders);
    - voorkomen dat het gratis Supabase-project na een week stilte op pauze gaat;
    - maandelijkse back-up (de gratis versie maakt er geen).

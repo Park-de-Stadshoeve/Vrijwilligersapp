@@ -5,14 +5,15 @@
 // Tijdelijk: later komen deze uit de database.
 // Gebruik hier NOOIT echte namen: deze code is openbaar.
 
-// Wie is er "ingelogd"? (nep, om te testen)
+// Wie is er ingelogd? Wordt ingevuld door startApp (onderaan), na het
+// inloggen. Naam, rol en werkgroepen komen uit de database (zie inloggen.js).
 const ingelogdeGebruiker = {
-  naam: "Kirsten",
-  werkgroepen: ["Dieren", "Klussen"],
-  // TIJDELIJK voor de demo: "?rol=bestuur" achter de link maakt Kirsten bestuurslid.
-  // Verwijderen zodra echt inloggen werkt!
-  magAllesZien: new URLSearchParams(location.search).get("rol") === "bestuur",
-  isFrion: false        // true = Frion-begeleider
+  id: null,
+  naam: "",
+  werkgroepen: [],
+  magAllesZien: false,  // true = bestuur of coördinator
+  isBeheerder: false,
+  isFrion: false        // Frion valt voorlopig buiten de app
 };
 
 const alleWerkgroepen = ["Dieren", "Tuinen", "Avontuurlijk spelen", "Klussen", "Educatie", "Evenementen", "Geschiedenis"];
@@ -122,7 +123,8 @@ function sorteerTaken(a, b) {
 }
 
 // Onder welke naam wijs je een taak aan jezelf toe?
-const mijnToewijsNaam = ingelogdeGebruiker.isFrion ? FRION : ingelogdeGebruiker.naam;
+// (Wordt ingevuld door startApp, na het inloggen.)
+let mijnToewijsNaam = "";
 
 // Is deze taak van mij? (of van Frion, als ik Frion-begeleider ben)
 function isMijnTaak(taak) {
@@ -1000,7 +1002,7 @@ function toonMijnTaken() {
   markeerMenu("mijn");
 }
 
-let gekozenWerkgroep = ingelogdeGebruiker.werkgroepen[0];
+let gekozenWerkgroep = "";   // leeg = de eerste keuze (zie hieronder)
 
 function toonWerkgroep() {
   huidigScherm = "werkgroep";
@@ -1048,7 +1050,21 @@ function toonWerkgroep() {
 document.querySelectorAll("nav button").forEach(knop => {
   knop.addEventListener("click", () => toonScherm(knop.dataset.scherm));
 });
-toonMijnTaken();
+
+// Start de app voor de ingelogde persoon. Wordt aangeroepen door inloggen.js
+// zodra bekend is wie er is ingelogd. "profiel" komt uit de database.
+function startApp(profiel) {
+  ingelogdeGebruiker.id = profiel.id;
+  ingelogdeGebruiker.naam = profiel.naam;
+  ingelogdeGebruiker.werkgroepen = profiel.werkgroepen;
+  ingelogdeGebruiker.magAllesZien = profiel.rol === "bestuur" || profiel.rol === "coordinator";
+  ingelogdeGebruiker.isBeheerder = profiel.isBeheerder;
+  mijnToewijsNaam = ingelogdeGebruiker.naam;
+  toonMijnTaken();
+}
+
+// Eerst inloggen (of nagaan of je al bent ingelogd). Staat in inloggen.js.
+startMetInloggen();
 
 // Zet de service worker aan: die bewaart de app op de telefoon, zodat hij
 // ook bij slecht bereik opent. Uitleg staat in service-worker.js.

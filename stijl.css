@@ -18,7 +18,19 @@ body {
   color: var(--tekst);
   background: var(--achtergrond);
 }
-header { background: var(--groen); color: #ffffff; padding: 16px; position: sticky; top: 0; z-index: 1; }
+header {
+  background: var(--groen); color: #ffffff; padding: 16px; position: sticky; top: 0; z-index: 1;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+/* Knop "Uitloggen" rechtsboven: klein, want je hebt hem zelden nodig */
+.knop-uitloggen {
+  min-height: 44px; padding: 0 12px; font-size: 16px;
+  background: none; color: #ffffff; border: 2px solid #ffffff; border-radius: 8px;
+}
+/* Iets met "hidden" moet echt verdwijnen, ook als er een "display" op staat */
+[hidden] { display: none !important; }
+/* Code uit de mail: grote, uit elkaar staande cijfers */
+.invoer-code { font-size: 28px !important; letter-spacing: 8px; text-align: center; }
 h1 { margin: 0; font-size: 22px; }
 main { padding: 16px; padding-bottom: 180px; } /* ruimte vrij voor menu én melding onderaan */
 
@@ -83,7 +95,7 @@ main { padding: 16px; padding-bottom: 180px; } /* ruimte vrij voor menu én meld
 /* Formulieren */
 .veld { margin-bottom: 24px; }
 .veld-titel { display: block; margin: 0 0 8px; font-weight: bold; }
-textarea, input[type="text"], input[type="date"] {
+textarea, input[type="text"], input[type="date"], input[type="email"] {
   display: block; width: 100%; min-height: 48px; margin-top: 8px; padding: 12px;
   font-family: inherit; font-size: 18px; font-weight: normal;
   border: 2px solid var(--grijs); border-radius: 8px;

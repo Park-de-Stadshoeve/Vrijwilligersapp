@@ -19,7 +19,11 @@
   <meta name="apple-mobile-web-app-title" content="Stadshoeve">
 </head>
 <body>
-  <header><h1 id="titel">Mijn taken</h1></header>
+  <header>
+    <h1 id="titel">Even geduld…</h1>
+    <!-- Verschijnt pas als je bent ingelogd (zie inloggen.js) -->
+    <button id="knop-uitloggen" class="knop-uitloggen" hidden>Uitloggen</button>
+  </header>
 
   <!-- Hier zet het script de inhoud van het scherm neer -->
   <main id="inhoud"></main>
@@ -31,14 +35,21 @@
   </div>
 
   <!-- Menu: "data-scherm" zegt welk scherm bij de knop hoort -->
-  <nav>
+  <nav hidden>
     <button data-scherm="mijn">Mijn taken</button>
     <button data-scherm="werkgroep">Werkgroep</button>
     <button data-scherm="melden">Melden</button>
     <button data-scherm="meldingen">Meldingen</button>
   </nav>
 
-  <!-- De logica van de app staat in app.js. Staat onderaan, zodat de pagina eerst geladen is. -->
+  <!-- Scripts staan onderaan, zodat de pagina eerst geladen is. Volgorde is belangrijk. -->
+  <!-- 1. Hulpbestand van Supabase (vaste versie, zodat het niet onverwacht verandert) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <!-- 2. Adres en sleutel van de database -->
+  <script src="instellingen.js"></script>
+  <!-- 3. Inloggen en "wie ben ik" -->
+  <script src="inloggen.js"></script>
+  <!-- 4. De app zelf: schermen en voorbeeldgegevens -->
   <script src="app.js"></script>
 </body>
 </html>

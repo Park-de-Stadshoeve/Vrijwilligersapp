@@ -1,12 +1,13 @@
 # Beheerhandleiding Vrijwilligersapp
 
 Deze handleiding is voor de beheerder van de app. Je hoeft geen programmeur te zijn.
-De app is nog een ontwerp: alle gegevens zijn verzonnen en er wordt niets bewaard.
+Stand: inloggen werkt met de database (Supabase). Taken en meldingen zijn nog
+voorbeeldgegevens en worden nog niet bewaard.
 
 ## Waar staat de app?
 - **Code:** GitHub, organisatie `park-de-stadshoeve`, repository `Vrijwilligersapp`.
 - **Online:** https://park-de-stadshoeve.github.io/Vrijwilligersapp/
-- **Bestuursversie (demo):** dezelfde link met `?rol=bestuur` erachter.
+- **Database:** Supabase, project `vrijwilligersapp-test` (alleen testgegevens).
 
 ## Welk bestand doet wat?
 | Bestand | Wat staat erin | Wanneer pas je het aan? |
@@ -14,6 +15,8 @@ De app is nog een ontwerp: alle gegevens zijn verzonnen en er wordt niets bewaar
 | `index.html` | Het geraamte: kopbalk, middenruimte, menu onderaan | Zelden |
 | `stijl.css` | Het uiterlijk: kleuren, groottes, knoppen | Kleur of tekstgrootte veranderen |
 | `app.js` | De logica en de voorbeeldgegevens | Plekken, werkgroepen, termijnen |
+| `instellingen.js` | Adres en publieke sleutel van de database | Bij een andere database (bijv. van test naar echt) |
+| `inloggen.js` | Inlogscherm met code uit de mail, uitloggen, "wie ben ik" | Zelden |
 | `CLAUDE.md` | Instructies voor Claude en de stand van zaken | Als er afspraken veranderen |
 | `DATABASE.md` | Ontwerp van de database: welke gegevens, wie mag wat | Als de opbouw of de rechten veranderen |
 | `database/` | De SQL-bestanden die de database opbouwen (uitleg in `database/LEESMIJ.md`) | Alleen bij het opzetten van een nieuwe database |
@@ -31,6 +34,37 @@ Vertel vrijwilligers dit bij de start. Het hoeft maar één keer per telefoon.
 
 Daarna staat er een icoon met de kip en de naam "Stadshoeve" op het beginscherm.
 
+## Inloggen
+Iedereen logt één keer per toestel in. Daarna blijft de app ingelogd, tot je op
+**Uitloggen** (rechtsboven) tikt.
+1. Vul je e-mailadres in en tik op **Stuur mij een code**.
+2. Je krijgt een mail met een code van 6 cijfers. Typ die over in de app.
+
+Waarom een code en geen link? Op de iPhone opent een link in de mail in Safari, niet in
+de app op het beginscherm. Je zou dan in de app niet ingelogd zijn. Een code werkt overal.
+
+Alleen e-mailadressen die de beheerder heeft toegevoegd kunnen inloggen.
+
+## Iemand toevoegen (tijdelijk, tot het beheerscherm er is)
+1. Supabase > **Authentication** > **Users** > **Add user** > **Create new user**.
+   Vul het e-mailadres in, kies een willekeurig lang wachtwoord (dat wordt nooit
+   gebruikt, je hoeft het niet te bewaren) en zet **Auto Confirm User** aan.
+2. **SQL Editor** > **New query**, vul de vier dingen tussen < > in en klik op **Run**:
+   ```sql
+   insert into gebruikers (id, voornaam, achternaam_letter, rol, is_beheerder)
+   select id, '<Voornaam>', '<eerste letter achternaam>', '<vrijwilliger, bestuur of coordinator>', false
+   from auth.users where email = '<e-mailadres>';
+
+   insert into lidmaatschappen (gebruiker, werkgroep)
+   select u.id, w.id from auth.users u, werkgroepen w
+   where u.email = '<e-mailadres>' and w.naam in ('Klussen');
+   ```
+   Meerdere werkgroepen? Zet ze tussen de haakjes: `('Klussen', 'Tuinen')`.
+3. Laat de persoon inloggen. Ziet hij of zij "Je account is nog niet klaar", dan is
+   stap 2 niet gelukt.
+
+Zet deze SQL met echte namen en adressen **nooit** in GitHub.
+
 ## Werken bij slecht bereik
 De telefoon bewaart een kopie van de app. Is er bereik, dan haalt de app altijd eerst
 de nieuwste versie op. Is er na 3 seconden nog niets, dan opent de bewaarde kopie.
@@ -41,6 +75,9 @@ Je hoeft na een wijziging dus niets bij te houden of op te hogen.
   dezelfde naam en maat. Op telefoons waar de app al staat, verandert het icoon pas
   na verwijderen en opnieuw op het beginscherm zetten.
 - Taken en meldingen worden nog niet bewaard bij slecht bereik. Dat komt later.
+- **Supabase-hulpbestand:** `inloggen.js` gebruikt een vaste versie (2.45.4) van
+  internet. Die staat in `index.html` én in `service-worker.js`. Bij een nieuwe
+  versie op beide plekken aanpassen.
 
 ## Veelvoorkomende aanpassingen (in `app.js`)
 - **Plek op het park toevoegen:** in de lijst `PLEKKEN` (vóór "Overig"), en in

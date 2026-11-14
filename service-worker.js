@@ -9,7 +9,7 @@
 // Daardoor zie je na een wijziging in GitHub altijd de nieuwe versie zodra je bereik hebt.
 //
 // Let op: dit bewaart alleen de app zelf (schermen, kleuren, iconen),
-// geen taken of meldingen. Dat komt later, als er een database is.
+// geen taken of meldingen uit de database.
 
 // Naam van de opslag op de telefoon. Alleen veranderen als er iets raars gebeurt;
 // dan wordt de oude kopie weggegooid en een nieuwe gemaakt.
@@ -19,11 +19,18 @@ const OPSLAG_NAAM = "stadshoeve-v1";
 const WACHTTIJD = 3000;
 
 // De bestanden die samen de app vormen. Nieuw bestand toegevoegd? Zet het hier ook bij.
+// Het hulpbestand van Supabase komt van een andere website (cdn.jsdelivr.net).
+// Staat ook in index.html; bij een nieuwe versie op BEIDE plekken aanpassen.
+const SUPABASE_HULPBESTAND = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
+
 const APP_BESTANDEN = [
   "./",
   "index.html",
   "stijl.css",
+  "instellingen.js",
+  "inloggen.js",
   "app.js",
+  SUPABASE_HULPBESTAND,
   "manifest.json",
   "iconen/icoon-180.png",
   "iconen/icoon-192.png",
@@ -50,8 +57,10 @@ self.addEventListener("activate", gebeurtenis => {
 // Elke keer dat de app een bestand opvraagt.
 self.addEventListener("fetch", gebeurtenis => {
   const verzoek = gebeurtenis.request;
-  // Alleen gewone opvragingen van onze eigen website; de rest laten we met rust.
-  if (verzoek.method !== "GET" || new URL(verzoek.url).origin !== location.origin) return;
+  // Alleen gewone opvragingen van onze eigen website en het Supabase-hulpbestand.
+  // De rest laten we met rust, vooral de database zelf: die moet altijd vers zijn.
+  const vanOns = new URL(verzoek.url).origin === location.origin;
+  if (verzoek.method !== "GET" || !(vanOns || verzoek.url === SUPABASE_HULPBESTAND)) return;
   gebeurtenis.respondWith(eerstInternetDanKopie(verzoek));
 });
 
