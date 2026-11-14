@@ -138,10 +138,11 @@ Klaar (als werkend ontwerp met voorbeeldgegevens, nog zonder database):
 - Installeerbaar als app (PWA): manifest.json, iconen/ (logo in 180, 192, 512) en
   service-worker.js ("eerst internet, na 3 seconden de bewaarde kopie"). Alleen de
   app zelf wordt bewaard, nog geen taken of meldingen.
+- Foto's worden op de telefoon verkleind (verkleinFoto in app.js: langste kant 1280,
+  JPEG 80%) en verliezen daarbij alle verborgen gegevens, ook gps.
 
 In afwachting van het besluit over hosting (zonder database mogelijk):
 - Gebruikstest van de demo met 3 à 4 vrijwilligers van Klussen.
-- Foto's verkleinen en locatiegegevens verwijderen in de browser.
 
 Volgende stappen:
 0. Demo-trucje "?rol=bestuur" verwijderen uit app.js zodra echt inloggen werkt.
@@ -154,7 +155,6 @@ Volgende stappen:
 2. Database en inloggen koppelen, eerst voor de proef met Klussen. Daarbij:
    - één tabel gebruikers met per persoon een rol en werkgroepen;
    - rechten afdwingen in de database;
-   - foto's verkleinen en locatiegegevens verwijderen voor upload;
    - bewaartermijn voor foto's afspreken;
    - vastleggen wie de foto bij een melding mag zien (voorstel: de melder, de
      werkgroep van de taak, bestuur en coördinator);

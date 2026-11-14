@@ -46,6 +46,16 @@ Je hoeft na een wijziging dus niets bij te houden of op te hogen.
 - **Werkgroep toevoegen:** in de lijst `alleWerkgroepen`. Let op exact dezelfde spelling.
 - **Standaard deadline bij een melding:** `DAGEN_GEVAARLIJK` en `DAGEN_NORMAAL`.
 - **Hoe lang "Ongedaan maken" zichtbaar is:** `MELDING_DUUR` (in milliseconden).
+- **Grootte van foto's:** `FOTO_MAX_PIXELS` (langste kant, nu 1280) en
+  `FOTO_KWALITEIT` (nu 0.8 = 80%). Groter = scherper, maar trager uploaden en
+  meer opslagruimte nodig.
+
+## Foto's en privacy
+Elke foto wordt op de telefoon zelf verkleind, voordat hij verder gaat. Daarbij gaan
+alle verborgen gegevens eruit, ook de plek waar de foto is gemaakt (gps), het merk
+telefoon en de datum. Een foto van een paar MB wordt zo ongeveer 150–300 kB.
+Let op: wat er óp de foto staat blijft natuurlijk wel staan. Daarom staat bij elke
+fotoknop: "Fotografeer alleen het werk, geen mensen."
 
 ## Kleuren aanpassen (in `stijl.css`)
 Alle kleuren staan bovenaan bij `:root`. Houd voldoende contrast, zodat alles buiten in

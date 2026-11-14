@@ -79,6 +79,10 @@ const MELDING_DUUR = 6000;
 const DAGEN_GEVAARLIJK = 1;    // morgen
 const DAGEN_NORMAAL = 14;      // over twee weken
 
+// Foto's worden op de telefoon verkleind voordat ze verder gaan (zie verkleinFoto).
+const FOTO_MAX_PIXELS = 1280;  // langste kant van de foto, in pixels
+const FOTO_KWALITEIT = 0.8;    // 0.8 = 80%: kleiner bestand, verschil nauwelijks te zien
+
 // ===== HULPFUNCTIES =====
 
 // De datum van vandaag, in dezelfde vorm als de deadlines ("2026-10-11")
@@ -178,28 +182,78 @@ function maakFotoKnop(knopTekst, bijFoto) {
 
   const label = document.createElement("label");
   label.className = "knop-foto";
-  label.textContent = knopTekst;
+  const knopTekstVak = document.createElement("span"); // apart, zodat we de tekst kunnen wisselen
+  knopTekstVak.textContent = knopTekst;
+
+  // Privacy-tip, in gewone taal. Hier komt ook een foutmelding als het misgaat.
+  const tip = document.createElement("p");
+  tip.className = "foto-tip";
+  const TIP_TEKST = "Fotografeer alleen het werk, geen mensen.";
+  tip.textContent = TIP_TEKST;
 
   const invoer = document.createElement("input");
   invoer.type = "file";
   invoer.accept = "image/*";         // alleen foto's
   invoer.className = "verborgen";
-  invoer.addEventListener("change", () => {
+  invoer.addEventListener("change", async () => {
     const bestand = invoer.files[0];
     if (!bestand) return;            // niets gekozen: niets doen
-    // Tijdelijk: de foto staat alleen in het geheugen van de telefoon.
-    bijFoto(URL.createObjectURL(bestand));
-  });
-  label.append(invoer);
-  blok.append(label);
 
-  // Privacy-tip, in gewone taal
-  const tip = document.createElement("p");
-  tip.className = "foto-tip";
-  tip.textContent = "Fotografeer alleen het werk, geen mensen.";
-  blok.append(tip);
+    // Direct laten zien dat er iets gebeurt
+    knopTekstVak.textContent = "Foto verwerken…";
+    tip.textContent = TIP_TEKST;
+    tip.classList.remove("fout");
+
+    try {
+      const kleineFoto = await verkleinFoto(bestand);
+      // Tijdelijk: de foto staat alleen in het geheugen van de telefoon.
+      bijFoto(URL.createObjectURL(kleineFoto));
+    } catch (fout) {
+      knopTekstVak.textContent = knopTekst;
+      tip.textContent = "Deze foto kon niet worden gebruikt. Maak een nieuwe foto of kies een andere.";
+      tip.classList.add("fout");
+    }
+    invoer.value = "";               // zodat je dezelfde foto nog eens kunt kiezen
+  });
+  label.append(knopTekstVak, invoer);
+  blok.append(label, tip);
 
   return blok;
+}
+
+// Maakt een foto kleiner en haalt alle verborgen gegevens eruit.
+// Hoe: de foto wordt opnieuw getekend op een "canvas" (een onzichtbaar tekenvel)
+// en daarna als nieuwe JPEG bewaard. Alleen de pixels gaan mee; verborgen gegevens
+// zoals de gps-locatie, het merk telefoon en de datum blijven achter.
+// De maat en kwaliteit staan bovenin dit bestand: FOTO_MAX_PIXELS en FOTO_KWALITEIT.
+async function verkleinFoto(bestand) {
+  // 1. Foto inlezen. De browser zet hem daarbij vanzelf rechtop.
+  const adres = URL.createObjectURL(bestand);
+  const plaatje = new Image();
+  plaatje.src = adres;
+  try {
+    await plaatje.decode();          // wacht tot de foto helemaal ingelezen is
+  } finally {
+    URL.revokeObjectURL(adres);      // origineel uit het geheugen halen
+  }
+
+  // 2. Nieuwe maat uitrekenen. Kleine foto's worden niet groter gemaakt.
+  const schaal = Math.min(1, FOTO_MAX_PIXELS / Math.max(plaatje.naturalWidth, plaatje.naturalHeight));
+  const tekenvel = document.createElement("canvas");
+  tekenvel.width = Math.round(plaatje.naturalWidth * schaal);
+  tekenvel.height = Math.round(plaatje.naturalHeight * schaal);
+
+  // 3. Foto op het tekenvel tekenen, op de nieuwe maat.
+  tekenvel.getContext("2d").drawImage(plaatje, 0, 0, tekenvel.width, tekenvel.height);
+
+  // 4. Tekenvel bewaren als JPEG-bestand.
+  return new Promise((gelukt, mislukt) => {
+    tekenvel.toBlob(
+      nieuweFoto => nieuweFoto ? gelukt(nieuweFoto) : mislukt(new Error("Foto opslaan mislukt")),
+      "image/jpeg",
+      FOTO_KWALITEIT
+    );
+  });
 }
 
 // Maakt een vraag met keuzeknoppen (zoals "Waar is het?")
