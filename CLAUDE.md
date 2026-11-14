@@ -140,7 +140,7 @@ Klaar (als werkend ontwerp met voorbeeldgegevens, nog zonder database):
   app zelf wordt bewaard, nog geen taken of meldingen.
 - Foto's worden op de telefoon verkleind (verkleinFoto in app.js: langste kant 1280,
   JPEG 80%) en verliezen daarbij alle verborgen gegevens, ook gps.
-- Ontwerp van de database in gewone taal: DATABASE.md (zes tabellen, wie mag wat,
+- Ontwerp van de database in gewone taal: DATABASE.md (zeven tabellen, wie mag wat,
   bewaren en verwijderen, besluiten). Eén rol per persoon; vinkje krijgt_gevaar_mail
   bepaalt wie de e-mail bij een gevaarlijke melding krijgt. Nog niet in SQL, nog
   geen account.
@@ -152,6 +152,11 @@ Besluiten (november 2026):
   zien. De werkgroep van een taak ziet ook de melding waar die taak uit komt.
 - Iemand stopt: account en e-mailadres direct weg; voornaam blijft bij taken en
   meldingen, ook in het archief op SharePoint.
+- Plekken hebben twee lagen: plek en onderdeel (bijv. Hummelhoeve > Nestschommel).
+  Het onderdeel is niet verplicht bij melden en bij taken.
+- Beheerder is geen rol maar een vinkje (is_beheerder); alleen beheerders gebruiken
+  het beheerscherm. Advies: twee beheerders.
+- Bij een dubbele voornaam toont de app "Piet P." (kolom achternaam_letter).
 
 Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg).
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
@@ -169,7 +174,8 @@ Volgende stappen:
    - rechten afdwingen in de database;
    - rechten en bewaartermijnen volgens DATABASE.md;
    - e-mail aan de coördinator bij een gevaarlijke melding;
-   - beheerscherm voor gebruikers, werkgroepen en plekken;
+   - beheerscherm voor gebruikers, werkgroepen, plekken en onderdelen (alleen voor
+     beheerders);
    - eigen e-maildienst voor de inloglinks (de ingebouwde mail van Supabase stuurt
      maar 2 berichten per uur en alleen naar beheerders);
    - voorkomen dat het gratis Supabase-project na een week stilte op pauze gaat;

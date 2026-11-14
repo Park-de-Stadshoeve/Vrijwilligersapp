@@ -19,15 +19,15 @@ werkt in vrijwel elke database.
 ## Overzicht
 
 ```
-werkgroepen ──┬── plekken (standaardwerkgroep)
+werkgroepen ──┬── plekken (standaardwerkgroep) ── onderdelen
               ├── lidmaatschappen ── gebruikers
               └── taken ── gebruikers (toegewezen aan)
                     │
                meldingen ── gebruikers (gemeld door)
 ```
 
-Zes tabellen: **werkgroepen**, **plekken**, **gebruikers**, **lidmaatschappen**,
-**taken** en **meldingen**. Foto's staan apart in de foto-opslag; de tabellen bewaren
+Zeven tabellen: **werkgroepen**, **plekken**, **onderdelen**, **gebruikers**,
+**lidmaatschappen**, **taken** en **meldingen**. Foto's staan apart in de foto-opslag; de tabellen bewaren
 alleen waar de foto staat.
 
 ---
@@ -52,7 +52,24 @@ De vaste plekken op het park, voor "Waar is het?" bij melden en bij taken.
 | volgorde | in welke volgorde de knoppen staan | ja |
 | actief | ja/nee, zoals bij werkgroepen | ja (standaard ja) |
 
-## 3. gebruikers
+## 3. onderdelen
+De tweede laag onder een plek. Bijvoorbeeld: plek Hummelhoeve, onderdelen
+Nestschommel en Glijbaan. Een plek mag ook geen onderdelen hebben.
+
+| Kolom | Wat | Verplicht |
+|---|---|---|
+| id | nummer | ja |
+| plek | nummer uit plekken | ja |
+| naam | bijv. "Nestschommel" | ja, uniek binnen de plek |
+| volgorde | in welke volgorde de knoppen staan | ja |
+| actief | ja/nee, zoals bij werkgroepen | ja (standaard ja) |
+
+**Bij melden en bij een taak is het onderdeel niet verplicht.** Na het kiezen van de
+plek verschijnen de onderdelen als knoppen; overslaan mag. Zo blijft melden snel, ook
+als iemand niet weet hoe een toestel heet. Het bestuur kan het onderdeel later bij de
+taak invullen. De standaardwerkgroep hoort bij de plek, niet bij het onderdeel.
+
+## 4. gebruikers
 Iedereen die inlogt. Zo min mogelijk gegevens (AVG).
 
 | Kolom | Wat | Verplicht |
@@ -62,6 +79,7 @@ Iedereen die inlogt. Zo min mogelijk gegevens (AVG).
 | achternaam_letter | eerste letter van de achternaam, bijv. "P" (1 tot 3 letters) | ja |
 | rol | `vrijwilliger`, `bestuur` of `coordinator` | ja (standaard vrijwilliger) |
 | krijgt_gevaar_mail | ja/nee: krijgt een e-mail bij een gevaarlijke melding | ja (standaard nee) |
+| is_beheerder | ja/nee: mag het beheerscherm gebruiken | ja (standaard nee) |
 | actief | ja/nee. Op "nee" = gestopt, kan niet meer inloggen | ja (standaard ja) |
 
 **Welke naam zie je in de app?** Normaal alleen de voornaam: "Piet". Zijn er twee
@@ -77,10 +95,18 @@ Iedereen heeft precies één rol. Bestuur en coördinator hebben dezelfde rechte
 vinkje `krijgt_gevaar_mail` bepaalt wie de e-mail krijgt. Dat kunnen er ook twee zijn,
 of tijdelijk een vervanger.
 
+**Beheerder is geen rol, maar een vinkje** (`is_beheerder`). De beheerder is meestal
+ook bestuurslid of vrijwilliger, en iedereen heeft maar één rol. Alleen beheerders
+mogen het beheerscherm gebruiken: gebruikers toevoegen of verwijderen, rollen en
+werkgroepen wijzigen, en werkgroepen, plekken en onderdelen beheren. Wie rollen kan
+wijzigen, kan zichzelf overal toegang toe geven; daarom zo weinig mogelijk mensen.
+Advies: twee beheerders, zodat er altijd een reserve is. Dit vinkje staat los van de
+technische beheeraccounts van Supabase en GitHub.
+
 Frion valt voorlopig buiten de app (zie later-lijst in CLAUDE.md). Er is dus nog geen
 rol voor Frion-begeleiders en een taak kan nog niet aan Frion worden toegewezen.
 
-## 4. lidmaatschappen (koppeltabel)
+## 5. lidmaatschappen (koppeltabel)
 Wie zit in welke werkgroep. Eén regel per persoon per werkgroep.
 
 | Kolom | Wat | Verplicht |
@@ -104,7 +130,7 @@ In het beheerscherm ziet de beheerder dit als een rij vinkjes bij de persoon, é
 werkgroep. Vinkje aan = er komt een regel bij; vinkje uit = de regel verdwijnt. De
 beheerder ziet de tabel zelf nooit. Dezelfde combinatie kan maar één keer voorkomen.
 
-## 5. taken
+## 6. taken
 
 | Kolom | Wat | Verplicht |
 |---|---|---|
@@ -112,6 +138,7 @@ beheerder ziet de tabel zelf nooit. Dezelfde combinatie kan maar één keer voor
 | titel | korte naam van de taak | ja |
 | omschrijving | uitleg | nee |
 | plek | nummer uit plekken | ja |
+| onderdeel | nummer uit onderdelen | nee |
 | werkgroep | nummer uit werkgroepen | ja |
 | toegewezen_aan | nummer uit gebruikers | nee |
 | deadline | datum | nee |
@@ -124,15 +151,17 @@ beheerder ziet de tabel zelf nooit. Dezelfde combinatie kan maar één keer voor
 
 **Regels die de database bewaakt**
 - Een taak is aan hooguit één persoon toegewezen.
+- Het onderdeel hoort bij de gekozen plek (dat geldt ook voor meldingen).
 - Alleen een toegewezen taak kan op `gereed`.
 - Terug naar `open`: de gereed-gegevens worden leeg gemaakt.
 
-## 6. meldingen
+## 7. meldingen
 
 | Kolom | Wat | Verplicht |
 |---|---|---|
 | id | nummer | ja |
 | plek | nummer uit plekken | ja |
+| onderdeel | nummer uit onderdelen | nee |
 | foto | waar de foto van het gebrek staat | ja |
 | toelichting | tekst van de melder | nee |
 | gevaarlijk | ja/nee | ja (standaard nee) |
@@ -179,8 +208,8 @@ de app omzeilt, krijgt niets te zien wat niet mag.
 
 | Wat | Vrijwilliger | Bestuur en coördinator |
 |---|---|---|
-| Werkgroepen en plekken zien | ja | ja |
-| Werkgroepen, plekken, gebruikers beheren | nee | ja |
+| Werkgroepen, plekken en onderdelen zien | ja | ja |
+| Beheerscherm (gebruikers, werkgroepen, plekken, onderdelen) | alleen met vinkje is_beheerder | alleen met vinkje is_beheerder |
 | Taken zien | eigen werkgroepen, en taken die aan hem/haar zijn toegewezen | alle |
 | Taak aanmaken of wijzigen | nee | ja |
 | Taak oppakken ("Ik doe dit") of teruggeven | alleen voor zichzelf, eigen werkgroepen | ja, aan iedereen |
@@ -231,3 +260,6 @@ voorstel is geen juridisch advies.
    ziet ook de melding waar de taak uit komt.
 3. Bewaren en verwijderen: zie hierboven. Voornamen blijven bewaard in het archief.
 4. Frion valt voorlopig buiten de app.
+5. Plekken hebben twee lagen: plek en onderdeel. Het onderdeel is niet verplicht.
+6. Beheerder is een vinkje, geen rol. Alleen beheerders gebruiken het beheerscherm.
+7. Bij een dubbele voornaam toont de app de letter van de achternaam: "Piet P.".
