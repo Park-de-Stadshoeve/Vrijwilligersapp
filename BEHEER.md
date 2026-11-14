@@ -15,6 +15,7 @@ De app is nog een ontwerp: alle gegevens zijn verzonnen en er wordt niets bewaar
 | `stijl.css` | Het uiterlijk: kleuren, groottes, knoppen | Kleur of tekstgrootte veranderen |
 | `app.js` | De logica en de voorbeeldgegevens | Plekken, werkgroepen, termijnen |
 | `CLAUDE.md` | Instructies voor Claude en de stand van zaken | Als er afspraken veranderen |
+| `DATABASE.md` | Ontwerp van de database: welke gegevens, wie mag wat | Als de opbouw of de rechten veranderen |
 | `manifest.json` | Naam, icoon en kleur van de app op het beginscherm | Andere naam of kleur |
 | `service-worker.js` | Bewaart de app op de telefoon voor slecht bereik | Als je een bestand toevoegt |
 | `iconen/` | Het logo in drie maten (180, 192 en 512 pixels) | Nieuw logo |

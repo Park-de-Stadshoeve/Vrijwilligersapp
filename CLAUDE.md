@@ -141,6 +141,10 @@ Klaar (als werkend ontwerp met voorbeeldgegevens, nog zonder database):
 - Foto's worden op de telefoon verkleind (verkleinFoto in app.js: langste kant 1280,
   JPEG 80%) en verliezen daarbij alle verborgen gegevens, ook gps.
 
+- Ontwerp van de database in gewone taal: DATABASE.md (zes tabellen, wie mag wat,
+  open punten). Eén rol per persoon; vinkje krijgt_gevaar_mail bepaalt wie de
+  e-mail bij een gevaarlijke melding krijgt. Nog niet in SQL, nog geen account.
+
 Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg).
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
@@ -175,3 +179,6 @@ Volgende stappen:
 5. WhatsApp-bericht bij een gevaarlijke melding (afgeraden: kosten, onderhoud, AVG).
 6. Filters op de schermen. Pas bepalen na een paar weken gebruik.
 7. Taken verwijderen (bijvoorbeeld een taak die per ongeluk is aangemaakt).
+8. Pushbericht op de telefoon bij een gevaarlijke melding, als extra naast de e-mail
+   (niet in plaats van: op de iPhone alleen als de app op het beginscherm staat,
+   en minder betrouwbaar dan e-mail).
