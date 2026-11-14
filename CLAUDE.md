@@ -135,7 +135,9 @@ Klaar (de schermen werken nog met voorbeeldgegevens; inloggen werkt met de datab
   instellingen.js gekoppeld aan het testproject. Getest: niet-ingelogd wordt overal
   geweigerd (tabellen, acties, foto's); onbekend e-mailadres geeft de juiste melding.
   Supabase laat de mailtekst niet aanpassen zonder eigen SMTP: de mail bevat nu een
-  link (emailRedirectTo = de app), nog geen code. Echt inloggen nog niet getest.
+  link (emailRedirectTo = de app), nog geen code. Inloggen via de link getest en
+  werkt. Het codescherm heeft een TIJDELIJKE zin over de link (inloggen.js,
+  "TIJDELIJK"); weghalen zodra Brevo de code stuurt.
 - Domein: DNS bij Digiworks (beheerder nog onbekend), mail via Microsoft 365, SPF
   staat alleen Microsoft toe. Brevo heeft DNS-regels nodig. Afzender voor de test:
   jerome@; voor echt gebruik een algemeen adres (bijv. gedeelde mailbox app@).
