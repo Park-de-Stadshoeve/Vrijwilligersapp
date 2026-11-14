@@ -154,8 +154,9 @@ Klaar (als werkend ontwerp met voorbeeldgegevens, nog zonder database):
   en test_01_regels.sql: alles goed.
 - 04_fotos.sql geschreven: afgesloten bucket "fotos" (JPEG, max 2 MB), pad
   <gebruiker-id>/<uuid>.jpg, zien via melding/taak, melding alleen met eigen foto,
-  view fotos_zonder_koppeling (niet via de app). test_04_fotos.sql draait alles
-  terug. Nog niet uitgevoerd. Uploaden zelf pas te testen als de app gekoppeld is.
+  view fotos_zonder_koppeling (niet via de app). Uitgevoerd in het testproject;
+  bucket gecontroleerd (niet openbaar); test_04_fotos.sql: alles goed. Uploaden
+  en tijdelijke links pas te testen als de app gekoppeld is.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst). De demo in app.js bevat nog

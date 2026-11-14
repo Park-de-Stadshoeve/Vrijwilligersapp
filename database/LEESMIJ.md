@@ -9,7 +9,7 @@ database opbouwt en bevraagt. Het ontwerp in gewone taal staat in `../DATABASE.m
 | `01_tabellen.sql` | Maakt de zeven tabellen met hun regels, en de overzichten "meldingen met status" en "naam die de app laat zien" | uitgevoerd in testproject |
 | `02_startgegevens.sql` | Vult de werkgroepen en plekken | uitgevoerd in testproject |
 | `03_rechten.sql` | Wie wat mag zien en doen: regels per tabel en vaste acties voor taken | uitgevoerd in testproject |
-| `04_fotos.sql` | Afgesloten fotomap, wie welke foto mag zien en neerzetten, overzicht van foto's om op te ruimen | klaar, nog niet uitgevoerd |
+| `04_fotos.sql` | Afgesloten fotomap, wie welke foto mag zien en neerzetten, overzicht van foto's om op te ruimen | uitgevoerd in testproject |
 
 ## Testbestanden
 Deze mag je zo vaak uitvoeren als je wilt. Ze ruimen hun eigen testgegevens op.
@@ -19,7 +19,13 @@ Gebruik ze na een wijziging, om te zien of alles nog werkt.
 |---|---|
 | `test_01_regels.sql` | De regels uit `01_tabellen.sql` (12 tests). In de kolom "goed" moet overal "goed" staan. Getest: alles goed. |
 | `test_03_rechten.sql` | Wie wat mag uit `03_rechten.sql` (24 tests), met vijf verzonnen gebruikers. Getest: alles goed. |
-| `test_04_fotos.sql` | Wie welke foto mag zien en neerzetten (10 tests). Draait aan het eind alles terug. |
+| `test_04_fotos.sql` | Wie welke foto mag zien en neerzetten (10 tests). Draait aan het eind alles terug. Getest: alles goed. |
+
+## Controleren of de fotomap afgesloten is
+Voer uit in de SQL Editor:
+`select id, public, file_size_limit, allowed_mime_types from storage.buckets where id = 'fotos';`
+Goed is: `public` = false, `file_size_limit` = 2097152 (2 MB), `allowed_mime_types` = {image/jpeg}.
+In het dashboard: **Storage** > **fotos** > **Edit bucket**: "Public bucket" staat uit.
 
 ## Foto's opruimen (maandelijks)
 1. Open de **SQL Editor** en voer uit: `select * from fotos_zonder_koppeling;`
