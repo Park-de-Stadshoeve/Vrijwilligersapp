@@ -86,8 +86,17 @@ de knop **Beheer**. Daar staan alle gebruikers: naam, rol, werkgroepen en de vin
 - Het beheerscherm werkt alleen met bereik. De lijst wordt (expres) niet op de
   telefoon bewaard.
 - Zie je de knop niet, terwijl je wel beheerder bent? Log uit en weer in.
-- Wijzigen, toevoegen en laten stoppen komen in de volgende stappen. Tot die tijd
-  gaat dat zoals hieronder beschreven.
+- **Iemand wijzigen:** tik op **Wijzigen** bij de persoon. Je kunt de voornaam, de
+  letter van de achternaam, de rol, de werkgroepen en de twee vinkjes aanpassen.
+  Tik op **Opslaan**. Vergist? Tik meteen op **Ongedaan maken**.
+- **Na een wijziging van rol of werkgroep:** vraag de persoon de app helemaal af te
+  sluiten en opnieuw te openen (of uit en weer in te loggen). Wat iemand mag, klopt
+  meteen; de knoppen en schermen passen zich pas na opnieuw openen aan. Een nieuwe
+  naam staat ook bij oude taken en meldingen.
+- **Er blijft altijd minstens één beheerder.** Wil je je eigen vinkje uitzetten, maak
+  dan eerst iemand anders beheerder. Advies: zorg voor twee beheerders.
+- Toevoegen en laten stoppen komen in de volgende stappen. Tot die tijd gaat dat
+  zoals hieronder beschreven.
 
 ## Iemand toevoegen (tijdelijk, tot het beheerscherm er is)
 1. Supabase > **Authentication** > **Users** > **Add user** > **Create new user**.
