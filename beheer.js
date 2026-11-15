@@ -1,7 +1,8 @@
 // Beheerscherm: overzicht van alle gebruikers (alleen voor beheerders).
 // Dit bestand wordt geladen door index.html, vóór app.js.
 //
-// Stap 1: alleen bekijken. Wijzigen, toevoegen en laten stoppen komen later.
+// Stap 1: bekijken. Stap 2: naam, rol, vinkjes en werkgroepen wijzigen.
+// Toevoegen en laten stoppen komen later.
 //
 // Veilig? De knop "Beheer" zie je alleen met het vinkje is_beheerder. Maar ook
 // als iemand anders dit scherm zou openen, geeft de database alleen zijn eigen
@@ -50,8 +51,8 @@ async function toonBeheer() {
 }
 
 // Vraagt alle gebruikers en hun werkgroepen op bij de database.
-// Geeft een lijst: { id, naam, rol, werkgroepen: ["Klussen"], isBeheerder,
-// krijgtGevaarMail, actief }, gesorteerd op voornaam.
+// Geeft een lijst: { id, voornaam, letter, naam, rol, werkgroepen: ["Klussen"],
+// werkgroepIds: [4], isBeheerder, krijgtGevaarMail, actief }, gesorteerd op voornaam.
 async function haalGebruikersOp() {
   // Stopt het wachten na WACHTTIJD_DATABASE (staat in app.js)
   const stopper = new AbortController();
@@ -67,7 +68,7 @@ async function haalGebruikersOp() {
     // 2. Wie in welke werkgroep zit. "werkgroepen(naam)" haalt meteen de naam op.
     const ledenVraag = database
       .from("lidmaatschappen")
-      .select("gebruiker, werkgroepen(naam)")
+      .select("gebruiker, werkgroep, werkgroepen(naam)")
       .abortSignal(stopper.signal);
 
     // Beide vragen tegelijk versturen en op allebei wachten (dat is sneller)
@@ -75,18 +76,25 @@ async function haalGebruikersOp() {
     if (gebruikersAntwoord.error) throw gebruikersAntwoord.error;
     if (ledenAntwoord.error) throw ledenAntwoord.error;
 
-    return gebruikersAntwoord.data.map(rij => ({
-      id: rij.id,
-      naam: rij.voornaam + " " + rij.achternaam_letter + ".",   // bijv. "Piet P."
-      rol: rij.rol,
-      werkgroepen: ledenAntwoord.data
-        .filter(lid => lid.gebruiker === rij.id)
-        .map(lid => lid.werkgroepen.naam)
-        .sort(),
-      isBeheerder: rij.is_beheerder,
-      krijgtGevaarMail: rij.krijgt_gevaar_mail,
-      actief: rij.actief
-    }));
+    // Werkgroepnamen bij hun nummer onthouden (ook van werkgroepen die niet
+    // meer meedoen), zodat het formulier ze kan laten zien.
+    ledenAntwoord.data.forEach(lid => { werkgroepNaamVan[lid.werkgroep] = lid.werkgroepen.naam; });
+
+    return gebruikersAntwoord.data.map(rij => {
+      const leden = ledenAntwoord.data.filter(lid => lid.gebruiker === rij.id);
+      return {
+        id: rij.id,
+        voornaam: rij.voornaam,
+        letter: rij.achternaam_letter,
+        naam: rij.voornaam + " " + rij.achternaam_letter + ".",   // bijv. "Piet P."
+        rol: rij.rol,
+        werkgroepen: leden.map(lid => lid.werkgroepen.naam).sort(),
+        werkgroepIds: leden.map(lid => lid.werkgroep),
+        isBeheerder: rij.is_beheerder,
+        krijgtGevaarMail: rij.krijgt_gevaar_mail,
+        actief: rij.actief
+      };
+    });
   } finally {
     clearTimeout(wekker);
   }
@@ -140,6 +148,11 @@ function maakGebruikerKaart(gebruiker) {
   if (gebruiker.krijgtGevaarMail) kaart.append(maakLabel("⚠️ Krijgt mail bij gevaar"));
   if (!gebruiker.actief) kaart.append(maakLabel("Gestopt"));
 
+  // Wie gestopt is, kun je (nog) niet wijzigen. Dat komt bij "laten stoppen".
+  if (gebruiker.actief) {
+    kaart.append(maakTweedeKnop("Wijzigen", () => openGebruikerFormulier(gebruiker)));
+  }
+
   return kaart;
 }
 
@@ -149,6 +162,160 @@ function maakLabel(tekst) {
   label.className = "status status-open";
   label.textContent = tekst;
   return label;
+}
+
+// ===== WIJZIGEN =====
+
+// Opzoektabel: nummer van een werkgroep → naam (gevuld door haalGebruikersOp)
+const werkgroepNaamVan = {};
+
+// Wat er in het formulier staat. null = er is geen formulier open.
+let gebruikerFormulier = null;
+
+// Opent het formulier met de huidige gegevens van deze persoon
+function openGebruikerFormulier(gebruiker) {
+  gebruikerFormulier = {
+    id: gebruiker.id,
+    voornaam: gebruiker.voornaam,
+    letter: gebruiker.letter,
+    rol: gebruiker.rol,
+    werkgroepIds: [...gebruiker.werkgroepIds],   // een kopie, zodat het origineel blijft
+    isBeheerder: gebruiker.isBeheerder,
+    krijgtGevaarMail: gebruiker.krijgtGevaarMail,
+    origineel: gebruiker                          // voor "Ongedaan maken"
+  };
+  toonGebruikerFormulier();
+}
+
+// Tekent het formulier. Wordt na elke tik op een keuzeknop opnieuw getekend.
+function toonGebruikerFormulier() {
+  if (!gebruikerFormulier) { toonBeheer(); return; }   // geen formulier open: terug
+  huidigScherm = "gebruiker-formulier";
+  const formulier = gebruikerFormulier;
+  document.getElementById("titel").textContent = "Gebruiker wijzigen";
+  const inhoud = document.getElementById("inhoud");
+  inhoud.replaceChildren();
+
+  inhoud.append(maakInvoerVeld("Voornaam", "tekst", formulier.voornaam,
+    waarde => { formulier.voornaam = waarde; }));
+  inhoud.append(maakInvoerVeld("Eerste letter van de achternaam", "tekst", formulier.letter,
+    waarde => { formulier.letter = waarde; }));
+
+  // Rol: één keuze. Op het scherm "Coördinator", in de database "coordinator".
+  const rollen = Object.keys(ROL_TEKST);   // ["vrijwilliger", "bestuur", "coordinator"]
+  inhoud.append(maakKeuzeVeld("Rol", rollen.map(rol => ROL_TEKST[rol]), ROL_TEKST[formulier.rol],
+    tekst => {
+      formulier.rol = rollen.find(rol => ROL_TEKST[rol] === tekst);
+      toonGebruikerFormulier();
+    }));
+
+  inhoud.append(maakWerkgroepenVeld(formulier));
+
+  inhoud.append(maakKeuzeVeld("Beheerder? (mag dit beheerscherm gebruiken)", ["Nee", "Ja"],
+    formulier.isBeheerder ? "Ja" : "Nee",
+    keuze => { formulier.isBeheerder = keuze === "Ja"; toonGebruikerFormulier(); }));
+
+  inhoud.append(maakKeuzeVeld("Krijgt een e-mail bij een gevaarlijke melding?", ["Nee", "Ja"],
+    formulier.krijgtGevaarMail ? "Ja" : "Nee",
+    keuze => { formulier.krijgtGevaarMail = keuze === "Ja"; toonGebruikerFormulier(); }));
+
+  const fout = document.createElement("p");
+  fout.id = "gebruiker-fout";
+  fout.className = "fout";
+  fout.setAttribute("role", "alert");
+  inhoud.append(fout);
+
+  const opslaan = maakHoofdKnop("Opslaan", slaGebruikerOp);
+  opslaan.id = "knop-gebruiker-opslaan";
+  inhoud.append(opslaan);
+  inhoud.append(maakTweedeKnop("Annuleren", () => {
+    gebruikerFormulier = null;
+    toonBeheer();
+  }));
+
+  markeerMenu("beheer");
+}
+
+// Werkgroepen: meer keuzes tegelijk. Elke knop zet een werkgroep aan of uit.
+// Te kiezen: de werkgroepen die meedoen, plus een oude werkgroep waar deze
+// persoon nog in zit (anders zou die ongemerkt verdwijnen).
+function maakWerkgroepenVeld(formulier) {
+  const keuzes = lijsten.werkgroepen.map(w => ({ id: w.id, naam: w.naam }));
+  formulier.werkgroepIds.forEach(id => {
+    if (!keuzes.some(k => k.id === id)) keuzes.push({ id, naam: werkgroepNaamVan[id] || "Werkgroep " + id });
+  });
+
+  const veld = document.createElement("div");
+  veld.className = "veld";
+  const titel = document.createElement("p");
+  titel.className = "veld-titel";
+  titel.textContent = "Werkgroepen (tik om aan of uit te zetten)";
+  veld.append(titel);
+
+  const kiezer = document.createElement("div");
+  kiezer.className = "kiezer";
+  keuzes.forEach(werkgroep => {
+    const gekozen = formulier.werkgroepIds.includes(werkgroep.id);
+    const knop = document.createElement("button");
+    // Een vinkje ervoor, zodat je niet alleen aan de kleur ziet wat aan staat
+    knop.textContent = (gekozen ? "✓ " : "") + werkgroep.naam;
+    knop.setAttribute("aria-pressed", gekozen);
+    knop.addEventListener("click", () => {
+      formulier.werkgroepIds = gekozen
+        ? formulier.werkgroepIds.filter(id => id !== werkgroep.id)   // uitzetten
+        : [...formulier.werkgroepIds, werkgroep.id];                 // aanzetten
+      toonGebruikerFormulier();
+    });
+    kiezer.append(knop);
+  });
+  veld.append(kiezer);
+  return veld;
+}
+
+// Controleert het formulier en bewaart de wijziging
+async function slaGebruikerOp() {
+  const formulier = gebruikerFormulier;
+  const fout = document.getElementById("gebruiker-fout");
+  if (!formulier.voornaam.trim()) { fout.textContent = "Vul een voornaam in."; return; }
+  if (!formulier.letter.trim())   { fout.textContent = "Vul de eerste letter van de achternaam in."; return; }
+
+  const knop = document.getElementById("knop-gebruiker-opslaan");
+  if (knop) knop.disabled = true;   // een tweede tik doet niets
+
+  // Mislukt het, dan blijft het formulier staan (de melding onderaan zegt waarom)
+  if (!await bewaarGebruiker(formulier)) {
+    if (knop) knop.disabled = false;
+    return;
+  }
+
+  const oud = formulier.origineel;
+  const naam = formulier.voornaam.trim() + " " + formulier.letter.trim() + ".";
+  gebruikerFormulier = null;
+  await toonBeheer();
+  // Jezelf gewijzigd? Dan zie je dat pas als je de app opnieuw opent (zie BEHEER.md).
+  const tekst = formulier.id === ingelogdeGebruiker.id
+    ? "Opgeslagen. Open de app opnieuw om je eigen wijziging te zien."
+    : "Opgeslagen: " + naam;
+  toonMelding(tekst, async () => {
+    if (await bewaarGebruiker(oud)) {
+      toonMelding("Teruggezet: " + oud.naam);
+      if (huidigScherm === "beheer") toonBeheer();
+    }
+  });
+}
+
+// Stuurt de gegevens naar de database (vaste actie gebruiker_wijzigen in
+// database/08_beheer.sql). Geeft true als het gelukt is.
+async function bewaarGebruiker(g) {
+  return await vraagDatabase("gebruiker_wijzigen", {
+    gebruiker_id: g.id,
+    nieuwe_voornaam: g.voornaam,
+    nieuwe_achternaam_letter: g.letter,
+    nieuwe_rol: g.rol,
+    wordt_beheerder: g.isBeheerder,
+    krijgt_mail_bij_gevaar: g.krijgtGevaarMail,
+    nieuwe_werkgroepen: g.werkgroepIds
+  });
 }
 
 // De knop "Beheer" bovenin. Of hij te zien is, regelt startApp (app.js).
