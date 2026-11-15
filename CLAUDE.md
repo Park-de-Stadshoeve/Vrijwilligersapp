@@ -254,8 +254,9 @@ Klaar (inloggen, taken en meldingen werken met de database):
   gemeld_door)); de werkgroep ziet bij de taak foto, toelichting en naam van de
   melder (besluit: naam wél tonen, voor navragen). Plek van een melding die niet
   meer meedoet: formulier laat de plek leeg. AFHANDELEN_AAN weg.
-  06_meldingen.sql en test_06 nog NIET uitgevoerd; app getest in de browser met
-  nagemaakte database.
+  06_meldingen.sql uitgevoerd in het testproject; test_06_meldingen.sql: alles
+  goed. Getest op de telefoon (Maak taak, taak met meldingsfoto, status bij de
+  melder, Geen actie nodig): alles goed.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
@@ -285,8 +286,7 @@ Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
 Volgende stappen:
-0. 06_meldingen.sql en test_06 uitvoeren in het testproject, afhandelen testen op
-   de telefoon. Daarmee werken alle vijf de functies met de database. Daarna de
+0. Alle vijf de functies werken met de database (november 2026). Verder met de
    punten onder 2 (voor de proef met Klussen).
 1. Besluit van het bestuur afwachten. Feedback (vergadering 22 oktober 2026): eerst
    autorisaties en hosting onderzoeken, invoering stap voor stap. Daarvoor is een
