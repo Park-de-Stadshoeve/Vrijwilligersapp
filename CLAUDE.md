@@ -207,8 +207,9 @@ Klaar (de schermen werken nog met voorbeeldgegevens; inloggen werkt met de datab
   bestuur; keuzelijst: Nog niemand, "Werkgroep X", "Anderen". Taken hebben nu
   toegewezenAanId; isMijnTaak vergelijkt het nummer. Melding: "Toegewezen aan
   Anna (was: Piet)". Voorbeeldlijst vrijwilligers en FRION weg uit app.js.
-  05_toewijzen.sql en test_05_toewijzen.sql nog NIET uitgevoerd; app getest in
-  de browser met nagemaakte antwoorden.
+  05_toewijzen.sql uitgevoerd in het testproject; test_05_toewijzen.sql: alles
+  goed. Getest op de telefoon: toewijzen werkt en de taak staat bij de
+  Testvrijwilliger onder Mijn taken.
   Meldingen zijn nog voorbeeldgegevens.
 
 Besluiten (november 2026):
@@ -239,8 +240,7 @@ Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
 Volgende stappen:
-0. 05_toewijzen.sql en test_05 uitvoeren in het testproject, toewijzen testen op
-   de telefoon. Daarna in kleine stappen: foto's na afloop bij taken (uploaden
+0. In kleine stappen verder: foto's na afloop bij taken (uploaden
    naar de fotomap, TAAKFOTOS_AAN weer aan; gebruiker mist de foto-knop);
    taken aanmaken en wijzigen (dan de "Proefversie"-zin weg); meldingen.
 1. Besluit van het bestuur afwachten. Feedback (vergadering 22 oktober 2026): eerst
