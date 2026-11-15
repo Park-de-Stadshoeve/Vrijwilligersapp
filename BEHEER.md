@@ -1,9 +1,17 @@
 # Beheerhandleiding Vrijwilligersapp
 
 Deze handleiding is voor de beheerder van de app. Je hoeft geen programmeur te zijn.
-Stand: inloggen werkt met de database (Supabase). De taken komen uit de database,
-maar de knoppen bij een taak (oppakken, gereed melden, toewijzen, nieuwe taak) bewaren
-nog niets: na opnieuw openen is de wijziging weg. Meldingen zijn nog voorbeeldgegevens.
+Stand: inloggen werkt met de database (Supabase). De taken komen uit de database.
+"Ik doe dit", "Teruggeven", "Gereed melden" en "Weer openen" worden bewaard.
+Nog NIET bewaard (alleen bestuur ziet deze knoppen): toewijzen met de keuzelijst,
+nieuwe taak en wijzigen. Foto's na afloop bij taken staan tijdelijk uit.
+Meldingen zijn nog voorbeeldgegevens.
+
+Lukt een knop niet, dan staat onderaan wat er mis is. Bijvoorbeeld "Iemand anders
+heeft deze taak al opgepakt" (de app haalt dan de nieuwste lijst op) of "Geen
+verbinding. Er is niets veranderd." De app onthoudt een mislukte tik niet: probeer
+het opnieuw als je bereik hebt. Bij een tik op "Mijn taken" of "Werkgroep" haalt de
+app de nieuwste taken op.
 
 ## Waar staat de app?
 - **Code:** GitHub, organisatie `park-de-stadshoeve`, repository `Vrijwilligersapp`.

@@ -186,6 +186,16 @@ Klaar (de schermen werken nog met voorbeeldgegevens; inloggen werkt met de datab
   testproject en getest op de telefoon: bestuur ziet alles, Testvrijwilliger
   alleen Klussen, zonder verbinding de bewaarde lijst. Alles goed. (Let op bij
   voorbeeld_1: het adres precies kopiëren uit "select email from auth.users".)
+- Knoppen bij taken bewaren in de database: pakTaakOp, geefTaakTerug, meldGereed,
+  heropenTaak (app.js) roepen via vraagDatabase de vaste acties aan; pas na
+  "gelukt" verandert het scherm. Ongedaan maken = tegenovergestelde actie
+  (heropenen ongedaan geeft de oude foto_na_afloop mee). Fout P0001: tekst uit de
+  database tonen en lijst opnieuw ophalen; geen bereik: "Er is niets veranderd";
+  geen wachtrij. "Even geduld…" bij elke tik. Lijst opnieuw ophalen bij tik op
+  Mijn taken of Werkgroep (ververs). Nog lokaal (TIJDELIJK, zin alleen voor
+  bestuur): keuzelijst toewijzen, nieuwe taak, wijzigen. Foto-knoppen bij taken
+  uit (TAAKFOTOS_AAN = false). Getest in de browser met nagemaakte
+  database-antwoorden; nog niet op de telefoon.
   Meldingen en de lijst vrijwilligers (toewijzen) zijn nog voorbeeldgegevens.
 
 Besluiten (november 2026):
@@ -217,9 +227,9 @@ Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
 Volgende stappen:
-0. In kleine stappen verder koppelen: knoppen bij taken echt laten werken (vaste
-   acties uit 03_rechten.sql) en dan de "Proefversie"-zin weg; taken aanmaken en
-   wijzigen; keuzelijst toewijzen uit de database; meldingen; foto's.
+0. Knoppen bij taken testen op de telefoon. Daarna in kleine stappen: keuzelijst
+   toewijzen uit de database; taken aanmaken en wijzigen (dan de
+   "Proefversie"-zin weg); meldingen; foto's.
 1. Besluit van het bestuur afwachten. Feedback (vergadering 22 oktober 2026): eerst
    autorisaties en hosting onderzoeken, invoering stap voor stap. Daarvoor is een
    notitie gemaakt (staat buiten de repository, want het is een intern stuk) met

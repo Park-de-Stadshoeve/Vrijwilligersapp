@@ -62,6 +62,10 @@ const meldingen = [
   { plek: "Weides", tekst: "Hek weide 3 gaat niet meer dicht.", gevaarlijk: false, gemeldDoor: "Piet", datum: "2026-10-05", foto: "", taakId: null, geenActie: false },
   { plek: "Gebouw", tekst: "Lamp bij de ingang flikkert.", gevaarlijk: false, gemeldDoor: "Kirsten", datum: "2026-10-02", foto: "", taakId: null, geenActie: true, geenActieReden: "Lamp is al vervangen door de bistro.", geenActieDoor: "Jan" }    ];
 
+// TIJDELIJK: foto's na afloop bij taken staan uit tot ze in de fotomap van de
+// database kunnen. Daarna op true zetten.
+const TAAKFOTOS_AAN = false;
+
 // Hoe lang de melding "Ongedaan maken" zichtbaar blijft (in milliseconden: 6000 = 6 seconden)
 const MELDING_DUUR = 6000;
 
@@ -383,10 +387,10 @@ function maakTaakKaart(taak) {
         naam => wijsToe(taak, naam)));
       kaart.append(maakTweedeKnop("✏ Wijzigen", () => openTaakWijzigen(taak)));   // NIEUW
     } else if (magZelfOppakken(taak)) {
-      kaart.append(maakTweedeKnop("🙋 Ik doe dit", () => wijsToe(taak, mijnToewijsNaam)));
+      kaart.append(maakTweedeKnop("🙋 Ik doe dit", () => pakTaakOp(taak)));
     } else if (isMijnTaak(taak)) {
-      // Je eigen taak: je kunt hem teruggeven ("" = aan niemand)
-      kaart.append(maakTweedeKnop("↩ Teruggeven", () => wijsToe(taak, "")));
+      // Je eigen taak: je kunt hem teruggeven
+      kaart.append(maakTweedeKnop("↩ Teruggeven", () => geefTaakTerug(taak)));
     }
   }
 
@@ -401,10 +405,12 @@ function maakTaakKaart(taak) {
       kaart.append(maakFotoMetLabel(taak.foto, "Foto na afloop", "Foto na afloop: " + taak.titel));
     }
     if (magGereedMelden(taak)) {
-      const fotoTekst = taak.foto ? "📷 Foto vervangen" : "📷 Foto toevoegen";
-      kaart.append(maakFotoKnop(fotoTekst, url => zetTaakFoto(taak, url)));
-      if (taak.foto) {
-        kaart.append(maakTweedeKnop("Foto verwijderen", () => zetTaakFoto(taak, "")));
+      if (TAAKFOTOS_AAN) {
+        const fotoTekst = taak.foto ? "📷 Foto vervangen" : "📷 Foto toevoegen";
+        kaart.append(maakFotoKnop(fotoTekst, url => zetTaakFoto(taak, url)));
+        if (taak.foto) {
+          kaart.append(maakTweedeKnop("Foto verwijderen", () => zetTaakFoto(taak, "")));
+        }
       }
       kaart.append(maakTweedeKnop("↺ Weer openen", () => heropenTaak(taak)));
     }
@@ -412,6 +418,100 @@ function maakTaakKaart(taak) {
 
   return kaart;
 }
+
+// ===== KNOPPEN BIJ EEN TAAK (bewaard in de database) =====
+// Elke knop vraagt de database om een "vaste actie" uit te voeren (zie
+// database/03_rechten.sql). De database controleert zelf of het mag.
+// Pas als de database "gelukt" zegt, passen we de taak op het scherm aan.
+// "Ongedaan maken" voert de tegenovergestelde actie uit.
+
+// 🙋 "Ik doe dit"
+async function pakTaakOp(taak) {
+  if (!await vraagDatabase("taak_oppakken", { taak_id: taak.id })) return;
+  taak.toegewezenAan = mijnToewijsNaam;
+  takenGewijzigd();
+  toonMelding("Je doet deze taak", () => geefTaakTerug(taak));
+}
+
+// ↩ "Teruggeven"
+async function geefTaakTerug(taak) {
+  if (!await vraagDatabase("taak_teruggeven", { taak_id: taak.id })) return;
+  taak.toegewezenAan = "";
+  takenGewijzigd();
+  toonMelding("Taak is weer vrij", () => pakTaakOp(taak));
+}
+
+// ✓ "Gereed melden". "fotoPad" is alleen nodig bij het ongedaan maken van
+// "Weer openen": dan komt de oude foto terug. Anders leeg (null).
+async function meldGereed(taak, fotoPad = null) {
+  if (!await vraagDatabase("taak_gereed_melden", { taak_id: taak.id, foto: fotoPad })) return;
+  taak.status = "gereed";
+  taak.gereedGemeldDoor = mijnToewijsNaam;
+  taak.fotoPad = fotoPad || "";
+  takenGewijzigd();
+  toonMelding("Taak gereed gemeld", () => heropenTaak(taak));
+}
+
+// ↺ "Weer openen"
+async function heropenTaak(taak) {
+  const vorigeFotoPad = taak.fotoPad || null;   // onthouden voor "Ongedaan maken"
+  if (!await vraagDatabase("taak_heropenen", { taak_id: taak.id })) return;
+  taak.status = "open";
+  taak.gereedGemeldDoor = "";
+  taak.foto = "";
+  taak.fotoPad = "";
+  takenGewijzigd();
+  toonMelding("Taak staat weer open", () => meldGereed(taak, vorigeFotoPad));
+}
+
+// Na een gelukte actie: lijst op de telefoon bijwerken en scherm opnieuw tekenen
+function takenGewijzigd() {
+  bewaarTakenOpToestel();
+  verversScherm();
+}
+
+// Vraagt de database om een vaste actie. Geeft true als het gelukt is.
+// Lukt het niet, dan staat onderaan wat er mis is en wat je kunt doen.
+async function vraagDatabase(actie, gegevens) {
+  toonMelding("Even geduld…");   // direct laten zien dat de tik is aangekomen
+  const stopper = new AbortController();
+  const wekker = setTimeout(() => stopper.abort(), WACHTTIJD_DATABASE);
+  let fout = null;
+  try {
+    const antwoord = await database.rpc(actie, gegevens).abortSignal(stopper.signal);
+    fout = antwoord.error;
+  } catch (probleem) {
+    fout = probleem;
+  } finally {
+    clearTimeout(wekker);
+  }
+  if (!fout) return true;
+
+  console.warn("Actie mislukt:", actie, fout);
+  if (fout.code === "P0001") {
+    // De database zegt zelf wat er mis is, in gewone taal (zie 03_rechten.sql),
+    // bijvoorbeeld "Iemand anders heeft deze taak al opgepakt."
+    // De lijst opnieuw ophalen, zodat je ziet hoe het nu echt zit.
+    await haalTakenOp();
+    verversScherm();
+    toonMelding(fout.message);
+  } else if (isVerbindingsFout(fout)) {
+    toonMelding("Geen verbinding. Er is niets veranderd. Probeer het opnieuw als je bereik hebt.");
+  } else {
+    toonMelding("Er ging iets mis (" + fout.message + "). Er is niets veranderd. Probeer het opnieuw.");
+  }
+  return false;
+}
+
+// Komt een fout door slecht of geen bereik? (of duurde het te lang)
+function isVerbindingsFout(fout) {
+  const tekst = ((fout.name || "") + " " + (fout.message || "")).toLowerCase();
+  return tekst.includes("fetch") || tekst.includes("network") || tekst.includes("abort");
+}
+
+// ===== KNOPPEN BIJ EEN TAAK (nog NIET bewaard) =====
+// TIJDELIJK: de keuzelijst "Toegewezen aan" (bestuur) en de foto's na afloop
+// veranderen alleen de kopie op de telefoon. Dat komt in een volgende stap.
 
 // Wijst een taak toe aan een naam ("" = aan niemand)
 function wijsToe(taak, naam) {
@@ -425,19 +525,6 @@ function wijsToe(taak, naam) {
   });
 }
 
-// Zet een taak op gereed
-function meldGereed(taak) {
-  taak.status = "gereed";
-  taak.gereedGemeldDoor = ingelogdeGebruiker.naam;
-  verversScherm();
-  toonMelding("Taak gereed gemeld", () => {
-    taak.status = "open";
-    taak.gereedGemeldDoor = "";
-    taak.foto = "";
-    verversScherm();
-  });
-}
-
 // Foto na afloop toevoegen, vervangen of verwijderen ("" = verwijderen)
 function zetTaakFoto(taak, url) {
   const vorigeFoto = taak.foto;
@@ -446,22 +533,6 @@ function zetTaakFoto(taak, url) {
   let tekst = "Foto verwijderd";
   if (url) tekst = vorigeFoto ? "Foto vervangen" : "Foto toegevoegd";
   toonMelding(tekst, () => {
-    taak.foto = vorigeFoto;
-    verversScherm();
-  });
-}
-
-// Zet een gereed gemelde taak weer op open
-function heropenTaak(taak) {
-  const vorigeDoor = taak.gereedGemeldDoor;
-  const vorigeFoto = taak.foto;
-  taak.status = "open";
-  taak.gereedGemeldDoor = "";
-  taak.foto = "";
-  verversScherm();
-  toonMelding("Taak staat weer open", () => {
-    taak.status = "gereed";
-    taak.gereedGemeldDoor = vorigeDoor;
     taak.foto = vorigeFoto;
     verversScherm();
   });
@@ -944,12 +1015,7 @@ async function haalTakenOp() {
     taken.splice(0, taken.length, ...nieuweTaken);   // lijst leegmaken en vullen
     mijnToewijsNaam = mijnNaam;
     takenUitleg = "";
-    schrijfOpslag(OPSLAG_TAKEN, {
-      gebruikerId: ingelogdeGebruiker.id,   // zodat iemand anders ze nooit ziet
-      tijd: Date.now(),
-      mijnNaam,
-      taken: nieuweTaken
-    });
+    bewaarTakenOpToestel();
   } catch (fout) {
     console.warn("Taken ophalen mislukt:", fout);
     const bewaard = leesOpslag(OPSLAG_TAKEN);
@@ -965,6 +1031,23 @@ async function haalTakenOp() {
   }
 }
 
+// Bewaart de takenlijst op de telefoon, voor als er straks geen bereik is
+function bewaarTakenOpToestel() {
+  schrijfOpslag(OPSLAG_TAKEN, {
+    gebruikerId: ingelogdeGebruiker.id,   // zodat iemand anders ze nooit ziet
+    tijd: Date.now(),
+    mijnNaam: mijnToewijsNaam,
+    taken: taken
+  });
+}
+
+// Haalt de taken opnieuw op en tekent het scherm opnieuw, als je nog op
+// hetzelfde scherm bent. Gebruikt bij een tik op "Mijn taken" of "Werkgroep".
+async function ververs(scherm) {
+  await haalTakenOp();
+  if (huidigScherm === scherm) verversScherm();
+}
+
 // Het echte werk: twee vragen aan de database.
 // De database geeft alleen de taken die jij mag zien (regels in 03_rechten.sql).
 async function vraagTakenOpBijDatabase() {
@@ -976,7 +1059,7 @@ async function vraagTakenOpBijDatabase() {
     //    naam op uit de tabel waar het nummer naar wijst.
     const takenVraag = database
       .from("taken")
-      .select("id, titel, omschrijving, deadline, status, toegewezen_aan, gereed_gemeld_door, " +
+      .select("id, titel, omschrijving, deadline, status, toegewezen_aan, gereed_gemeld_door, foto_na_afloop, " +
               "plek_naam:plekken(naam), werkgroep_naam:werkgroepen(naam)")
       .abortSignal(stopper.signal);
 
@@ -1006,7 +1089,8 @@ async function vraagTakenOpBijDatabase() {
       deadline: rij.deadline || "",
       status: rij.status,
       gereedGemeldDoor: naamVan[rij.gereed_gemeld_door] || "",
-      foto: "",          // foto's komen in een latere stap
+      foto: "",          // foto laten zien komt in een latere stap
+      fotoPad: rij.foto_na_afloop || "",   // waar de foto in de fotomap staat
       meldingFoto: ""
     }));
 
@@ -1030,9 +1114,11 @@ function leesbareTijd(tijd) {
 let meldingTimer = null;      // de "wekker" die de melding weer verbergt
 let ongedaanActie = null;     // wat er gebeurt bij "Ongedaan maken"
 
+// Zonder actieBijOngedaan (bijv. "Even geduld…" of een fout) is er geen knop.
 function toonMelding(tekst, actieBijOngedaan) {
   document.getElementById("melding-tekst").textContent = tekst;
-  ongedaanActie = actieBijOngedaan;
+  ongedaanActie = actieBijOngedaan || null;
+  document.getElementById("knop-ongedaan").hidden = !actieBijOngedaan;
   document.getElementById("melding").hidden = false;
   clearTimeout(meldingTimer);                              // oude wekker uitzetten
   meldingTimer = setTimeout(verbergMelding, MELDING_DUUR); // nieuwe wekker zetten
@@ -1087,12 +1173,16 @@ function toonLijst(lijst) {
     inhoud.append(uitleg);
   }
 
-  // TIJDELIJK: de knoppen bij een taak veranderen nog alleen iets op je eigen
-  // telefoon, niet in de database. Weghalen zodra de knoppen echt werken.
-  const tijdelijk = document.createElement("p");
-  tijdelijk.className = "uitleg-bovenaan";
-  tijdelijk.textContent = "Proefversie: wat je bij een taak verandert, wordt nog niet bewaard.";
-  inhoud.append(tijdelijk);
+  // TIJDELIJK: wat alleen bestuur kan (toewijzen met de keuzelijst, nieuwe taak,
+  // wijzigen) verandert nog alleen iets op de eigen telefoon. Weghalen zodra
+  // dat ook in de database wordt bewaard.
+  if (ingelogdeGebruiker.magAllesZien) {
+    const tijdelijk = document.createElement("p");
+    tijdelijk.className = "uitleg-bovenaan";
+    tijdelijk.textContent = "Proefversie: toewijzen met de keuzelijst, nieuwe taken en wijzigen " +
+                            "worden nog niet bewaard.";
+    inhoud.append(tijdelijk);
+  }
 
   if (lijst.length === 0) {
     const leeg = document.createElement("p");
@@ -1158,8 +1248,14 @@ function toonWerkgroep() {
 
 // ===== START =====
 // Elke menuknop opent het scherm dat in zijn "data-scherm" staat
+// Bij de takenschermen halen we daarna ook de nieuwste taken op: je ziet meteen
+// de lijst die je al had, en zodra de database antwoordt de nieuwste.
 document.querySelectorAll("nav button").forEach(knop => {
-  knop.addEventListener("click", () => toonScherm(knop.dataset.scherm));
+  knop.addEventListener("click", () => {
+    const scherm = knop.dataset.scherm;
+    toonScherm(scherm);
+    if (scherm === "mijn" || scherm === "werkgroep") ververs(scherm);
+  });
 });
 
 // Start de app voor de ingelogde persoon. Wordt aangeroepen door inloggen.js
