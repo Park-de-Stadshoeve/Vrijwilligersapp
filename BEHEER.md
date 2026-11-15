@@ -42,6 +42,7 @@ app de nieuwste taken op.
 | `manifest.json` | Naam, icoon en kleur van de app op het beginscherm | Andere naam of kleur |
 | `service-worker.js` | Bewaart de app op de telefoon voor slecht bereik | Als je een bestand toevoegt |
 | `iconen/` | Het logo in drie maten (180, 192 en 512 pixels) | Nieuw logo |
+| `.github/workflows/` | Automatische taak die de database wakker houdt | Zelden |
 
 ## De app op het beginscherm zetten
 Vertel vrijwilligers dit bij de start. Het hoeft maar één keer per telefoon.
@@ -163,6 +164,26 @@ Foto's na afloop (bij taken):
 ## Kleuren aanpassen (in `stijl.css`)
 Alle kleuren staan bovenaan bij `:root`. Houd voldoende contrast, zodat alles buiten in
 de zon leesbaar blijft.
+
+## Supabase wakker houden
+Een gratis Supabase-project gaat op pauze na een week zonder activiteit. Daarom roept
+GitHub elke 3 dagen de database aan (de taak "Supabase wakker houden").
+
+- **Werkt het?** GitHub > tabblad **Actions** > **Supabase wakker houden**. Groen
+  vinkje = gelukt.
+- **Zelf starten:** op dezelfde plek op **Run workflow** klikken.
+- **Mail "Run failed"?** Kijk in Supabase of het project op pauze staat ("Paused").
+  Zo ja: klik op **Restore project** en wacht een paar minuten. Start daarna de
+  taak met de hand.
+- **Mail "scheduled workflow will be disabled"?** GitHub zet de taak uit als er
+  60 dagen niets aan de code is veranderd. Ga naar **Actions** > **Supabase wakker
+  houden** en klik op **Enable workflow**.
+- **Wie krijgt de mails?** Degene die de taak het laatst heeft aangezet of aangepast.
+  Nieuwe beheerder? Laat die de taak één keer uitzetten (**...** > **Disable
+  workflow**) en weer aanzetten. Dan gaan de mails naar hem of haar.
+- **Ander Supabase-project** (bijv. van test naar echt)? De taak leest het adres uit
+  `instellingen.js`, dus die gaat vanzelf mee. Voer wel `database/07_ping.sql` uit in
+  het nieuwe project.
 
 ## Iets ging mis?
 - **Pagina leeg na een wijziging?** Meestal een vergeten komma of haakje. Open het
