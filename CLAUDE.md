@@ -259,7 +259,7 @@ Klaar (inloggen, taken en meldingen werken met de database):
   melder, Geen actie nodig): alles goed.
 - Wakker houden: database/07_ping.sql (functie ping, geeft 'ok', ook voor anon)
   en .github/workflows/supabase-wakker-houden.yml (elke 3 dagen, plus met de hand;
-  leest adres en sleutel uit instellingen.js). Mail bij mislukken naar Jerome.
+  leest adres en sleutel uit instellingen.js). Mail bij mislukken naar de beheerder die de taak aanzette.
   GitHub zet de taak uit na 60 dagen zonder wijziging (uitleg in BEHEER.md).
   07 uitgevoerd in het testproject (select ping() = ok); taak met de hand
   gestart vanaf main: gelukt.
@@ -396,7 +396,7 @@ Volgende stappen:
 13. Welkomstmail aan een nieuwe vrijwilliger bij toevoegen in het beheerscherm
     (met uitleg hoe je inlogt). Kan pas als Brevo werkt. Tot die tijd stuurt de
     beheerder zelf een bericht (voorbeeld in BEHEER.md).
-14. Opmerking bij gereed melden (wens van Jerome, november 2026): de vrijwilliger
+14. Opmerking bij gereed melden (eigen wens, november 2026): de vrijwilliger
     kan bij "Gereed melden" een korte opmerking invullen (niet verplicht), bijv.
     "Nieuwe scharnieren, de oude lagen in de container." Zichtbaar voor wie de taak
     mag zien. Klein: één tekstveld, nieuwe kolom bij taken, aanpassing in
