@@ -43,6 +43,7 @@ app de nieuwste taken op.
 | `manifest.json` | Naam, icoon en kleur van de app op het beginscherm | Andere naam of kleur |
 | `service-worker.js` | Bewaart de app op de telefoon voor slecht bereik | Als je een bestand toevoegt |
 | `iconen/` | Het logo in drie maten (180, 192 en 512 pixels) | Nieuw logo |
+| `supabase/functions/beheer/` | Edge Function: iemand toevoegen en e-mailadres wijzigen (draait bij Supabase) | Zelden; daarna opnieuw plakken bij Supabase |
 | `.github/workflows/` | Automatische taak die de database wakker houdt | Zelden |
 
 ## De app op het beginscherm zetten
@@ -86,19 +87,56 @@ de knop **Beheer**. Daar staan alle gebruikers: naam, rol, werkgroepen en de vin
 - Het beheerscherm werkt alleen met bereik. De lijst wordt (expres) niet op de
   telefoon bewaard.
 - Zie je de knop niet, terwijl je wel beheerder bent? Log uit en weer in.
-- **Iemand wijzigen:** tik op **Wijzigen** bij de persoon. Je kunt de voornaam, de
-  letter van de achternaam, de rol, de werkgroepen en de twee vinkjes aanpassen.
-  Tik op **Opslaan**. Vergist? Tik meteen op **Ongedaan maken**.
+- **Iemand toevoegen:** tik op **+ Iemand toevoegen**. Vul het e-mailadres, de
+  voornaam en de eerste letter van de achternaam in, kies rol en werkgroepen en tik
+  op **Toevoegen**. Vergist? Tik meteen op **Ongedaan maken** (kan tot 10 minuten
+  na het toevoegen, zolang de persoon nog niets heeft gedaan).
+  De persoon krijgt **geen** mail. Laat het zelf weten, bijvoorbeeld zo:
+  > Hoi Kees, je kunt nu de app van Park de Stadshoeve gebruiken. Open
+  > https://park-de-stadshoeve.github.io/Vrijwilligersapp/ op je telefoon, vul je
+  > e-mailadres in en je krijgt een mail om in te loggen. Zet de app daarna op je
+  > beginscherm (uitleg in de app). Vragen? Bel of app mij.
+- **Iemand wijzigen:** tik op **Wijzigen** bij de persoon. Je kunt het e-mailadres,
+  de voornaam, de letter van de achternaam, de rol, de werkgroepen en de twee
+  vinkjes aanpassen. Tik op **Opslaan**. Vergist? Tik meteen op **Ongedaan maken**.
+- **Ander e-mailadres:** de persoon blijft ingelogd. Bij de volgende keer inloggen
+  gebruikt hij of zij het nieuwe adres.
 - **Na een wijziging van rol of werkgroep:** vraag de persoon de app helemaal af te
   sluiten en opnieuw te openen (of uit en weer in te loggen). Wat iemand mag, klopt
   meteen; de knoppen en schermen passen zich pas na opnieuw openen aan. Een nieuwe
   naam staat ook bij oude taken en meldingen.
 - **Er blijft altijd minstens één beheerder.** Wil je je eigen vinkje uitzetten, maak
   dan eerst iemand anders beheerder. Advies: zorg voor twee beheerders.
-- Toevoegen en laten stoppen komen in de volgende stappen. Tot die tijd gaat dat
-  zoals hieronder beschreven.
+- Laten stoppen komt in de volgende stap.
+- **Foutmelding "Er ging iets mis" of "Geen verbinding" bij toevoegen, terwijl je
+  wel bereik hebt?** Kijk dan of de Edge Function "beheer" bij Supabase staat (zie
+  hieronder).
 
-## Iemand toevoegen (tijdelijk, tot het beheerscherm er is)
+## Edge Function "beheer" (bij Supabase)
+Toevoegen en e-mailadressen wijzigen gaat via een klein programma dat bij Supabase
+draait: de Edge Function **beheer**. De code staat in
+`supabase/functions/beheer/index.ts`. Er staat geen geheime sleutel in: die geeft
+Supabase zelf aan de functie.
+
+**Eerste keer neerzetten (of na een wijziging in het bestand):**
+1. Open het bestand `supabase/functions/beheer/index.ts` op GitHub en klik op het
+   kopieer-icoon (**Copy raw file**).
+2. Supabase > je project > **Edge Functions** > **Deploy a new function** >
+   **Via Editor**. (Bij een wijziging: open de functie **beheer** > **Code**.)
+3. Haal de voorbeeldcode weg en plak de gekopieerde code.
+4. Naam van de functie: `beheer` (precies zo, kleine letters).
+5. Klik op **Deploy function**. Na een halve minuut staat hij klaar.
+
+Laat "Verify JWT" (controle van de inlog) aan staan. Krijg je bij toevoegen toch de
+melding "Invalid JWT" of "Unauthorized"? Zet het dan bij **beheer** > **Details** uit.
+Dat is veilig, want de functie controleert zelf of je ingelogd en beheerder bent.
+
+**Werkt het niet?** Supabase > **Edge Functions** > **beheer** > **Logs** laat
+zien wat er mis ging.
+
+## Iemand toevoegen zonder beheerscherm (noodgeval)
+Alleen nodig als het beheerscherm niet werkt.
+
 1. Supabase > **Authentication** > **Users** > **Add user** > **Create new user**.
    Vul het e-mailadres in, kies een willekeurig lang wachtwoord (dat wordt nooit
    gebruikt, je hoeft het niet te bewaren) en zet **Auto Confirm User** aan.

@@ -288,6 +288,18 @@ Klaar (inloggen, taken en meldingen werken met de database):
   test_08: alles goed. Getest op de telefoon (wijzigen, Ongedaan maken,
   bewaker bij eigen vinkje, Testvrijwilliger ziet nieuwe werkgroep na
   opnieuw openen): alles goed.
+  Stap 3 gebouwd: één Edge Function "beheer" (supabase/functions/beheer/index.ts,
+  via het dashboard geplakt, geen CLI) met acties toevoegen (createUser met
+  email_confirm, dan gebruikers + lidmaatschappen; mislukt = account weer weg),
+  toevoegen_ongedaan (alleen < 10 min oud en zonder taken/meldingen) en
+  email_wijzigen (updateUserById). Controleert zelf inlog (getUser) en
+  is_beheerder; geheime sleutel uit Deno.env. Geen welkomstmail (beheerder
+  stuurt zelf een bericht, voorbeeld in BEHEER.md). E-mailadres zien:
+  database/09_email.sql (gebruiker_email, alleen beheerder). Formulier in
+  beheer.js voor "nieuw" en "wijzigen"; bij wijzigen eerst e-mailadres, dan
+  de rest; Ongedaan maken zet allebei terug. Getest: functie met nep-Supabase
+  (12 gevallen), test_09 lokaal (4 tests), formulier in de browser: alles
+  goed. NOG TE DOEN: 09 uitvoeren, functie neerzetten, testen op de telefoon.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
@@ -361,3 +373,6 @@ Volgende stappen:
     Speelkasteel") en op project kunnen filteren. Hangt samen met punt 6 (filters).
 12. Bericht aan een vrijwilliger als bestuur een taak die hij of zij had opgepakt
     aan iemand anders geeft. Hangt samen met punt 4.
+13. Welkomstmail aan een nieuwe vrijwilliger bij toevoegen in het beheerscherm
+    (met uitleg hoe je inlogt). Kan pas als Brevo werkt. Tot die tijd stuurt de
+    beheerder zelf een bericht (voorbeeld in BEHEER.md).
