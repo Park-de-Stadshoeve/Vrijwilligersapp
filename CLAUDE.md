@@ -272,7 +272,9 @@ Klaar (inloggen, taken en meldingen werken met de database):
   Stap 1 gebouwd: beheer.js (toonBeheer, haalGebruikersOp, toonGebruikersLijst),
   knop knop-beheer in index.html, zichtbaar via startApp. Lijst niet op het
   toestel bewaard (AVG); zonder bereik een melding met "Opnieuw proberen".
-  Database ongewijzigd (regels uit 03 waren er al). NOG TESTEN op de telefoon.
+  Database ongewijzigd (regels uit 03 waren er al). Getest op de telefoon
+  (beheerder ziet lijst, Testvrijwilliger geen knop, zonder bereik melding):
+  alles goed.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
