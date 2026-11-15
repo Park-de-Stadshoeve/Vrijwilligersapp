@@ -35,6 +35,7 @@ app de nieuwste taken op.
 | `stijl.css` | Het uiterlijk: kleuren, groottes, knoppen | Kleur of tekstgrootte veranderen |
 | `app.js` | De logica, taken ophalen uit de database, de voorbeeldmeldingen | Plekken, werkgroepen, termijnen |
 | `instellingen.js` | Adres en publieke sleutel van de database | Bij een andere database (bijv. van test naar echt) |
+| `beheer.js` | Het beheerscherm (knop "Beheer", alleen voor beheerders) | Zelden |
 | `inloggen.js` | Inlogscherm met code uit de mail, uitloggen, "wie ben ik" | Zelden |
 | `CLAUDE.md` | Instructies voor Claude en de stand van zaken | Als er afspraken veranderen |
 | `DATABASE.md` | Ontwerp van de database: welke gegevens, wie mag wat | Als de opbouw of de rechten veranderen |
@@ -75,6 +76,18 @@ Eenmalig, bij een nieuw project:
   aangepast met een eigen e-maildienst (Brevo, nog te regelen). Tot die tijd bevat de
   mail een link in plaats van een code. Die link werkt op een computer en in Chrome op
   Android, maar niet in de app op het beginscherm van een iPhone.
+
+## Het beheerscherm
+Wie het vinkje beheerder heeft (`is_beheerder` in de tabel gebruikers), ziet rechtsboven
+de knop **Beheer**. Daar staan alle gebruikers: naam, rol, werkgroepen en de vinkjes
+"Beheerder" en "Krijgt mail bij gevaar". Wie gestopt is, staat onderaan.
+
+- Terug naar de app: tik op een knop in het menu onderaan.
+- Het beheerscherm werkt alleen met bereik. De lijst wordt (expres) niet op de
+  telefoon bewaard.
+- Zie je de knop niet, terwijl je wel beheerder bent? Log uit en weer in.
+- Wijzigen, toevoegen en laten stoppen komen in de volgende stappen. Tot die tijd
+  gaat dat zoals hieronder beschreven.
 
 ## Iemand toevoegen (tijdelijk, tot het beheerscherm er is)
 1. Supabase > **Authentication** > **Users** > **Add user** > **Create new user**.

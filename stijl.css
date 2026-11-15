@@ -27,6 +27,10 @@ header {
   min-height: 44px; padding: 0 12px; font-size: 16px;
   background: none; color: #ffffff; border: 2px solid #ffffff; border-radius: 8px;
 }
+/* Knoppen rechtsboven (Beheer, Uitloggen) naast elkaar */
+.knoppen-boven { display: flex; gap: 8px; flex-shrink: 0; }
+/* Kopjes in het beheerscherm ("Gebruikers (12)") */
+.beheer-kop { margin: 8px 0 12px; font-size: 20px; }
 /* Iets met "hidden" moet echt verdwijnen, ook als er een "display" op staat */
 [hidden] { display: none !important; }
 /* Code uit de mail: grote, uit elkaar staande cijfers */

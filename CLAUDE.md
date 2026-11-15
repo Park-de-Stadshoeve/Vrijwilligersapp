@@ -263,6 +263,16 @@ Klaar (inloggen, taken en meldingen werken met de database):
   GitHub zet de taak uit na 60 dagen zonder wijziging (uitleg in BEHEER.md).
   07 uitgevoerd in het testproject (select ping() = ok); taak met de hand
   gestart vanaf main: gelukt.
+- Beheerscherm, in 4 stappen: (1) bekijken, (2) rol, werkgroepen en vinkjes
+  wijzigen, (3) toevoegen via een Edge Function (geheime sleutel alleen bij
+  Supabase, functie controleert is_beheerder), (4) laten stoppen (account en
+  e-mailadres weg, voornaam blijft). Werkgroepen en plekken voorlopig via de
+  Table Editor; onderdelen na de proef. Knop "Beheer" rechtsboven, alleen voor
+  beheerders (geen vijfde menuknop).
+  Stap 1 gebouwd: beheer.js (toonBeheer, haalGebruikersOp, toonGebruikersLijst),
+  knop knop-beheer in index.html, zichtbaar via startApp. Lijst niet op het
+  toestel bewaard (AVG); zonder bereik een melding met "Opnieuw proberen".
+  Database ongewijzigd (regels uit 03 waren er al). NOG TESTEN op de telefoon.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).

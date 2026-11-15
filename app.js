@@ -1602,6 +1602,7 @@ function toonScherm(scherm) {
   else if (scherm === "melden") toonMelden();
   else if (scherm === "meldingen") toonMeldingen();
   else if (scherm === "taak-formulier") toonTaakFormulier();   // NIEUW (nieuwe naam)
+  else if (scherm === "beheer") toonBeheer();                  // staat in beheer.js
 }
 
 // Tekent het huidige scherm opnieuw (na een wijziging)
@@ -1713,6 +1714,8 @@ async function startApp(profiel) {
   ingelogdeGebruiker.werkgroepen = profiel.werkgroepen;
   ingelogdeGebruiker.magAllesZien = profiel.rol === "bestuur" || profiel.rol === "coordinator";
   ingelogdeGebruiker.isBeheerder = profiel.isBeheerder;
+  // Knop "Beheer" bovenin alleen voor beheerders (het scherm staat in beheer.js)
+  document.getElementById("knop-beheer").hidden = !profiel.isBeheerder;
   mijnToewijsNaam = ingelogdeGebruiker.naam;
 
   // Direct laten zien dat er iets gebeurt, dan de taken ophalen

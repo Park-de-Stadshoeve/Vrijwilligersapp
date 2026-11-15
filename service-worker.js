@@ -29,6 +29,7 @@ const APP_BESTANDEN = [
   "stijl.css",
   "instellingen.js",
   "inloggen.js",
+  "beheer.js",
   "app.js",
   SUPABASE_HULPBESTAND,
   "manifest.json",
