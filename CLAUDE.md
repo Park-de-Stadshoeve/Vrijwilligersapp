@@ -126,9 +126,9 @@ Ik bouw deze app zelf om te leren hoe je een app maakt. Claude schrijft code, ma
 ## Stand van zaken
 Werk deze sectie bij aan het eind van elke stap.
 
-Klaar (de schermen werken nog met voorbeeldgegevens; inloggen werkt met de database):
+Klaar (inloggen en taken werken met de database; meldingen zijn nog voorbeeldgegevens):
 - Alle vijf de functies, verdeeld over: index.html (geraamte), stijl.css (uiterlijk),
-  app.js (logica en voorbeeldgegevens), instellingen.js (adres en publishable
+  app.js (logica en voorbeeldmeldingen), instellingen.js (adres en publishable
   sleutel van Supabase) en inloggen.js (inloggen met code, uitloggen, profiel).
 - Inloggen: signInWithOtp met shouldCreateUser: false, daarna verifyOtp met de code.
   Profiel (voornaam, rol, werkgroepen) uit de database, bewaard op het toestel voor
@@ -147,10 +147,11 @@ Klaar (de schermen werken nog met voorbeeldgegevens; inloggen werkt met de datab
 - Elke actie heeft "Ongedaan maken" (6 seconden).
 - De status van een melding wordt afgeleid van de gekoppelde taak (taakId), niet
   apart opgeslagen.
-- Plekken op het park staan in PLEKKEN; de standaardwerkgroep per plek in
-  PLEK_WERKGROEP.
-- De voorbeeldgegevens gebruiken verzonnen namen (Kirsten, Piet, Fatima, Kees,
-  Sanne, Jan).
+- Plekken en werkgroepen komen uit de database (tabellen plekken en werkgroepen,
+  alleen actief; plekken op volgorde) en staan in plekNamen, werkgroepBijPlek,
+  alleWerkgroepen, plekNummer en werkgroepNummer (zetLijsten in app.js), ook
+  bewaard op het toestel. Onderdelen nog niet in de app.
+- De voorbeeldmeldingen gebruiken verzonnen namen (Kirsten, Piet, Jan).
 - Installeerbaar als app (PWA): manifest.json, iconen/ (logo in 180, 192, 512) en
   service-worker.js ("eerst internet, na 3 seconden de bewaarde kopie"). Alleen de
   app zelf wordt bewaard, nog geen taken of meldingen.
@@ -219,6 +220,15 @@ Klaar (de schermen werken nog met voorbeeldgegevens; inloggen werkt met de datab
   vorige foto weer. maakFotoKnop geeft nu de verkleinde foto (blob) door, niet
   een adres. Getest op telefoon en computer (versturen, zien door bestuur,
   foto in Storage, zonder bereik): alles goed.
+- Taken aanmaken en wijzigen (bestuur) direct in de tabel taken (insert/update,
+  regels uit 03_rechten.sql; geen vaste actie nodig): maakTaak, wijzigTaak,
+  verwijderTaak (alleen voor Ongedaan maken na aanmaken), taakNaarRij zet namen om
+  in nummers. Mislukt opslaan: formulier blijft staan. Update/delete die 0 rijen
+  raakt geeft een eigen melding. Algemene hulp stuurNaarDatabase (wachttijd,
+  foutmeldingen; 42501 = "Dit mag je niet doen"); vraagDatabase gebruikt hem.
+  "Proefversie"-zin weg. "Maak taak" bij een melding TIJDELIJK uit (regel met //
+  in maakMeldingKaart). Getest in de browser met nagemaakte database; nog niet op
+  de telefoon.
   Meldingen zijn nog voorbeeldgegevens (foto bij melden nog alleen op toestel).
 
 Besluiten (november 2026):
@@ -249,7 +259,8 @@ Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
 Volgende stappen:
-0. In kleine stappen verder: taken aanmaken en wijzigen (dan de "Proefversie"-zin weg); meldingen (met foto).
+0. Taken aanmaken en wijzigen testen op de telefoon. Daarna: meldingen uit de
+   database (met foto, status, "Geen actie nodig", "Maak taak" weer aan).
 1. Besluit van het bestuur afwachten. Feedback (vergadering 22 oktober 2026): eerst
    autorisaties en hosting onderzoeken, invoering stap voor stap. Daarvoor is een
    notitie gemaakt (staat buiten de repository, want het is een intern stuk) met

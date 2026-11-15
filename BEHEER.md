@@ -1,13 +1,13 @@
 # Beheerhandleiding Vrijwilligersapp
 
 Deze handleiding is voor de beheerder van de app. Je hoeft geen programmeur te zijn.
-Stand: inloggen werkt met de database (Supabase). De taken komen uit de database.
-"Ik doe dit", "Teruggeven", "Gereed melden", "Weer openen" en toewijzen met de
-keuzelijst (bestuur) worden bewaard. In de keuzelijst staan eerst de leden van de
-werkgroep van de taak, dan alle anderen; wie gestopt is staat er niet in.
-Nog NIET bewaard (alleen bestuur ziet deze knoppen): nieuwe taak en wijzigen.
-Een foto na afloop bij een gereed gemelde taak wordt bewaard in de afgesloten
-fotomap. Meldingen zijn nog voorbeeldgegevens.
+Stand: inloggen en alles rond taken werkt met de database (Supabase): bekijken,
+"Ik doe dit", "Teruggeven", "Gereed melden", "Weer openen", toewijzen met de
+keuzelijst, nieuwe taak, wijzigen en de foto na afloop. In de keuzelijst staan eerst
+de leden van de werkgroep van de taak, dan alle anderen; wie gestopt is staat er
+niet in. Plekken en werkgroepen komen ook uit de database.
+Meldingen zijn nog voorbeeldgegevens; de knop "Maak taak" bij een melding staat
+daarom tijdelijk uit.
 
 Lukt een knop niet, dan staat onderaan wat er mis is. Bijvoorbeeld "Iemand anders
 heeft deze taak al opgepakt" (de app haalt dan de nieuwste lijst op) of "Geen
@@ -115,10 +115,18 @@ Uitleg staat bovenin elk bestand.
   internet. Die staat in `index.html` én in `service-worker.js`. Bij een nieuwe
   versie op beide plekken aanpassen.
 
+## Plekken en werkgroepen (in Supabase, niet in de code)
+Tot het beheerscherm er is, doe je dit in Supabase > **Table Editor**:
+- **Plek toevoegen:** tabel `plekken` > **Insert row**. Vul `naam` in, bij
+  `standaard_werkgroep` het nummer van de werkgroep die er meestal bij hoort (zie
+  tabel `werkgroepen`, kolom `id`), en bij `volgorde` een getal: de knoppen staan op
+  volgorde van klein naar groot ("Overig" heeft 999, dus blijft achteraan).
+- **Plek of werkgroep niet meer gebruiken:** zet `actief` op false. Niet
+  verwijderen: oude taken verwijzen er nog naar.
+- **Werkgroep toevoegen:** tabel `werkgroepen` > **Insert row**, alleen `naam`.
+De app haalt de nieuwe lijst op bij de volgende keer openen.
+
 ## Veelvoorkomende aanpassingen (in `app.js`)
-- **Plek op het park toevoegen:** in de lijst `PLEKKEN` (vóór "Overig"), en in
-  `PLEK_WERKGROEP` bij welke werkgroep hij hoort.
-- **Werkgroep toevoegen:** in de lijst `alleWerkgroepen`. Let op exact dezelfde spelling.
 - **Standaard deadline bij een melding:** `DAGEN_GEVAARLIJK` en `DAGEN_NORMAAL`.
 - **Hoe lang "Ongedaan maken" zichtbaar is:** `MELDING_DUUR` (in milliseconden).
 - **Grootte van foto's:** `FOTO_MAX_PIXELS` (langste kant, nu 1280) en

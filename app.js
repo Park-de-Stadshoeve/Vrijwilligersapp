@@ -16,7 +16,8 @@ const ingelogdeGebruiker = {
   isFrion: false        // Frion valt voorlopig buiten de app
 };
 
-const alleWerkgroepen = ["Dieren", "Tuinen", "Avontuurlijk spelen", "Klussen", "Educatie", "Evenementen", "Geschiedenis"];
+// Alle werkgroepen. Komen uit de database (zie haalTakenOp).
+let alleWerkgroepen = [];
 
 // Alle actieve gebruikers met hun werkgroepen, voor de keuzelijst bij toewijzen.
 // Komt uit de database (zie haalTakenOp). Alleen bestuur en coördinator
@@ -29,24 +30,16 @@ let personen = [];
 // "meldingFoto" is de foto uit een melding.
 const taken = [];
 
-// Vaste plekken op het park, voor "Waar is het?" (bij meldingen én taken)
-const PLEKKEN = ["Stal", "Weides", "Wortelhoeve", "Hummelhoeve", "Speelkasteel", "Waterspelen", "Trekvlot",
-                 "Wilgenburcht", "Moestuin", "Belevenistuin", "Gebouw", "Overig"];
+// Plekken op het park, voor "Waar is het?" (bij meldingen én taken), in de
+// volgorde van de knoppen. Komen uit de database (zie haalTakenOp); de
+// beheerder past ze daar aan, niet hier.
+let plekNamen = [];          // bijv. ["Stal", "Weides", …, "Overig"]
+let werkgroepBijPlek = {};   // bij welke werkgroep hoort een plek meestal? bijv. { "Stal": "Dieren" }
 
-// Opzoektabel: bij welke werkgroep hoort een plek meestal?
-const PLEK_WERKGROEP = {
-  "Stal": "Dieren",
-  "Weides": "Dieren",
-  "Wortelhoeve": "Dieren",
-  "Hummelhoeve": "Avontuurlijk spelen",
-  "Speelkasteel": "Avontuurlijk spelen",
-  "Waterspelen": "Avontuurlijk spelen",
-  "Trekvlot": "Avontuurlijk spelen",
-  "Wilgenburcht": "Avontuurlijk spelen",
-  "Moestuin": "Tuinen",
-  "Belevenistuin": "Tuinen",
-  "Gebouw": "Klussen"
-};
+// De database werkt met nummers. Deze opzoektabellen zetten een naam om in
+// het nummer, bijv. plekNummer["Stal"] = 1. Nodig bij het bewaren van een taak.
+let plekNummer = {};
+let werkgroepNummer = {};
 
 // Voorbeeldmeldingen.
 // taakId = het nummer van de taak die van deze melding is gemaakt (null = nog geen taak).
@@ -102,10 +95,6 @@ function vindTaak(id) {
   return taken.find(taak => taak.id === id);
 }
 
-// Het volgende vrije taaknummer (later regelt de database dit)
-function volgendeTaakId() {
-  return Math.max(0, ...taken.map(taak => taak.id)) + 1;
-}
 
 // Volgorde taken: open eerst, daarna op deadline (vroegste bovenaan)
 function sorteerTaken(a, b) {
@@ -494,22 +483,35 @@ function takenGewijzigd() {
 // Vraagt de database om een vaste actie. Geeft true als het gelukt is.
 // Lukt het niet, dan staat onderaan wat er mis is en wat je kunt doen.
 async function vraagDatabase(actie, gegevens) {
+  const antwoord = await stuurNaarDatabase(signaal => database.rpc(actie, gegevens).abortSignal(signaal));
+  return antwoord.gelukt;
+}
+
+// Stuurt een vraag naar de database, met wachttijd en foutmeldingen.
+// "maakVraag" bouwt de vraag; hij krijgt het signaal om te stoppen mee.
+// Geeft { gelukt: true/false, data: wat de database terugstuurt }.
+async function stuurNaarDatabase(maakVraag) {
   toonMelding("Even geduld…");   // direct laten zien dat de tik is aangekomen
   const stopper = new AbortController();
   const wekker = setTimeout(() => stopper.abort(), WACHTTIJD_DATABASE);
   let fout = null;
+  let data = null;
   try {
-    const antwoord = await database.rpc(actie, gegevens).abortSignal(stopper.signal);
+    const antwoord = await maakVraag(stopper.signal);
     fout = antwoord.error;
+    data = antwoord.data;
   } catch (probleem) {
     fout = probleem;
   } finally {
     clearTimeout(wekker);
   }
-  if (!fout) return true;
+  if (!fout) return { gelukt: true, data };
 
-  console.warn("Actie mislukt:", actie, fout);
-  if (fout.code === "P0001") {
+  console.warn("Database-vraag mislukt:", fout);
+  if (fout.code === "42501") {
+    // 42501 = de rijbeveiliging weigert (regels in 03_rechten.sql)
+    toonMelding("Dit mag je niet doen. Er is niets veranderd.");
+  } else if (fout.code === "P0001") {
     // De database zegt zelf wat er mis is, in gewone taal (zie 03_rechten.sql),
     // bijvoorbeeld "Iemand anders heeft deze taak al opgepakt."
     // De lijst opnieuw ophalen, zodat je ziet hoe het nu echt zit.
@@ -521,7 +523,7 @@ async function vraagDatabase(actie, gegevens) {
   } else {
     toonMelding("Er ging iets mis (" + fout.message + "). Er is niets veranderd. Probeer het opnieuw.");
   }
-  return false;
+  return { gelukt: false, data: null };
 }
 
 // Komt een fout door slecht of geen bereik? (of duurde het te lang)
@@ -675,7 +677,7 @@ function toonMelden() {
   inhoud.append(fotoVeld);
 
   // 2. Waar is het? (keuzeknoppen: één tik)
-  inhoud.append(maakKeuzeVeld("Waar is het?", PLEKKEN, nieuweMelding.plek, plek => {
+  inhoud.append(maakKeuzeVeld("Waar is het?", plekNamen, nieuweMelding.plek, plek => {
     nieuweMelding.plek = plek;
     verversScherm();
   }));
@@ -866,7 +868,10 @@ function maakMeldingKaart(melding) {
         verversScherm();
       }));
     } else if (status === "Nieuw") {
-      kaart.append(maakHoofdKnop("📋 Maak taak", () => openTaakUitMelding(melding)));
+      // TIJDELIJK uit: zolang meldingen nog voorbeeldgegevens zijn, kan een echte
+      // taak niet aan een melding gekoppeld worden. Weer aanzetten in de stap
+      // met meldingen uit de database (dan deze regel zonder // ervoor).
+      // kaart.append(maakHoofdKnop("📋 Maak taak", () => openTaakUitMelding(melding)));
       // NIEUW: opent eerst het vak voor de toelichting
       kaart.append(maakTweedeKnop("Geen actie nodig", () => {
         meldingMetRedenOpen = melding;
@@ -946,7 +951,7 @@ function openTaakUitMelding(melding) {
     titel: melding.tekst ? kortTekst(melding.tekst, 40) : "Gebrek bij " + melding.plek,
     omschrijving: melding.tekst,
     plek: melding.plek,
-    werkgroep: PLEK_WERKGROEP[melding.plek] || "",   // "" als de plek niet in de tabel staat
+    werkgroep: werkgroepBijPlek[melding.plek] || "",   // "" als de plek niet in de tabel staat
     toegewezenAanId: "",
     deadline: datumOver(melding.gevaarlijk ? DAGEN_GEVAARLIJK : DAGEN_NORMAAL)
   };
@@ -995,10 +1000,10 @@ function toonTaakFormulier() {
     waarde => { formulier.omschrijving = waarde; }));
 
   // Waar is het? Is de werkgroep nog leeg, vul dan alvast de werkgroep bij die plek in.
-  inhoud.append(maakKeuzeVeld("Waar is het?", PLEKKEN, formulier.plek, plek => {
+  inhoud.append(maakKeuzeVeld("Waar is het?", plekNamen, formulier.plek, plek => {
     formulier.plek = plek;
-    if (!formulier.werkgroep && PLEK_WERKGROEP[plek]) {
-      formulier.werkgroep = PLEK_WERKGROEP[plek];
+    if (!formulier.werkgroep && werkgroepBijPlek[plek]) {
+      formulier.werkgroep = werkgroepBijPlek[plek];
     }
     verversScherm();
   }));
@@ -1028,7 +1033,9 @@ function toonTaakFormulier() {
   inhoud.append(fout);
 
   const knopTekst = formulier.modus === "wijzigen" ? "Wijzigingen opslaan" : "Taak aanmaken";
-  inhoud.append(maakHoofdKnop(knopTekst, slaTaakOp));
+  const opslaan = maakHoofdKnop(knopTekst, slaTaakOp);
+  opslaan.id = "knop-taak-opslaan";
+  inhoud.append(opslaan);
   inhoud.append(maakTweedeKnop("Annuleren", () => {
     const terug = formulier.terugScherm;
     taakFormulier = null;
@@ -1039,7 +1046,7 @@ function toonTaakFormulier() {
 }
 
 // Controleert het formulier en maakt of wijzigt de taak
-function slaTaakOp() {
+async function slaTaakOp() {
   const formulier = taakFormulier;
   const fout = document.getElementById("taak-fout");
   if (!formulier.titel.trim()) { fout.textContent = "Geef de taak een titel."; return; }
@@ -1047,52 +1054,116 @@ function slaTaakOp() {
   if (!formulier.werkgroep)    { fout.textContent = "Kies een werkgroep."; return; }
   if (!formulier.deadline)     { fout.textContent = "Kies een datum."; return; }
 
-  // De ingevulde waarden, netjes bij elkaar
+  // De ingevulde waarden, netjes bij elkaar (zoals de app ze kent: met namen)
   const waarden = {
     titel: formulier.titel.trim(),
     omschrijving: formulier.omschrijving,
     plek: formulier.plek,
     werkgroep: formulier.werkgroep,
     toegewezenAanId: formulier.toegewezenAanId,
-    toegewezenAan: naamVanPersoon(formulier.toegewezenAanId) || "",
+    toegewezenAan: naamVanPersoon(formulier.toegewezenAanId) || formulier.toegewezenAan || "",
     deadline: formulier.deadline
   };
-  const terug = formulier.terugScherm;
-  taakFormulier = null;
 
-  // Kom je terug op "Werkgroep"? Toon dan de werkgroep van deze taak, zodat je hem ziet.
-  if (terug === "werkgroep" && gekozenWerkgroep !== "Alles") {
-    gekozenWerkgroep = waarden.werkgroep;
-  }
+  // De knop uitzetten, zodat een tweede tik niet twee taken maakt
+  const knop = document.getElementById("knop-taak-opslaan");
+  if (knop) knop.disabled = true;
 
-  // Wijzigen: oude waarden onthouden, nieuwe erover zetten
-  if (formulier.modus === "wijzigen") {
-    const taak = formulier.taak;
-    const oud = { ...taak };            // kopie van hoe de taak was
-    Object.assign(taak, waarden);       // nieuwe waarden overnemen
-    toonScherm(terug);
-    toonMelding("Taak gewijzigd", () => {
-      Object.assign(taak, oud);         // alles terugzetten
-      verversScherm();
-    });
+  // Wijzigen of nieuw. Mislukt het, dan blijft het formulier staan met alles
+  // wat je had ingevuld (de melding onderaan zegt wat er mis is).
+  const gelukt = formulier.modus === "wijzigen"
+    ? await wijzigTaak(formulier.taak, waarden)
+    : await maakTaak(waarden);
+  if (!gelukt) {
+    if (knop) knop.disabled = false;
     return;
   }
 
-  // Nieuw (met of zonder melding)
+  // Gelukt: terug naar het vorige scherm. Kom je terug op "Werkgroep"?
+  // Toon dan de werkgroep van deze taak, zodat je hem ziet.
+  taakFormulier = null;
+  if (formulier.terugScherm === "werkgroep" && gekozenWerkgroep !== "Alles") {
+    gekozenWerkgroep = waarden.werkgroep;
+  }
+  huidigScherm = formulier.terugScherm;
+  takenGewijzigd();
+}
+
+// Zet de waarden van een taak om naar een rij zoals de database die wil:
+// met nummers in plaats van namen, en leeg = null.
+function taakNaarRij(waarden) {
+  return {
+    titel: waarden.titel,
+    omschrijving: waarden.omschrijving.trim() || null,
+    plek: plekNummer[waarden.plek],
+    werkgroep: werkgroepNummer[waarden.werkgroep],
+    toegewezen_aan: waarden.toegewezenAanId || null,
+    deadline: waarden.deadline || null
+  };
+}
+
+// ➕ Nieuwe taak in de database. "Ongedaan maken" verwijdert hem weer.
+// Geeft true als het gelukt is.
+async function maakTaak(waarden) {
+  // insert = nieuwe rij toevoegen; select("id") = stuur het nieuwe nummer terug
+  const antwoord = await stuurNaarDatabase(signaal =>
+    database.from("taken").insert(taakNaarRij(waarden)).select("id").single().abortSignal(signaal));
+  if (!antwoord.gelukt) return false;
+
   const taak = {
-    id: volgendeTaakId(),
+    id: antwoord.data.id,   // het nummer dat de database heeft gegeven
     ...waarden,
     status: "open",
-    meldingFoto: formulier.melding ? formulier.melding.foto : ""
+    gereedGemeldDoor: "",
+    fotoPad: "",
+    meldingFoto: ""
   };
   taken.push(taak);
-  if (formulier.melding) formulier.melding.taakId = taak.id;   // koppeling met de melding
-  toonScherm(terug);
-  toonMelding("Taak aangemaakt", () => {
-    taken.splice(taken.indexOf(taak), 1);                     // taak weer weghalen
-    if (formulier.melding) formulier.melding.taakId = null;   // koppeling weer weghalen
-    verversScherm();
+  toonMelding("Taak aangemaakt", () => verwijderTaak(taak));
+  return true;
+}
+
+// Haalt een taak weg die net is aangemaakt (alleen voor "Ongedaan maken")
+async function verwijderTaak(taak) {
+  const antwoord = await stuurNaarDatabase(signaal =>
+    database.from("taken").delete().eq("id", taak.id).select("id").abortSignal(signaal));
+  if (!antwoord.gelukt) return;
+  if (antwoord.data.length === 0) {
+    // Niets verwijderd: de taak bestond al niet meer, of je mocht het niet
+    toonMelding("Deze taak kon niet worden weggehaald. Ververs het scherm.");
+    return;
+  }
+  taken.splice(taken.indexOf(taak), 1);
+  takenGewijzigd();
+  toonMelding("Taak weggehaald");
+}
+
+// ✏ Bestaande taak wijzigen. "Ongedaan maken" zet de oude waarden terug.
+// Geeft true als het gelukt is.
+async function wijzigTaak(taak, waarden) {
+  const oud = {   // hoe de taak was, voor "Ongedaan maken"
+    titel: taak.titel,
+    omschrijving: taak.omschrijving,
+    plek: taak.plek,
+    werkgroep: taak.werkgroep,
+    toegewezenAanId: taak.toegewezenAanId || "",
+    toegewezenAan: taak.toegewezenAan,
+    deadline: taak.deadline
+  };
+  // update = rij aanpassen; eq("id", …) = alleen de rij met dit nummer
+  const antwoord = await stuurNaarDatabase(signaal =>
+    database.from("taken").update(taakNaarRij(waarden)).eq("id", taak.id).select("id").abortSignal(signaal));
+  if (!antwoord.gelukt) return false;
+  if (antwoord.data.length === 0) {
+    // Niets gewijzigd: de taak bestaat niet meer, of je mag hem niet wijzigen
+    toonMelding("Deze taak kon niet worden gewijzigd. Misschien is hij weggehaald. Ververs het scherm.");
+    return false;
+  }
+  Object.assign(taak, waarden);
+  toonMelding("Taak gewijzigd", async () => {
+    if (await wijzigTaak(taak, oud)) takenGewijzigd();
   });
+  return true;
 }
 
 // ===== TAKEN UIT DE DATABASE =====
@@ -1116,6 +1187,8 @@ async function haalTakenOp() {
     taken.splice(0, taken.length, ...antwoord.taken);   // lijst leegmaken en vullen
     mijnToewijsNaam = antwoord.mijnNaam;
     personen = antwoord.personen;
+    lijsten = antwoord.lijsten;
+    zetLijsten(lijsten);
     takenUitleg = "";
     bewaarTakenOpToestel();
     await haalFotoLinksOp();   // tijdelijke links voor de foto's na afloop
@@ -1126,6 +1199,8 @@ async function haalTakenOp() {
       taken.splice(0, taken.length, ...bewaard.taken);
       mijnToewijsNaam = bewaard.mijnNaam;
       personen = bewaard.personen || [];
+      lijsten = bewaard.lijsten || lijsten;
+      zetLijsten(lijsten);
       takenUitleg = "Geen verbinding. Je ziet de lijst van " + leesbareTijd(bewaard.tijd) + ".";
     } else {
       taken.splice(0, taken.length);
@@ -1142,9 +1217,13 @@ function bewaarTakenOpToestel() {
     tijd: Date.now(),
     mijnNaam: mijnToewijsNaam,
     taken: taken,
-    personen: personen   // alleen gevuld voor bestuur en coördinator
+    personen: personen,   // alleen gevuld voor bestuur en coördinator
+    lijsten: lijsten      // werkgroepen en plekken
   });
 }
+
+// Werkgroepen en plekken zoals laatst opgehaald (met hun nummers)
+let lijsten = { werkgroepen: [], plekken: [] };
 
 // Haalt de taken opnieuw op en tekent het scherm opnieuw, als je nog op
 // hetzelfde scherm bent. Gebruikt bij een tik op "Mijn taken" of "Werkgroep".
@@ -1153,7 +1232,22 @@ async function ververs(scherm) {
   if (huidigScherm === scherm) verversScherm();
 }
 
-// Het echte werk: twee vragen aan de database (drie voor bestuur).
+// Zet werkgroepen en plekken uit de database in de lijsten die de schermen gebruiken
+function zetLijsten(lijsten) {
+  alleWerkgroepen = lijsten.werkgroepen.map(w => w.naam);
+  werkgroepNummer = {};
+  lijsten.werkgroepen.forEach(w => { werkgroepNummer[w.naam] = w.id; });
+
+  plekNamen = lijsten.plekken.map(p => p.naam);
+  plekNummer = {};
+  werkgroepBijPlek = {};
+  lijsten.plekken.forEach(p => {
+    plekNummer[p.naam] = p.id;
+    if (p.werkgroep) werkgroepBijPlek[p.naam] = p.werkgroep;
+  });
+}
+
+// Het echte werk: vier vragen aan de database (vijf voor bestuur).
 // De database geeft alleen de taken die jij mag zien (regels in 03_rechten.sql).
 async function vraagTakenOpBijDatabase() {
   // Stopt het wachten na WACHTTIJD_DATABASE, zodat de app niet blijft hangen
@@ -1181,12 +1275,39 @@ async function vraagTakenOpBijDatabase() {
       ? database.from("lidmaatschappen").select("gebruiker, werkgroepen(naam)").abortSignal(stopper.signal)
       : Promise.resolve({ data: [], error: null });
 
+    // 4. De werkgroepen die meedoen (actief), in de volgorde waarin ze zijn toegevoegd
+    const werkgroepenVraag = database
+      .from("werkgroepen")
+      .select("id, naam")
+      .eq("actief", true)
+      .order("id")
+      .abortSignal(stopper.signal);
+
+    // 5. De plekken die meedoen, in de volgorde van de knoppen, met de
+    //    werkgroep die er meestal bij hoort
+    const plekkenVraag = database
+      .from("plekken")
+      .select("id, naam, volgorde, werkgroep:werkgroepen(naam)")
+      .eq("actief", true)
+      .order("volgorde")
+      .abortSignal(stopper.signal);
+
     // Alle vragen tegelijk versturen, en wachten tot ze allemaal klaar zijn
-    const [takenAntwoord, namenAntwoord, ledenAntwoord] =
-      await Promise.all([takenVraag, namenVraag, ledenVraag]);
-    if (takenAntwoord.error) throw takenAntwoord.error;
-    if (namenAntwoord.error) throw namenAntwoord.error;
-    if (ledenAntwoord.error) throw ledenAntwoord.error;
+    const [takenAntwoord, namenAntwoord, ledenAntwoord, werkgroepenAntwoord, plekkenAntwoord] =
+      await Promise.all([takenVraag, namenVraag, ledenVraag, werkgroepenVraag, plekkenVraag]);
+    for (const antwoord of [takenAntwoord, namenAntwoord, ledenAntwoord, werkgroepenAntwoord, plekkenAntwoord]) {
+      if (antwoord.error) throw antwoord.error;
+    }
+
+    // Werkgroepen en plekken, in een eenvoudige vorm
+    const lijsten = {
+      werkgroepen: werkgroepenAntwoord.data.map(w => ({ id: w.id, naam: w.naam })),
+      plekken: plekkenAntwoord.data.map(p => ({
+        id: p.id,
+        naam: p.naam,
+        werkgroep: p.werkgroep ? p.werkgroep.naam : ""   // "" bij bijv. "Overig"
+      }))
+    };
 
     // Opzoeklijst: nummer van een gebruiker → naam
     const naamVan = {};
@@ -1224,7 +1345,7 @@ async function vraagTakenOpBijDatabase() {
 
     // Mijn eigen naam zoals de app hem laat zien (bijv. "Piet P.")
     const mijnNaam = naamVan[ingelogdeGebruiker.id] || ingelogdeGebruiker.naam;
-    return { taken: nieuweTaken, mijnNaam, personen: nieuwePersonen };
+    return { taken: nieuweTaken, mijnNaam, personen: nieuwePersonen, lijsten };
   } finally {
     clearTimeout(wekker);   // wekker uitzetten, ook als er iets misging
   }
@@ -1299,16 +1420,6 @@ function toonLijst(lijst) {
     uitleg.setAttribute("role", "status");
     uitleg.textContent = "📶 " + takenUitleg;
     inhoud.append(uitleg);
-  }
-
-  // TIJDELIJK: wat alleen bestuur kan (nieuwe taak, wijzigen) verandert nog
-  // alleen iets op de eigen telefoon. Weghalen zodra dat ook in de database
-  // wordt bewaard.
-  if (ingelogdeGebruiker.magAllesZien) {
-    const tijdelijk = document.createElement("p");
-    tijdelijk.className = "uitleg-bovenaan";
-    tijdelijk.textContent = "Proefversie: nieuwe taken en wijzigen worden nog niet bewaard.";
-    inhoud.append(tijdelijk);
   }
 
   if (lijst.length === 0) {
