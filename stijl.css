@@ -89,6 +89,10 @@ main { padding: 16px; padding-bottom: 180px; } /* ruimte vrij voor menu én meld
   background: #ffffff; color: var(--tekst);
 }
 
+/* Knop "Laten stoppen": rode rand en tekst, met ruimte erboven (de tekst zegt
+   zelf wat hij doet, dus niet alleen de kleur) */
+.knop-tweede.knop-stoppen { margin-top: 32px; border-color: var(--rood); color: var(--rood); }
+
 /* Keuzelijst (bijv. "Toegewezen aan") */
 .toewijzen { display: block; margin-top: 12px; font-size: 16px; font-weight: bold; }
 .toewijzen select {

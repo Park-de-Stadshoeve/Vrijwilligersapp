@@ -14,7 +14,8 @@ database opbouwt en bevraagt. Het ontwerp in gewone taal staat in `../DATABASE.m
 | `06_meldingen.sql` | Vaste actie "Maak taak": taak maken en aan de melding koppelen in één keer | uitgevoerd in testproject |
 | `07_ping.sql` | Mini-functie "ping" waarmee GitHub de database wakker houdt (zie `BEHEER.md`) | uitgevoerd in testproject |
 | `08_beheer.sql` | Vaste actie "gebruiker wijzigen" voor het beheerscherm, en een bewaker: er blijft altijd minstens één beheerder | uitgevoerd in testproject |
-| `09_email.sql` | Beheerders kunnen het e-mailadres van een gebruiker zien (in het formulier "Wijzigen") | nog uitvoeren |
+| `09_email.sql` | Beheerders kunnen het e-mailadres van een gebruiker zien (in het formulier "Wijzigen") | uitgevoerd in testproject |
+| `10_stoppen.sql` | Database-deel van "Laten stoppen" en "Weer laten meedoen" (alleen voor de Edge Function) | nog uitvoeren |
 
 ## Testbestanden
 Deze mag je zo vaak uitvoeren als je wilt. Ze ruimen hun eigen testgegevens op.
@@ -28,7 +29,8 @@ Gebruik ze na een wijziging, om te zien of alles nog werkt.
 | `test_05_toewijzen.sql` | Wie een taak mag toewijzen, en aan wie (6 tests). Getest: alles goed. |
 | `test_06_meldingen.sql` | "Maak taak" en "Geen actie nodig": wie mag het, en klopt de status (8 tests). Getest: alles goed. |
 | `test_08_beheer.sql` | Wie gebruikers mag wijzigen, en of er altijd een beheerder overblijft (9 tests). Zet de echte beheerders heel even uit en daarna terug. Getest: alles goed. |
-| `test_09_email.sql` | Wie e-mailadressen mag zien (4 tests). Gebruikt een verzonnen adres op `voorbeeld.invalid`; daar gaat nooit mail heen. |
+| `test_09_email.sql` | Wie e-mailadressen mag zien (4 tests). Gebruikt een verzonnen adres op `voorbeeld.invalid`; daar gaat nooit mail heen. Getest: alles goed. |
+| `test_10_stoppen.sql` | Laten stoppen en weer laten meedoen: taken, vinkjes, wie het mag (7 tests). Zet de echte beheerders heel even uit en daarna terug. |
 
 Let op: na `08_beheer.sql` heeft het project minstens één echte beheerder nodig om de
 tests uit te voeren. Anders houdt de bewaker het opruimen van de testgebruikers tegen.

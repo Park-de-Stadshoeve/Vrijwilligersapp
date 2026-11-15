@@ -1,5 +1,5 @@
 // =====================================================================
-// Edge Function "beheer" — inlogaccounts toevoegen en wijzigen
+// Edge Function "beheer" — inlogaccounts toevoegen, wijzigen en weghalen
 // =====================================================================
 // Wat is dit?
 //   Een klein programma dat bij Supabase draait, niet op de telefoon.
@@ -14,6 +14,11 @@
 //                            (alleen binnen 10 minuten, en alleen zonder taken
 //                            of meldingen)
 //   - "email_wijzigen":      ander e-mailadres voor iemand
+//   - "stoppen":             iemand laten stoppen: open taken vrijgeven,
+//                            vinkjes uit, inlogaccount en e-mailadres weg
+//   - "terugzetten":         weer laten meedoen (ook "Ongedaan maken" na
+//                            stoppen): nieuw inlogaccount met hetzelfde nummer,
+//                            zodat naam en geschiedenis blijven kloppen
 //
 // Wie mag het?
 //   Alleen een ingelogde, actieve beheerder (vinkje is_beheerder). Dat
@@ -90,6 +95,8 @@ Deno.serve(async (verzoek) => {
     if (vraag.actie === "toevoegen") return antwoord(await voegToe(beheer, vraag));
     if (vraag.actie === "toevoegen_ongedaan") return antwoord(await maakToevoegenOngedaan(beheer, vraag));
     if (vraag.actie === "email_wijzigen") return antwoord(await wijzigEmail(beheer, vraag));
+    if (vraag.actie === "stoppen") return antwoord(await laatStoppen(beheer, vraag, vrager.id));
+    if (vraag.actie === "terugzetten") return antwoord(await zetTerug(beheer, vraag));
     throw new BeheerFout("Onbekende actie.");
   } catch (fout) {
     if (fout instanceof BeheerFout) return antwoord({ fout: fout.message }, fout.status);
@@ -188,6 +195,79 @@ async function wijzigEmail(beheer: any, vraag: any) {
 }
 
 
+// ----- LATEN STOPPEN -----
+// vraag: { gebruikerId }
+// Eerst het database-deel (vaste actie zet_gebruiker_stop in
+// database/10_stoppen.sql), dan het inlogaccount weg. Lukt dat laatste
+// niet, dan zetten we het database-deel terug.
+// deno-lint-ignore no-explicit-any
+async function laatStoppen(beheer: any, vraag: any, vragerId: string) {
+  const id = vraag.gebruikerId;
+  if (id === vragerId) {
+    throw new BeheerFout("Je kunt jezelf niet laten stoppen. Vraag dat aan een andere beheerder.");
+  }
+
+  // Het e-mailadres onthouden, voor "Ongedaan maken"
+  const { data: account } = await beheer.auth.admin.getUserById(id);
+  const email = account?.user?.email || "";
+
+  const { data: uitslag, error } = await beheer.rpc("zet_gebruiker_stop", { gebruiker_id: id });
+  if (error) throw vertaalDatabaseFout(error);
+
+  if (account?.user) {
+    const { error: weg } = await beheer.auth.admin.deleteUser(id);
+    if (weg) {
+      console.error(weg);
+      await beheer.rpc("zet_gebruiker_terug", {
+        gebruiker_id: id,
+        terug_taken: uitslag.taken,
+        wordt_beheerder: uitslag.was_beheerder,
+        krijgt_mail_bij_gevaar: uitslag.kreeg_gevaar_mail,
+      });
+      throw new BeheerFout("Stoppen is niet gelukt. Er is niets veranderd. Probeer het opnieuw.", 500);
+    }
+  }
+
+  return {
+    gelukt: true,
+    email,                                     // alleen voor "Ongedaan maken"
+    taken: uitslag.taken,                      // de taken die weer open staan
+    wasBeheerder: uitslag.was_beheerder,
+    kreegGevaarMail: uitslag.kreeg_gevaar_mail,
+  };
+}
+
+
+// ----- WEER LATEN MEEDOEN -----
+// vraag: { gebruikerId, email, taken?, wordtBeheerder?, krijgtGevaarMail? }
+// Maakt een nieuw inlogaccount met HETZELFDE nummer als vroeger. Daardoor
+// horen de oude taken en meldingen meteen weer bij deze persoon.
+// deno-lint-ignore no-explicit-any
+async function zetTerug(beheer: any, vraag: any) {
+  const id = vraag.gebruikerId;
+  const email = controleerEmail(vraag.email);
+
+  const { error: accountFout } = await beheer.auth.admin.createUser({
+    id,
+    email,
+    email_confirm: true,
+  });
+  if (accountFout) throw vertaalAccountFout(accountFout);
+
+  const { error } = await beheer.rpc("zet_gebruiker_terug", {
+    gebruiker_id: id,
+    terug_taken: Array.isArray(vraag.taken) ? vraag.taken : [],
+    wordt_beheerder: vraag.wordtBeheerder === true,
+    krijgt_mail_bij_gevaar: vraag.krijgtGevaarMail === true,
+  });
+  if (error) {
+    await beheer.auth.admin.deleteUser(id);   // account weer weg: niets half doen
+    throw vertaalDatabaseFout(error);
+  }
+  return { gelukt: true };
+}
+
+
 // ----- HULPJES -----
 
 // Maakt het adres netjes (kleine letters, geen spaties) en kijkt of het
@@ -198,6 +278,15 @@ function controleerEmail(invoer: unknown) {
     throw new BeheerFout("Dit is geen geldig e-mailadres. Controleer het adres.");
   }
   return email;
+}
+
+// Zet een fout van de database om in gewone taal. Fouten met code P0001
+// hebben we zelf in gewone taal geschreven (zie de SQL-bestanden).
+// deno-lint-ignore no-explicit-any
+function vertaalDatabaseFout(fout: any) {
+  console.error(fout);
+  if (fout.code === "P0001") return new BeheerFout(fout.message);
+  return new BeheerFout("Er ging iets mis bij de database. Er is niets veranderd. Probeer het opnieuw.", 500);
 }
 
 // Zet een fout van het inlogdeel om in gewone taal
