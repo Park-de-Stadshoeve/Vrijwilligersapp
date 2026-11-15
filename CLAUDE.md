@@ -275,6 +275,17 @@ Klaar (inloggen, taken en meldingen werken met de database):
   Database ongewijzigd (regels uit 03 waren er al). Getest op de telefoon
   (beheerder ziet lijst, Testvrijwilliger geen knop, zonder bereik melding):
   alles goed.
+  Stap 2 gebouwd: knop Wijzigen per actieve persoon, formulier (voornaam, letter,
+  rol, werkgroepen aan/uit met ✓, Beheerder ja/nee, Mail bij gevaar ja/nee),
+  Opslaan via vaste actie gebruiker_wijzigen (database/08_beheer.sql: alleen
+  beheerder, alles in één keer, werkgroepen vervangen) en Ongedaan maken (oude
+  waarden opnieuw opslaan). Trigger altijd_een_beheerder (security definer): na
+  elke update van is_beheerder/actief of delete moet er een actieve beheerder
+  zijn. Oude werkgroep (niet actief) blijft zichtbaar als iemand er nog in zit.
+  Eigen wijziging: "Open de app opnieuw". test_08_beheer.sql (9 tests) lokaal
+  gedraaid in een nagebootste Supabase (Postgres 16): alles goed; ook 01-06
+  laden en hun tests geven geen FOUT. NOG UITVOEREN in het testproject en
+  testen op de telefoon.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
