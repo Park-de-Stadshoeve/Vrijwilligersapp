@@ -11,6 +11,7 @@ database opbouwt en bevraagt. Het ontwerp in gewone taal staat in `../DATABASE.m
 | `03_rechten.sql` | Wie wat mag zien en doen: regels per tabel en vaste acties voor taken | uitgevoerd in testproject |
 | `04_fotos.sql` | Afgesloten fotomap, wie welke foto mag zien en neerzetten, overzicht van foto's om op te ruimen | uitgevoerd in testproject |
 | `05_toewijzen.sql` | Vaste actie "toewijzen" voor bestuur, en een betere foutmelding bij gereed melden | uitgevoerd in testproject |
+| `06_meldingen.sql` | Vaste actie "Maak taak": taak maken en aan de melding koppelen in één keer | nog uitvoeren in testproject |
 
 ## Testbestanden
 Deze mag je zo vaak uitvoeren als je wilt. Ze ruimen hun eigen testgegevens op.
@@ -22,6 +23,7 @@ Gebruik ze na een wijziging, om te zien of alles nog werkt.
 | `test_03_rechten.sql` | Wie wat mag uit `03_rechten.sql` (24 tests), met vijf verzonnen gebruikers. Getest: alles goed. |
 | `test_04_fotos.sql` | Wie welke foto mag zien en neerzetten (10 tests). Draait aan het eind alles terug. Getest: alles goed. |
 | `test_05_toewijzen.sql` | Wie een taak mag toewijzen, en aan wie (6 tests). Getest: alles goed. |
+| `test_06_meldingen.sql` | "Maak taak" en "Geen actie nodig": wie mag het, en klopt de status (8 tests). Nog niet getest. |
 
 ## Voorbeeldgegevens (alleen testproject)
 Nooit uitvoeren in het echte project. Alleen verzonnen namen.

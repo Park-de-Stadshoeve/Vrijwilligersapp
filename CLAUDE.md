@@ -126,7 +126,7 @@ Ik bouw deze app zelf om te leren hoe je een app maakt. Claude schrijft code, ma
 ## Stand van zaken
 Werk deze sectie bij aan het eind van elke stap.
 
-Klaar (inloggen, taken en melden werken met de database; afhandelen van meldingen nog niet):
+Klaar (inloggen, taken en meldingen werken met de database):
 - Alle vijf de functies, verdeeld over: index.html (geraamte), stijl.css (uiterlijk),
   app.js (logica en praten met de database), instellingen.js (adres en publishable
   sleutel van Supabase) en inloggen.js (inloggen met code, uitloggen, profiel).
@@ -236,9 +236,7 @@ Klaar (inloggen, taken en melden werken met de database; afhandelen van meldinge
   fouttekst), dan insert in meldingen; mislukt: formulier blijft staan, een al
   verstuurde foto wordt niet opnieuw verstuurd. Ongedaan maken = intrekken
   (trekMeldingIn, delete; mag zolang Nieuw). Foto bij melding via tijdelijke
-  link. Afhandelknoppen TIJDELIJK uit (AFHANDELEN_AAN = false); zetGeenActie en
-  openTaakUitMelding gebruiken nog oude velden (geenActie, melding.foto) en
-  moeten in stap 2 naar de database. Getest op telefoon en computer (melden,
+  link. Getest op telefoon en computer (melden,
   intrekken, bestuur ziet alle meldingen, geen bereik): alles goed. Wel: na de
   vliegtuigstand duurde het ~2 minuten voordat opnieuw versturen lukte (oorzaak
   onzeker: telefoon of supabase-js die blijft hangen op het verversen van de
@@ -246,6 +244,18 @@ Klaar (inloggen, taken en melden werken met de database; afhandelen van meldinge
   minuut of twee"). In de eerste week van de proef navragen of vrijwilligers hier
   last van hebben; zo ja, verder uitzoeken. isVerbindingsFout herkent nu ook
   "Load failed" (Safari).
+- Meldingen afhandelen (stap 2): "Maak taak" via vaste actie taak_uit_melding
+  (database/06_meldingen.sql: alleen bestuur, melding nog Nieuw (for update),
+  persoon actief; taak maken + koppelen in één keer; geeft taak-id terug).
+  Ongedaan maken = taak verwijderen (melding vanzelf weer Nieuw door on delete
+  set null). "Geen actie nodig" en "Weer openen" direct in meldingen (update met
+  .is("taak", null); 0 rijen = al afgehandeld, lijst verversen). Taken halen de
+  gekoppelde melding mee (embed melding:meldingen(id, foto, toelichting,
+  gemeld_door)); de werkgroep ziet bij de taak foto, toelichting en naam van de
+  melder (besluit: naam wél tonen, voor navragen). Plek van een melding die niet
+  meer meedoet: formulier laat de plek leeg. AFHANDELEN_AAN weg.
+  06_meldingen.sql en test_06 nog NIET uitgevoerd; app getest in de browser met
+  nagemaakte database.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
@@ -275,9 +285,9 @@ Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
 Volgende stappen:
-0. Stap 2 van meldingen: afhandelen door
-   bestuur ("Maak taak" met koppeling taak ↔ melding en foto bij de taak, "Geen
-   actie nodig" met toelichting, weer openen), AFHANDELEN_AAN weer aan.
+0. 06_meldingen.sql en test_06 uitvoeren in het testproject, afhandelen testen op
+   de telefoon. Daarmee werken alle vijf de functies met de database. Daarna de
+   punten onder 2 (voor de proef met Klussen).
 1. Besluit van het bestuur afwachten. Feedback (vergadering 22 oktober 2026): eerst
    autorisaties en hosting onderzoeken, invoering stap voor stap. Daarvoor is een
    notitie gemaakt (staat buiten de repository, want het is een intern stuk) met

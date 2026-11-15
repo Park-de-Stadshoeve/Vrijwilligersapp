@@ -8,9 +8,14 @@ de leden van de werkgroep van de taak, dan alle anderen; wie gestopt is staat er
 niet in. Plekken en werkgroepen komen ook uit de database.
 Meldingen werken ook met de database: melden met foto, en op "Meldingen" de status
 (vrijwilligers zien alleen hun eigen meldingen, bestuur alle). "Ongedaan maken" na
-het melden trekt de melding in. Afhandelen door bestuur ("Maak taak", "Geen actie
-nodig") staat nog tijdelijk uit. De e-mail bij een gevaarlijke melding komt later
-(daarvoor is eerst de e-maildienst nodig).
+het melden trekt de melding in. Bestuur handelt meldingen af op het scherm Meldingen:
+- **Maak taak**: het taakformulier is alvast ingevuld (deadline morgen bij gevaarlijk,
+  anders over twee weken). Taak en melding worden in één keer gekoppeld. Bij de taak
+  ziet de werkgroep de foto, de toelichting en wie het meldde.
+- **Geen actie nodig**: met een verplichte toelichting, die de melder te zien krijgt.
+  Met **Weer openen** zet je hem terug op "Nieuw".
+De e-mail bij een gevaarlijke melding komt later (daarvoor is eerst de e-maildienst
+nodig).
 
 Lukt een knop niet, dan staat onderaan wat er mis is. Bijvoorbeeld "Iemand anders
 heeft deze taak al opgepakt" (de app haalt dan de nieuwste lijst op) of "Geen
