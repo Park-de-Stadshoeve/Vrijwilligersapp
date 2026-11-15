@@ -12,7 +12,7 @@ database opbouwt en bevraagt. Het ontwerp in gewone taal staat in `../DATABASE.m
 | `04_fotos.sql` | Afgesloten fotomap, wie welke foto mag zien en neerzetten, overzicht van foto's om op te ruimen | uitgevoerd in testproject |
 | `05_toewijzen.sql` | Vaste actie "toewijzen" voor bestuur, en een betere foutmelding bij gereed melden | uitgevoerd in testproject |
 | `06_meldingen.sql` | Vaste actie "Maak taak": taak maken en aan de melding koppelen in één keer | uitgevoerd in testproject |
-| `07_ping.sql` | Mini-functie "ping" waarmee GitHub de database wakker houdt (zie `BEHEER.md`) | nog uitvoeren |
+| `07_ping.sql` | Mini-functie "ping" waarmee GitHub de database wakker houdt (zie `BEHEER.md`) | uitgevoerd in testproject |
 
 ## Testbestanden
 Deze mag je zo vaak uitvoeren als je wilt. Ze ruimen hun eigen testgegevens op.

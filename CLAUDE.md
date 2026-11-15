@@ -261,7 +261,18 @@ Klaar (inloggen, taken en meldingen werken met de database):
   en .github/workflows/supabase-wakker-houden.yml (elke 3 dagen, plus met de hand;
   leest adres en sleutel uit instellingen.js). Mail bij mislukken naar Jerome.
   GitHub zet de taak uit na 60 dagen zonder wijziging (uitleg in BEHEER.md).
-  NOG TE DOEN: 07 uitvoeren in het testproject en de taak met de hand starten.
+  07 uitgevoerd in het testproject (select ping() = ok); taak met de hand
+  gestart vanaf main: gelukt.
+- Beheerscherm, in 4 stappen: (1) bekijken, (2) rol, werkgroepen en vinkjes
+  wijzigen, (3) toevoegen via een Edge Function (geheime sleutel alleen bij
+  Supabase, functie controleert is_beheerder), (4) laten stoppen (account en
+  e-mailadres weg, voornaam blijft). Werkgroepen en plekken voorlopig via de
+  Table Editor; onderdelen na de proef. Knop "Beheer" rechtsboven, alleen voor
+  beheerders (geen vijfde menuknop).
+  Stap 1 gebouwd: beheer.js (toonBeheer, haalGebruikersOp, toonGebruikersLijst),
+  knop knop-beheer in index.html, zichtbaar via startApp. Lijst niet op het
+  toestel bewaard (AVG); zonder bereik een melding met "Opnieuw proberen".
+  Database ongewijzigd (regels uit 03 waren er al). NOG TESTEN op de telefoon.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
@@ -309,7 +320,7 @@ Volgende stappen:
    - eigen e-maildienst voor de inlogcodes (de ingebouwde mail van Supabase stuurt
      maar 2 berichten per uur en alleen naar beheerders);
    - voorkomen dat het gratis Supabase-project na een week stilte op pauze gaat
-     (gebouwd, nog testen);
+     (klaar en getest, november 2026);
    - maandelijkse back-up (de gratis versie maakt er geen).
 
 ## Later-lijst

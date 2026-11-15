@@ -21,8 +21,12 @@
 <body>
   <header>
     <h1 id="titel">Even geduld…</h1>
-    <!-- Verschijnt pas als je bent ingelogd (zie inloggen.js) -->
-    <button id="knop-uitloggen" class="knop-uitloggen" hidden>Uitloggen</button>
+    <div class="knoppen-boven">
+      <!-- Alleen voor beheerders (zie beheer.js en startApp in app.js) -->
+      <button id="knop-beheer" class="knop-uitloggen" hidden>Beheer</button>
+      <!-- Verschijnt pas als je bent ingelogd (zie inloggen.js) -->
+      <button id="knop-uitloggen" class="knop-uitloggen" hidden>Uitloggen</button>
+    </div>
   </header>
 
   <!-- Hier zet het script de inhoud van het scherm neer -->
@@ -49,7 +53,9 @@
   <script src="instellingen.js"></script>
   <!-- 3. Inloggen en "wie ben ik" -->
   <script src="inloggen.js"></script>
-  <!-- 4. De app zelf: schermen en voorbeeldgegevens -->
+  <!-- 4. Beheerscherm (alleen voor beheerders) -->
+  <script src="beheer.js"></script>
+  <!-- 5. De app zelf: schermen en voorbeeldgegevens -->
   <script src="app.js"></script>
 </body>
 </html>
