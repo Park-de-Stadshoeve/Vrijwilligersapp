@@ -284,8 +284,10 @@ Klaar (inloggen, taken en meldingen werken met de database):
   zijn. Oude werkgroep (niet actief) blijft zichtbaar als iemand er nog in zit.
   Eigen wijziging: "Open de app opnieuw". test_08_beheer.sql (9 tests) lokaal
   gedraaid in een nagebootste Supabase (Postgres 16): alles goed; ook 01-06
-  laden en hun tests geven geen FOUT. NOG UITVOEREN in het testproject en
-  testen op de telefoon.
+  laden en hun tests geven geen FOUT. 08 uitgevoerd in het testproject;
+  test_08: alles goed. Getest op de telefoon (wijzigen, Ongedaan maken,
+  bewaker bij eigen vinkje, Testvrijwilliger ziet nieuwe werkgroep na
+  opnieuw openen): alles goed.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
