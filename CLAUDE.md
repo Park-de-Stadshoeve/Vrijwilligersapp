@@ -182,8 +182,10 @@ Klaar (de schermen werken nog met voorbeeldgegevens; inloggen werkt met de datab
   staat een TIJDELIJKE zin "Proefversie: … wordt nog niet bewaard" (app.js,
   toonLijst). Foto's bij taken nog niet uit de database. Voorbeeldtaken uit app.js
   verwijderd; testgegevens in database/voorbeeld_1_testvrijwilliger.sql en
-  voorbeeld_2_taken.sql (alleen testproject). Getest in de browser met
-  nagemaakte database-antwoorden; nog NIET getest met het echte testproject.
+  voorbeeld_2_taken.sql (alleen testproject). Beide uitgevoerd in het
+  testproject en getest op de telefoon: bestuur ziet alles, Testvrijwilliger
+  alleen Klussen, zonder verbinding de bewaarde lijst. Alles goed. (Let op bij
+  voorbeeld_1: het adres precies kopiëren uit "select email from auth.users".)
   Meldingen en de lijst vrijwilligers (toewijzen) zijn nog voorbeeldgegevens.
 
 Besluiten (november 2026):
@@ -215,10 +217,9 @@ Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
 Volgende stappen:
-0. Voorbeeldbestanden uitvoeren in het testproject en op de telefoon testen
-   (bestuur ziet alles, Testvrijwilliger alleen Klussen). Daarna in kleine stappen:
-   knoppen bij taken echt laten werken (vaste acties uit 03_rechten.sql), taken
-   aanmaken en wijzigen, keuzelijst toewijzen uit de database, meldingen, foto's.
+0. In kleine stappen verder koppelen: knoppen bij taken echt laten werken (vaste
+   acties uit 03_rechten.sql) en dan de "Proefversie"-zin weg; taken aanmaken en
+   wijzigen; keuzelijst toewijzen uit de database; meldingen; foto's.
 1. Besluit van het bestuur afwachten. Feedback (vergadering 22 oktober 2026): eerst
    autorisaties en hosting onderzoeken, invoering stap voor stap. Daarvoor is een
    notitie gemaakt (staat buiten de repository, want het is een intern stuk) met
