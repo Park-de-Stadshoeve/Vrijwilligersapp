@@ -314,8 +314,11 @@ Klaar (inloggen, taken en meldingen werken met de database):
   melding "X is gestopt. N taken staan weer open." met Ongedaan maken; bij
   gestopten "Weer laten meedoen" (alleen e-mailadres; Ongedaan = weer stoppen).
   Getest: test_10 lokaal (7 tests), functie met nep-Supabase (6 gevallen),
-  knoppen in de browser: alles goed. NOG TE DOEN: 10 uitvoeren, functie
-  opnieuw plakken, testen op de telefoon.
+  knoppen in de browser: alles goed. 10 uitgevoerd, test_10 goed; functie
+  opnieuw geplakt. Getest op de telefoon (stoppen met vrijgegeven taak, account
+  weg in Authentication, Ongedaan maken, Weer laten meedoen met inloggen,
+  inloggen na stoppen geweigerd): alles goed. createUser met hetzelfde id
+  werkt in Supabase. Beheerscherm voor gebruikers is klaar.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
@@ -359,7 +362,8 @@ Volgende stappen:
    - rechten en bewaartermijnen volgens DATABASE.md;
    - e-mail aan de coördinator bij een gevaarlijke melding;
    - beheerscherm voor gebruikers, werkgroepen, plekken en onderdelen (alleen voor
-     beheerders);
+     beheerders); gebruikers klaar en getest (november 2026), werkgroepen en
+     plekken voorlopig via de Table Editor, onderdelen na de proef;
    - eigen e-maildienst voor de inlogcodes (de ingebouwde mail van Supabase stuurt
      maar 2 berichten per uur en alleen naar beheerders);
    - voorkomen dat het gratis Supabase-project na een week stilte op pauze gaat
