@@ -299,7 +299,10 @@ Klaar (inloggen, taken en meldingen werken met de database):
   beheer.js voor "nieuw" en "wijzigen"; bij wijzigen eerst e-mailadres, dan
   de rest; Ongedaan maken zet allebei terug. Getest: functie met nep-Supabase
   (12 gevallen), test_09 lokaal (4 tests), formulier in de browser: alles
-  goed. NOG TE DOEN: 09 uitvoeren, functie neerzetten, testen op de telefoon.
+  goed. 09 uitgevoerd, test_09 goed; functie "beheer" neergezet via het
+  dashboard (Verify JWT aan). Getest op de telefoon (toevoegen, Ongedaan maken,
+  inloggen met nieuw account, adres al in gebruik, e-mailadres wijzigen en
+  inloggen met nieuw adres): alles goed.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
