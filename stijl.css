@@ -53,6 +53,8 @@ main { padding: 16px; padding-bottom: 180px; } /* ruimte vrij voor menu én meld
 .status-open { background: #e8eef9; color: #1d3d7a; }
 .status-gereed { background: #e3f1e4; color: #1e4d24; }
 .leeg { color: var(--grijs); }
+/* Korte uitleg boven een lijst, bijv. "Geen verbinding" */
+.uitleg-bovenaan { background: #fff4d6; color: var(--tekst); border-radius: 8px; padding: 8px 12px; margin: 0 0 12px; font-size: 16px; }
 
 /* Hoofdknop (groot en gevuld) */
 .knop-gereed {

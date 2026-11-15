@@ -21,6 +21,14 @@ Gebruik ze na een wijziging, om te zien of alles nog werkt.
 | `test_03_rechten.sql` | Wie wat mag uit `03_rechten.sql` (24 tests), met vijf verzonnen gebruikers. Getest: alles goed. |
 | `test_04_fotos.sql` | Wie welke foto mag zien en neerzetten (10 tests). Draait aan het eind alles terug. Getest: alles goed. |
 
+## Voorbeeldgegevens (alleen testproject)
+Nooit uitvoeren in het echte project. Alleen verzonnen namen.
+
+| Bestand | Wat het doet |
+|---|---|
+| `voorbeeld_1_testvrijwilliger.sql` | Maakt van een e-mailadres (eerst toevoegen bij Authentication > Users) een "Testvrijwilliger" in Klussen. Het adres vul je alleen in de SQL Editor in, niet in GitHub. |
+| `voorbeeld_2_taken.sql` | Zet elf verzonnen taken in de database, met deadlines vanaf vandaag. Werkt alleen als er nog geen taken zijn. |
+
 ## Controleren of de fotomap afgesloten is
 Voer uit in de SQL Editor:
 `select id, public, file_size_limit, allowed_mime_types from storage.buckets where id = 'fotos';`

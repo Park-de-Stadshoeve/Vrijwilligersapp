@@ -30,21 +30,10 @@ const vrijwilligers = [
 // De naam waarmee een taak aan Frion als groep wordt toegewezen
 const FRION = "Frion";
 
-// Elke taak heeft een uniek nummer (id). "meldingFoto" is de foto uit een melding.
-// NIEUW: elke taak heeft nu ook een "plek".
-const taken = [
-  { id: 1,  titel: "Hek weide 2 repareren", omschrijving: "Onderste plank zit los bij de ingang.", plek: "Weides", werkgroep: "Klussen", toegewezenAan: "Kirsten", deadline: "2026-10-08", status: "open" },
-  { id: 2,  titel: "Hooi bestellen", omschrijving: "Voorraad op de hooizolder is bijna op.", plek: "Stal", werkgroep: "Dieren", toegewezenAan: "Kirsten", deadline: "2026-10-14", status: "open" },
-  { id: 3,  titel: "Waterpomp winterklaar maken", omschrijving: "Pomp bij het waterspelen aftappen.", plek: "Waterspelen", werkgroep: "Klussen", toegewezenAan: "Kirsten", deadline: "2026-10-03", status: "gereed", gereedGemeldDoor: "Kirsten" },
-  { id: 4,  titel: "Konijnenhok extra uitmesten", omschrijving: "Na de herfstvakantie.", plek: "Overig", werkgroep: "Dieren", toegewezenAan: "Piet", deadline: "2026-10-27", status: "open" },
-  { id: 5,  titel: "Lampen schuur vervangen", omschrijving: "Twee tl-buizen zijn kapot.", plek: "Gebouw", werkgroep: "Klussen", toegewezenAan: "", deadline: "2026-10-20", status: "open" },
-  { id: 6,  titel: "Drinkbak ezels schoonmaken", omschrijving: "Algen verwijderen en vers water.", plek: "Weides", werkgroep: "Dieren", toegewezenAan: "", deadline: "2026-10-16", status: "open" },
-  { id: 7,  titel: "Stal uitmesten", omschrijving: "Alle zes boxen, vers stro erin.", plek: "Stal", werkgroep: "Dieren", toegewezenAan: "Frion", deadline: "2026-10-13", status: "open" },
-  { id: 8,  titel: "Valondergrond aanvullen", omschrijving: "Houtsnippers bij de glijbaan.", plek: "Hummelhoeve", werkgroep: "Avontuurlijk spelen", toegewezenAan: "", deadline: "2026-10-22", status: "open" },
-  { id: 9,  titel: "Bollen planten", omschrijving: "Bollen liggen in de kas.", plek: "Belevenistuin", werkgroep: "Tuinen", toegewezenAan: "Fatima", deadline: "2026-10-25", status: "open" },
-  { id: 10, titel: "Lampionnen voorbereiden", omschrijving: "Materiaal klaarzetten voor de workshop.", plek: "Gebouw", werkgroep: "Evenementen", toegewezenAan: "Kees", deadline: "2026-11-05", status: "open" },
-  { id: 11, titel: "Hek weide 3 gaat niet dicht", omschrijving: "Hek weide 3 gaat niet meer dicht.", plek: "Weides", werkgroep: "Klussen", toegewezenAan: "Kees", deadline: "2026-10-19", status: "open", meldingFoto: "" }
-];
+// De taken. Deze lijst is eerst leeg. Na het inloggen vult haalTakenOp hem
+// met de taken uit de database (zie "TAKEN UIT DE DATABASE", verderop).
+// "meldingFoto" is de foto uit een melding.
+const taken = [];
 
 // Vaste plekken op het park, voor "Waar is het?" (bij meldingen én taken)
 const PLEKKEN = ["Stal", "Weides", "Wortelhoeve", "Hummelhoeve", "Speelkasteel", "Waterspelen", "Trekvlot",
@@ -70,7 +59,7 @@ const PLEK_WERKGROEP = {
 // geenActie = true als het bestuur heeft besloten dat er niets hoeft te gebeuren.
 const meldingen = [
   { plek: "Speelkasteel", tekst: "Splinter in de leuning van de trap.", gevaarlijk: true, gemeldDoor: "Kirsten", datum: "2026-10-09", foto: "", taakId: null, geenActie: false },
-  { plek: "Weides", tekst: "Hek weide 3 gaat niet meer dicht.", gevaarlijk: false, gemeldDoor: "Piet", datum: "2026-10-05", foto: "", taakId: 11, geenActie: false },
+  { plek: "Weides", tekst: "Hek weide 3 gaat niet meer dicht.", gevaarlijk: false, gemeldDoor: "Piet", datum: "2026-10-05", foto: "", taakId: null, geenActie: false },
   { plek: "Gebouw", tekst: "Lamp bij de ingang flikkert.", gevaarlijk: false, gemeldDoor: "Kirsten", datum: "2026-10-02", foto: "", taakId: null, geenActie: true, geenActieReden: "Lamp is al vervangen door de bistro.", geenActieDoor: "Jan" }    ];
 
 // Hoe lang de melding "Ongedaan maken" zichtbaar blijft (in milliseconden: 6000 = 6 seconden)
@@ -119,7 +108,8 @@ function volgendeTaakId() {
 // Volgorde taken: open eerst, daarna op deadline (vroegste bovenaan)
 function sorteerTaken(a, b) {
   if (a.status !== b.status) return a.status === "open" ? -1 : 1;
-  return a.deadline.localeCompare(b.deadline);
+  // Een taak zonder datum komt onderaan ("9999" komt na elke echte datum)
+  return (a.deadline || "9999").localeCompare(b.deadline || "9999");
 }
 
 // Onder welke naam wijs je een taak aan jezelf toe?
@@ -360,11 +350,12 @@ function maakTaakKaart(taak) {
   const details = document.createElement("p");
   details.className = "details";
   const wie = taak.toegewezenAan || "Nog niemand";
-  details.textContent = "Uiterlijk " + leesbareDatum(taak.deadline) + " · " + taak.werkgroep + " · " + wie;
+  const wanneer = taak.deadline ? "Uiterlijk " + leesbareDatum(taak.deadline) : "Geen datum";
+  details.textContent = wanneer + " · " + taak.werkgroep + " · " + wie;
   kaart.append(details);
 
   // Waarschuwing in tekst én kleur (nooit alleen kleur)
-  if (taak.status === "open" && taak.deadline < vandaag) {
+  if (taak.status === "open" && taak.deadline && taak.deadline < vandaag) {
     const teLaat = document.createElement("p");
     teLaat.className = "te-laat";
     teLaat.textContent = "⚠ Te laat";
@@ -932,6 +923,109 @@ function slaTaakOp() {
   });
 }
 
+// ===== TAKEN UIT DE DATABASE =====
+// De database bewaart plek, werkgroep en persoon als nummers die naar een
+// andere tabel wijzen. De app werkt met namen ("Weides", "Klussen", "Piet").
+// haalTakenOp vraagt de taken op en zet de nummers om in namen.
+//
+// Slecht bereik: na elke keer ophalen bewaren we de lijst op de telefoon.
+// Lukt ophalen niet, dan laten we de bewaarde lijst zien, met de tijd erbij.
+
+// Hoe lang we op de database wachten (in milliseconden: 8000 = 8 seconden)
+const WACHTTIJD_DATABASE = 8000;
+
+// Wat er boven de takenlijst staat als we de bewaarde lijst laten zien
+// ("" = niets, alles is net opgehaald)
+let takenUitleg = "";
+
+async function haalTakenOp() {
+  try {
+    const { taken: nieuweTaken, mijnNaam } = await vraagTakenOpBijDatabase();
+    taken.splice(0, taken.length, ...nieuweTaken);   // lijst leegmaken en vullen
+    mijnToewijsNaam = mijnNaam;
+    takenUitleg = "";
+    schrijfOpslag(OPSLAG_TAKEN, {
+      gebruikerId: ingelogdeGebruiker.id,   // zodat iemand anders ze nooit ziet
+      tijd: Date.now(),
+      mijnNaam,
+      taken: nieuweTaken
+    });
+  } catch (fout) {
+    console.warn("Taken ophalen mislukt:", fout);
+    const bewaard = leesOpslag(OPSLAG_TAKEN);
+    if (bewaard && bewaard.gebruikerId === ingelogdeGebruiker.id) {
+      taken.splice(0, taken.length, ...bewaard.taken);
+      mijnToewijsNaam = bewaard.mijnNaam;
+      takenUitleg = "Geen verbinding. Je ziet de lijst van " + leesbareTijd(bewaard.tijd) + ".";
+    } else {
+      taken.splice(0, taken.length);
+      takenUitleg = "Geen verbinding. De taken konden niet worden geladen. " +
+                    "Open de app opnieuw als je bereik hebt.";
+    }
+  }
+}
+
+// Het echte werk: twee vragen aan de database.
+// De database geeft alleen de taken die jij mag zien (regels in 03_rechten.sql).
+async function vraagTakenOpBijDatabase() {
+  // Stopt het wachten na WACHTTIJD_DATABASE, zodat de app niet blijft hangen
+  const stopper = new AbortController();
+  const wekker = setTimeout(() => stopper.abort(), WACHTTIJD_DATABASE);
+  try {
+    // 1. De taken. "plekken(naam)" en "werkgroepen(naam)" halen meteen de
+    //    naam op uit de tabel waar het nummer naar wijst.
+    const takenVraag = database
+      .from("taken")
+      .select("id, titel, omschrijving, deadline, status, toegewezen_aan, gereed_gemeld_door, " +
+              "plek_naam:plekken(naam), werkgroep_naam:werkgroepen(naam)")
+      .abortSignal(stopper.signal);
+
+    // 2. De namen van alle gebruikers ("Piet", of "Piet P." bij een dubbele voornaam)
+    const namenVraag = database
+      .from("gebruikers_weergave")
+      .select("id, naam")
+      .abortSignal(stopper.signal);
+
+    // Beide vragen tegelijk versturen, en wachten tot allebei klaar zijn
+    const [takenAntwoord, namenAntwoord] = await Promise.all([takenVraag, namenVraag]);
+    if (takenAntwoord.error) throw takenAntwoord.error;
+    if (namenAntwoord.error) throw namenAntwoord.error;
+
+    // Opzoeklijst: nummer van een gebruiker → naam
+    const naamVan = {};
+    namenAntwoord.data.forEach(persoon => { naamVan[persoon.id] = persoon.naam; });
+
+    // Elke rij uit de database omzetten naar een taak zoals de app die kent
+    const nieuweTaken = takenAntwoord.data.map(rij => ({
+      id: rij.id,
+      titel: rij.titel,
+      omschrijving: rij.omschrijving || "",
+      plek: rij.plek_naam.naam,
+      werkgroep: rij.werkgroep_naam.naam,
+      toegewezenAan: naamVan[rij.toegewezen_aan] || "",
+      deadline: rij.deadline || "",
+      status: rij.status,
+      gereedGemeldDoor: naamVan[rij.gereed_gemeld_door] || "",
+      foto: "",          // foto's komen in een latere stap
+      meldingFoto: ""
+    }));
+
+    // Mijn eigen naam zoals de app hem laat zien (bijv. "Piet P.")
+    const mijnNaam = naamVan[ingelogdeGebruiker.id] || ingelogdeGebruiker.naam;
+    return { taken: nieuweTaken, mijnNaam };
+  } finally {
+    clearTimeout(wekker);   // wekker uitzetten, ook als er iets misging
+  }
+}
+
+// Zet een tijdstip om in "14:32" (vandaag) of "di 14 okt 14:32" (eerder)
+function leesbareTijd(tijd) {
+  const datum = new Date(tijd);
+  const uur = datum.toLocaleTimeString("nl-NL", { hour: "2-digit", minute: "2-digit" });
+  if (datum.toDateString() === new Date().toDateString()) return uur;
+  return datum.toLocaleDateString("nl-NL", { weekday: "short", day: "numeric", month: "short" }) + " " + uur;
+}
+
 // ===== MELDING ONDERAAN =====
 let meldingTimer = null;      // de "wekker" die de melding weer verbergt
 let ongedaanActie = null;     // wat er gebeurt bij "Ongedaan maken"
@@ -983,6 +1077,23 @@ function markeerMenu(scherm) {
 // Zet een lijst taken op het scherm
 function toonLijst(lijst) {
   const inhoud = document.getElementById("inhoud");
+
+  // Geen verbinding? Zeg dat boven de lijst.
+  if (takenUitleg) {
+    const uitleg = document.createElement("p");
+    uitleg.className = "uitleg-bovenaan";
+    uitleg.setAttribute("role", "status");
+    uitleg.textContent = "📶 " + takenUitleg;
+    inhoud.append(uitleg);
+  }
+
+  // TIJDELIJK: de knoppen bij een taak veranderen nog alleen iets op je eigen
+  // telefoon, niet in de database. Weghalen zodra de knoppen echt werken.
+  const tijdelijk = document.createElement("p");
+  tijdelijk.className = "uitleg-bovenaan";
+  tijdelijk.textContent = "Proefversie: wat je bij een taak verandert, wordt nog niet bewaard.";
+  inhoud.append(tijdelijk);
+
   if (lijst.length === 0) {
     const leeg = document.createElement("p");
     leeg.className = "leeg";
@@ -1053,13 +1164,22 @@ document.querySelectorAll("nav button").forEach(knop => {
 
 // Start de app voor de ingelogde persoon. Wordt aangeroepen door inloggen.js
 // zodra bekend is wie er is ingelogd. "profiel" komt uit de database.
-function startApp(profiel) {
+// "async" betekent: deze functie mag wachten (hier: op de database).
+async function startApp(profiel) {
   ingelogdeGebruiker.id = profiel.id;
   ingelogdeGebruiker.naam = profiel.naam;
   ingelogdeGebruiker.werkgroepen = profiel.werkgroepen;
   ingelogdeGebruiker.magAllesZien = profiel.rol === "bestuur" || profiel.rol === "coordinator";
   ingelogdeGebruiker.isBeheerder = profiel.isBeheerder;
   mijnToewijsNaam = ingelogdeGebruiker.naam;
+
+  // Direct laten zien dat er iets gebeurt, dan de taken ophalen
+  document.getElementById("titel").textContent = "Mijn taken";
+  const laden = document.createElement("p");
+  laden.className = "leeg";
+  laden.textContent = "Taken laden…";
+  document.getElementById("inhoud").replaceChildren(laden);
+  await haalTakenOp();
   toonMijnTaken();
 }
 

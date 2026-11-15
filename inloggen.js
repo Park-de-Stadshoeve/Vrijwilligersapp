@@ -20,6 +20,7 @@ const database = (IS_INGESTELD && typeof supabase !== "undefined")
 // Namen waaronder we iets op de telefoon bewaren
 const OPSLAG_PROFIEL = "stadshoeve-profiel";      // naam, rol, werkgroepen (voor slecht bereik)
 const OPSLAG_WACHT_OP_CODE = "stadshoeve-code";   // naar welk adres de code is gestuurd
+const OPSLAG_TAKEN = "stadshoeve-taken";          // laatst opgehaalde taken (voor slecht bereik)
 
 // ===== START =====
 // Wordt aangeroepen onderaan app.js, als alles geladen is.
@@ -241,6 +242,7 @@ async function haalProfiel(gebruikerId) {
 async function uitloggen() {
   if (database) await database.auth.signOut();
   verwijderOpslag(OPSLAG_PROFIEL);
+  verwijderOpslag(OPSLAG_TAKEN);   // taken horen bij deze persoon, dus ook weg
   location.reload();   // app opnieuw starten, dan verschijnt het inlogscherm
 }
 document.getElementById("knop-uitloggen").addEventListener("click", uitloggen);

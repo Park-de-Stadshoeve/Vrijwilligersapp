@@ -1,8 +1,9 @@
 # Beheerhandleiding Vrijwilligersapp
 
 Deze handleiding is voor de beheerder van de app. Je hoeft geen programmeur te zijn.
-Stand: inloggen werkt met de database (Supabase). Taken en meldingen zijn nog
-voorbeeldgegevens en worden nog niet bewaard.
+Stand: inloggen werkt met de database (Supabase). De taken komen uit de database,
+maar de knoppen bij een taak (oppakken, gereed melden, toewijzen, nieuwe taak) bewaren
+nog niets: na opnieuw openen is de wijziging weg. Meldingen zijn nog voorbeeldgegevens.
 
 ## Waar staat de app?
 - **Code:** GitHub, organisatie `park-de-stadshoeve`, repository `Vrijwilligersapp`.
@@ -14,7 +15,7 @@ voorbeeldgegevens en worden nog niet bewaard.
 |---|---|---|
 | `index.html` | Het geraamte: kopbalk, middenruimte, menu onderaan | Zelden |
 | `stijl.css` | Het uiterlijk: kleuren, groottes, knoppen | Kleur of tekstgrootte veranderen |
-| `app.js` | De logica en de voorbeeldgegevens | Plekken, werkgroepen, termijnen |
+| `app.js` | De logica, taken ophalen uit de database, de voorbeeldmeldingen | Plekken, werkgroepen, termijnen |
 | `instellingen.js` | Adres en publieke sleutel van de database | Bij een andere database (bijv. van test naar echt) |
 | `inloggen.js` | Inlogscherm met code uit de mail, uitloggen, "wie ben ik" | Zelden |
 | `CLAUDE.md` | Instructies voor Claude en de stand van zaken | Als er afspraken veranderen |
@@ -85,7 +86,17 @@ Je hoeft na een wijziging dus niets bij te houden of op te hogen.
 - **Logo vervangen?** Vervang de drie bestanden in `iconen/` door nieuwe met precies
   dezelfde naam en maat. Op telefoons waar de app al staat, verandert het icoon pas
   na verwijderen en opnieuw op het beginscherm zetten.
-- Taken en meldingen worden nog niet bewaard bij slecht bereik. Dat komt later.
+- **Taken bij slecht bereik:** na elke keer ophalen bewaart de telefoon de takenlijst.
+  Lukt ophalen niet binnen 8 seconden, dan zie je de bewaarde lijst, met bovenaan
+  "Geen verbinding. Je ziet de lijst van 14:32." Bij uitloggen wordt die lijst gewist.
+  Meldingen worden nog niet bewaard bij slecht bereik.
+
+## Testtaken in het testproject
+In `database/` staan twee voorbeeldbestanden, **alleen voor het testproject**:
+- `voorbeeld_1_testvrijwilliger.sql`: maakt van een tweede e-mailadres een
+  "Testvrijwilliger" in Klussen. Zo kun je zien wat een gewone vrijwilliger ziet.
+- `voorbeeld_2_taken.sql`: zet elf verzonnen taken in de database.
+Uitleg staat bovenin elk bestand.
 - **Supabase-hulpbestand:** `inloggen.js` gebruikt een vaste versie (2.45.4) van
   internet. Die staat in `index.html` én in `service-worker.js`. Bij een nieuwe
   versie op beide plekken aanpassen.

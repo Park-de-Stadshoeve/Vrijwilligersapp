@@ -171,6 +171,18 @@ Klaar (de schermen werken nog met voorbeeldgegevens; inloggen werkt met de datab
   view fotos_zonder_koppeling (niet via de app). Uitgevoerd in het testproject;
   bucket gecontroleerd (niet openbaar); test_04_fotos.sql: alles goed. Uploaden
   en tijdelijke links pas te testen als de app gekoppeld is.
+- Taken komen uit de database (haalTakenOp in app.js): twee vragen (taken met
+  plekken(naam) en werkgroepen(naam), plus gebruikers_weergave voor namen), omgezet
+  naar dezelfde vorm als vroeger. Na ophalen bewaard op het toestel
+  (stadshoeve-taken, per gebruiker, gewist bij uitloggen); lukt ophalen niet binnen
+  8 seconden, dan de bewaarde lijst met "Geen verbinding. Je ziet de lijst van …".
+  De knoppen bij taken wijzigen nog alleen de kopie op het toestel; boven de lijst
+  staat een TIJDELIJKE zin "Proefversie: … wordt nog niet bewaard" (app.js,
+  toonLijst). Foto's bij taken nog niet uit de database. Voorbeeldtaken uit app.js
+  verwijderd; testgegevens in database/voorbeeld_1_testvrijwilliger.sql en
+  voorbeeld_2_taken.sql (alleen testproject). Getest in de browser met
+  nagemaakte database-antwoorden; nog NIET getest met het echte testproject.
+  Meldingen en de lijst vrijwilligers (toewijzen) zijn nog voorbeeldgegevens.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst). De voorbeeldgegevens in
@@ -193,8 +205,10 @@ Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
 Volgende stappen:
-0. Inloggen testen op de telefoon met het testproject. Daarna: taken en meldingen
-   uit de database in plaats van voorbeeldgegevens (in kleine stappen).
+0. Voorbeeldbestanden uitvoeren in het testproject en op de telefoon testen
+   (bestuur ziet alles, Testvrijwilliger alleen Klussen). Daarna in kleine stappen:
+   knoppen bij taken echt laten werken (vaste acties uit 03_rechten.sql), taken
+   aanmaken en wijzigen, keuzelijst toewijzen uit de database, meldingen, foto's.
 1. Besluit van het bestuur afwachten. Feedback (vergadering 22 oktober 2026): eerst
    autorisaties en hosting onderzoeken, invoering stap voor stap. Daarvoor is een
    notitie gemaakt (staat buiten de repository, want het is een intern stuk) met
