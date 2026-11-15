@@ -89,6 +89,10 @@ Zet deze SQL met echte namen en adressen **nooit** in GitHub.
 De telefoon bewaart een kopie van de app. Is er bereik, dan haalt de app altijd eerst
 de nieuwste versie op. Is er na 3 seconden nog niets, dan opent de bewaarde kopie.
 Je hoeft na een wijziging dus niets bij te houden of op te hogen.
+Na een wijziging in GitHub duurt het een minuut of twee voordat GitHub de nieuwe
+versie online heeft. Daarna krijgt de telefoon hem bij de volgende keer openen. Zie
+je hem nog niet? Sluit de app helemaal af (niet alleen wegvegen naar de achtergrond)
+en open hem opnieuw.
 - **Nieuw bestand toegevoegd** (bijvoorbeeld een extra plaatje)? Zet de naam erbij in
   de lijst `APP_BESTANDEN` in `service-worker.js`.
 - **Logo vervangen?** Vervang de drie bestanden in `iconen/` door nieuwe met precies

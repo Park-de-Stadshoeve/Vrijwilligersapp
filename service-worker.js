@@ -68,7 +68,10 @@ async function eerstInternetDanKopie(verzoek) {
   const opslag = await caches.open(OPSLAG_NAAM);
 
   // Vraag het bestand op bij internet en bewaar een kopie als het lukt.
-  const vanInternet = fetch(verzoek).then(antwoord => {
+  // cache: "no-cache" = altijd even bij GitHub navragen of er een nieuwere
+  // versie is. Zonder dit mag de telefoon een bestand nog 10 minuten
+  // gebruiken zonder te vragen, en zie je een nieuwe versie pas later.
+  const vanInternet = fetch(verzoek.url, { cache: "no-cache" }).then(antwoord => {
     if (antwoord.ok) opslag.put(verzoek, antwoord.clone());
     return antwoord;
   });

@@ -195,9 +195,10 @@ Klaar (de schermen werken nog met voorbeeldgegevens; inloggen werkt met de datab
   Mijn taken of Werkgroep (ververs). Nog lokaal (TIJDELIJK, zin alleen voor
   bestuur): keuzelijst toewijzen, nieuwe taak, wijzigen. Foto-knoppen bij taken
   uit (TAAKFOTOS_AAN = false). Getest op telefoon en computer, ook een conflict
-  (twee keer gereed melden): alles goed. Let op: na een push kan de telefoon tot
-  10 minuten de oude versie houden (GitHub Pages laat bestanden 10 minuten
-  bewaren). Bestuur krijgt bij "nog aan niemand toegewezen" de tekst 'Kies eerst
+  (twee keer gereed melden): alles goed. De telefoon hield na een push de oude
+  versie (GitHub Pages laat bestanden 10 minuten bewaren); opgelost in
+  service-worker.js met fetch(..., { cache: "no-cache" }), nog niet getest op
+  de telefoon. Bestuur krijgt bij "nog aan niemand toegewezen" de tekst 'Kies eerst
   "Ik doe dit"', die knop heeft bestuur niet: oplossen bij de keuzelijst-stap.
   Meldingen en de lijst vrijwilligers (toewijzen) zijn nog voorbeeldgegevens.
 
