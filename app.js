@@ -271,7 +271,7 @@ function maakKeuzeVeld(vraag, keuzes, gekozen, bijKiezen) {
   return veld;
 }
 
-// Maakt een invoerveld. soort = "tekst" (één regel), "lang" (meer regels) of "datum".
+// Maakt een invoerveld. soort = "tekst" (één regel), "lang" (meer regels), "datum" of "email".
 function maakInvoerVeld(labelTekst, soort, waarde, bijWijzigen) {
   const veld = document.createElement("div");
   veld.className = "veld";
@@ -282,6 +282,11 @@ function maakInvoerVeld(labelTekst, soort, waarde, bijWijzigen) {
   const invoer = document.createElement(soort === "lang" ? "textarea" : "input");
   if (soort === "tekst") invoer.type = "text";
   if (soort === "datum") invoer.type = "date";
+  if (soort === "email") {
+    invoer.type = "email";
+    invoer.autocapitalize = "none";   // geen hoofdletter aan het begin
+    invoer.autocomplete = "off";      // niet je eigen adres voorstellen
+  }
   invoer.value = waarde;
   invoer.addEventListener("input", () => bijWijzigen(invoer.value));
 

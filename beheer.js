@@ -2,7 +2,7 @@
 // Dit bestand wordt geladen door index.html, vóór app.js.
 //
 // Stap 1: bekijken. Stap 2: naam, rol, vinkjes en werkgroepen wijzigen.
-// Toevoegen en laten stoppen komen later.
+// Stap 3: iemand toevoegen en het e-mailadres wijzigen. Laten stoppen komt later.
 //
 // Veilig? De knop "Beheer" zie je alleen met het vinkje is_beheerder. Maar ook
 // als iemand anders dit scherm zou openen, geeft de database alleen zijn eigen
@@ -110,6 +110,8 @@ function toonGebruikersLijst(gebruikers) {
 
   const kop = document.createElement("h2");
   kop.className = "beheer-kop";
+  inhoud.append(maakHoofdKnop("+ Iemand toevoegen", openNieuweGebruiker));
+
   kop.textContent = "Gebruikers (" + actief.length + ")";
   inhoud.append(kop);
   actief.forEach(gebruiker => inhoud.append(maakGebruikerKaart(gebruiker)));
@@ -164,7 +166,14 @@ function maakLabel(tekst) {
   return label;
 }
 
-// ===== WIJZIGEN =====
+// ===== TOEVOEGEN EN WIJZIGEN =====
+// Eén formulier voor allebei. formulier.modus is "nieuw" of "wijzigen".
+//
+// Naam, rol, vinkjes en werkgroepen gaan via de database (vaste actie
+// gebruiker_wijzigen, database/08_beheer.sql). Een nieuw inlogaccount en een
+// ander e-mailadres gaan via de Edge Function "beheer"
+// (supabase/functions/beheer/index.ts), want daarvoor is de geheime sleutel
+// van Supabase nodig.
 
 // Opzoektabel: nummer van een werkgroep → naam (gevuld door haalGebruikersOp)
 const werkgroepNaamVan = {};
@@ -172,10 +181,30 @@ const werkgroepNaamVan = {};
 // Wat er in het formulier staat. null = er is geen formulier open.
 let gebruikerFormulier = null;
 
+// Opent een leeg formulier om iemand toe te voegen. Slimme standaard: vrijwilliger.
+function openNieuweGebruiker() {
+  gebruikerFormulier = {
+    modus: "nieuw",
+    email: "",
+    emailStatus: "klaar",
+    voornaam: "",
+    letter: "",
+    rol: "vrijwilliger",
+    werkgroepIds: [],
+    isBeheerder: false,
+    krijgtGevaarMail: false
+  };
+  toonGebruikerFormulier();
+}
+
 // Opent het formulier met de huidige gegevens van deze persoon
 function openGebruikerFormulier(gebruiker) {
-  gebruikerFormulier = {
+  const formulier = {
+    modus: "wijzigen",
     id: gebruiker.id,
+    email: "",
+    emailOrigineel: "",
+    emailStatus: "laden",   // "laden", "klaar" of "fout"
     voornaam: gebruiker.voornaam,
     letter: gebruiker.letter,
     rol: gebruiker.rol,
@@ -184,7 +213,31 @@ function openGebruikerFormulier(gebruiker) {
     krijgtGevaarMail: gebruiker.krijgtGevaarMail,
     origineel: gebruiker                          // voor "Ongedaan maken"
   };
+  gebruikerFormulier = formulier;
   toonGebruikerFormulier();
+  haalEmailOp(formulier);   // het e-mailadres komt even later
+}
+
+// Haalt het e-mailadres op (alleen beheerders mogen dat, database/09_email.sql)
+// en tekent het formulier opnieuw als het er nog staat.
+async function haalEmailOp(formulier) {
+  const stopper = new AbortController();
+  const wekker = setTimeout(() => stopper.abort(), WACHTTIJD_DATABASE);
+  try {
+    const { data, error } = await database
+      .rpc("gebruiker_email", { gebruiker_id: formulier.id })
+      .abortSignal(stopper.signal);
+    if (error) throw error;
+    formulier.email = data || "";
+    formulier.emailOrigineel = data || "";
+    formulier.emailStatus = "klaar";
+  } catch (fout) {
+    console.warn("E-mailadres ophalen mislukt:", fout);
+    formulier.emailStatus = "fout";
+  } finally {
+    clearTimeout(wekker);
+  }
+  if (gebruikerFormulier === formulier) toonGebruikerFormulier();
 }
 
 // Tekent het formulier. Wordt na elke tik op een keuzeknop opnieuw getekend.
@@ -192,9 +245,12 @@ function toonGebruikerFormulier() {
   if (!gebruikerFormulier) { toonBeheer(); return; }   // geen formulier open: terug
   huidigScherm = "gebruiker-formulier";
   const formulier = gebruikerFormulier;
-  document.getElementById("titel").textContent = "Gebruiker wijzigen";
+  const isNieuw = formulier.modus === "nieuw";
+  document.getElementById("titel").textContent = isNieuw ? "Iemand toevoegen" : "Gebruiker wijzigen";
   const inhoud = document.getElementById("inhoud");
   inhoud.replaceChildren();
+
+  inhoud.append(maakEmailVeld(formulier));
 
   inhoud.append(maakInvoerVeld("Voornaam", "tekst", formulier.voornaam,
     waarde => { formulier.voornaam = waarde; }));
@@ -225,7 +281,8 @@ function toonGebruikerFormulier() {
   fout.setAttribute("role", "alert");
   inhoud.append(fout);
 
-  const opslaan = maakHoofdKnop("Opslaan", slaGebruikerOp);
+  const opslaan = maakHoofdKnop(isNieuw ? "Toevoegen" : "Opslaan",
+                                isNieuw ? voegGebruikerToe : slaGebruikerOp);
   opslaan.id = "knop-gebruiker-opslaan";
   inhoud.append(opslaan);
   inhoud.append(maakTweedeKnop("Annuleren", () => {
@@ -234,6 +291,25 @@ function toonGebruikerFormulier() {
   }));
 
   markeerMenu("beheer");
+}
+
+// Het veld voor het e-mailadres. Bij "wijzigen" moet het adres eerst geladen worden.
+function maakEmailVeld(formulier) {
+  const label = "E-mailadres (hiermee logt de persoon in)";
+  if (formulier.emailStatus === "fout") {
+    const uitleg = document.createElement("p");
+    uitleg.className = "uitleg-bovenaan";
+    uitleg.textContent = "📶 Het e-mailadres kon niet worden geladen. De rest kun je wel wijzigen.";
+    return uitleg;
+  }
+  const veld = maakInvoerVeld(label, "email", formulier.email,
+    waarde => { formulier.email = waarde; });
+  if (formulier.emailStatus === "laden") {
+    const invoer = veld.querySelector("input");
+    invoer.disabled = true;
+    invoer.placeholder = "Laden…";
+  }
+  return veld;
 }
 
 // Werkgroepen: meer keuzes tegelijk. Elke knop zet een werkgroep aan of uit.
@@ -272,23 +348,90 @@ function maakWerkgroepenVeld(formulier) {
   return veld;
 }
 
-// Controleert het formulier en bewaart de wijziging
-async function slaGebruikerOp() {
+// Controleert de velden die altijd ingevuld moeten zijn.
+// Geeft de foutzin terug, of "" als alles goed is.
+function controleerFormulier(formulier) {
+  const emailNodig = formulier.modus === "nieuw" || formulier.emailStatus === "klaar";
+  if (emailNodig && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formulier.email.trim())) {
+    return "Vul een geldig e-mailadres in, bijvoorbeeld naam@voorbeeld.nl.";
+  }
+  if (!formulier.voornaam.trim()) return "Vul een voornaam in.";
+  if (!formulier.letter.trim())   return "Vul de eerste letter van de achternaam in.";
+  return "";
+}
+
+// ➕ Iemand toevoegen (via de Edge Function)
+async function voegGebruikerToe() {
   const formulier = gebruikerFormulier;
   const fout = document.getElementById("gebruiker-fout");
-  if (!formulier.voornaam.trim()) { fout.textContent = "Vul een voornaam in."; return; }
-  if (!formulier.letter.trim())   { fout.textContent = "Vul de eerste letter van de achternaam in."; return; }
+  fout.textContent = controleerFormulier(formulier);
+  if (fout.textContent) return;
 
   const knop = document.getElementById("knop-gebruiker-opslaan");
-  if (knop) knop.disabled = true;   // een tweede tik doet niets
+  if (knop) knop.disabled = true;   // een tweede tik maakt niet twee accounts
 
-  // Mislukt het, dan blijft het formulier staan (de melding onderaan zegt waarom)
-  if (!await bewaarGebruiker(formulier)) {
+  const antwoord = await roepBeheerFunctieAan({
+    actie: "toevoegen",
+    email: formulier.email,
+    voornaam: formulier.voornaam,
+    letter: formulier.letter,
+    rol: formulier.rol,
+    isBeheerder: formulier.isBeheerder,
+    krijgtGevaarMail: formulier.krijgtGevaarMail,
+    werkgroepen: formulier.werkgroepIds
+  });
+  if (!antwoord.gelukt) {   // formulier blijft staan; de melding zegt wat er mis is
     if (knop) knop.disabled = false;
     return;
   }
 
+  const naam = formulier.voornaam.trim() + " " + formulier.letter.trim() + ".";
+  const nieuweId = antwoord.data.id;
+  gebruikerFormulier = null;
+  await toonBeheer();
+  toonMelding("Toegevoegd: " + naam, async () => {
+    const terug = await roepBeheerFunctieAan({ actie: "toevoegen_ongedaan", gebruikerId: nieuweId });
+    if (terug.gelukt) {
+      toonMelding("Weggehaald: " + naam);
+      if (huidigScherm === "beheer") toonBeheer();
+    }
+  });
+}
+
+// ✏️ Wijzigingen opslaan. Eerst het e-mailadres (als dat anders is), dan de rest.
+async function slaGebruikerOp() {
+  const formulier = gebruikerFormulier;
+  const fout = document.getElementById("gebruiker-fout");
+  fout.textContent = controleerFormulier(formulier);
+  if (fout.textContent) return;
+
+  const knop = document.getElementById("knop-gebruiker-opslaan");
+  if (knop) knop.disabled = true;   // een tweede tik doet niets
+
   const oud = formulier.origineel;
+  const oudEmail = formulier.emailOrigineel;
+  const nieuwEmail = formulier.email.trim().toLowerCase();
+  const emailAnders = formulier.emailStatus === "klaar" && nieuwEmail !== oudEmail;
+
+  // 1. Het e-mailadres (via de Edge Function). Mislukt het, dan is er niets veranderd.
+  if (emailAnders) {
+    const antwoord = await roepBeheerFunctieAan({ actie: "email_wijzigen", gebruikerId: formulier.id, email: nieuwEmail });
+    if (!antwoord.gelukt) {
+      if (knop) knop.disabled = false;
+      return;
+    }
+    formulier.emailOrigineel = nieuwEmail;   // bij nog een keer proberen niet opnieuw doen
+  }
+
+  // 2. Naam, rol, vinkjes en werkgroepen (via de database)
+  if (!await bewaarGebruiker(formulier)) {
+    if (emailAnders) {
+      toonMelding("Het nieuwe e-mailadres is opgeslagen, de rest nog niet. Tik nog een keer op Opslaan.");
+    }
+    if (knop) knop.disabled = false;
+    return;
+  }
+
   const naam = formulier.voornaam.trim() + " " + formulier.letter.trim() + ".";
   gebruikerFormulier = null;
   await toonBeheer();
@@ -297,6 +440,10 @@ async function slaGebruikerOp() {
     ? "Opgeslagen. Open de app opnieuw om je eigen wijziging te zien."
     : "Opgeslagen: " + naam;
   toonMelding(tekst, async () => {
+    if (emailAnders) {
+      const terug = await roepBeheerFunctieAan({ actie: "email_wijzigen", gebruikerId: oud.id, email: oudEmail });
+      if (!terug.gelukt) return;
+    }
     if (await bewaarGebruiker(oud)) {
       toonMelding("Teruggezet: " + oud.naam);
       if (huidigScherm === "beheer") toonBeheer();
@@ -316,6 +463,49 @@ async function bewaarGebruiker(g) {
     krijgt_mail_bij_gevaar: g.krijgtGevaarMail,
     nieuwe_werkgroepen: g.werkgroepIds
   });
+}
+
+// Hoe lang we op de Edge Function wachten. Langer dan bij de database: de
+// functie moet soms eerst "opstarten" en praat zelf ook met de database.
+const WACHTTIJD_BEHEER_FUNCTIE = 20000;
+
+// Roept de Edge Function "beheer" aan en laat onderaan zien hoe het ging.
+// Geeft { gelukt: true/false, data: het antwoord van de functie }.
+async function roepBeheerFunctieAan(gegevens) {
+  toonMelding("Even geduld…");
+  let wekker;
+  const teLang = new Promise(klaar => {
+    wekker = setTimeout(() => klaar({ teLang: true }), WACHTTIJD_BEHEER_FUNCTIE);
+  });
+  try {
+    const antwoord = await Promise.race([database.functions.invoke("beheer", { body: gegevens }), teLang]);
+    if (antwoord.teLang) {
+      toonMelding("Het duurde te lang. Ververs de lijst en kijk of het gelukt is.");
+      return { gelukt: false, data: null };
+    }
+    if (!antwoord.error) return { gelukt: true, data: antwoord.data };
+
+    // De functie legt zelf uit wat er mis is (bijv. "Dit e-mailadres is al in gebruik")
+    const fout = antwoord.error;
+    console.warn("Edge Function beheer:", fout);
+    let uitleg = "";
+    if (fout.context && typeof fout.context.json === "function") {
+      try { uitleg = (await fout.context.json()).fout || ""; } catch (e) { /* geen uitleg */ }
+    }
+    if (uitleg) toonMelding(uitleg);
+    else if (fout.name === "FunctionsFetchError" || isVerbindingsFout(fout)) {
+      toonMelding("Geen verbinding. Er is niets veranderd. Probeer het opnieuw als je bereik hebt.");
+    } else {
+      toonMelding("Er ging iets mis (" + fout.message + "). Er is niets veranderd. Probeer het opnieuw.");
+    }
+    return { gelukt: false, data: null };
+  } catch (fout) {
+    console.warn("Edge Function beheer:", fout);
+    toonMelding("Geen verbinding. Er is niets veranderd. Probeer het opnieuw als je bereik hebt.");
+    return { gelukt: false, data: null };
+  } finally {
+    clearTimeout(wekker);
+  }
 }
 
 // De knop "Beheer" bovenin. Of hij te zien is, regelt startApp (app.js).
