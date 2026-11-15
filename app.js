@@ -18,17 +18,11 @@ const ingelogdeGebruiker = {
 
 const alleWerkgroepen = ["Dieren", "Tuinen", "Avontuurlijk spelen", "Klussen", "Educatie", "Evenementen", "Geschiedenis"];
 
-// Alle vrijwilligers en hun werkgroepen. Nodig voor de keuzelijst bij toewijzen.
-const vrijwilligers = [
-  { naam: "Kirsten", werkgroepen: ["Dieren", "Klussen"] },
-  { naam: "Piet",    werkgroepen: ["Dieren"] },
-  { naam: "Fatima",  werkgroepen: ["Tuinen"] },
-  { naam: "Kees",    werkgroepen: ["Evenementen", "Klussen"] },
-  { naam: "Sanne",   werkgroepen: ["Educatie", "Geschiedenis", "Avontuurlijk spelen"] }
-];
-
-// De naam waarmee een taak aan Frion als groep wordt toegewezen
-const FRION = "Frion";
+// Alle actieve gebruikers met hun werkgroepen, voor de keuzelijst bij toewijzen.
+// Komt uit de database (zie haalTakenOp). Alleen bestuur en coördinator
+// krijgen deze lijst; voor anderen blijft hij leeg.
+// Vorm: { id: "…", naam: "Piet", werkgroepen: ["Dieren"] }
+let personen = [];
 
 // De taken. Deze lijst is eerst leeg. Na het inloggen vult haalTakenOp hem
 // met de taken uit de database (zie "TAKEN UIT DE DATABASE", verderop).
@@ -120,9 +114,16 @@ function sorteerTaken(a, b) {
 // (Wordt ingevuld door startApp, na het inloggen.)
 let mijnToewijsNaam = "";
 
-// Is deze taak van mij? (of van Frion, als ik Frion-begeleider ben)
+// Is deze taak van mij? (We vergelijken het nummer, niet de naam: er
+// kunnen twee mensen met dezelfde voornaam zijn.)
 function isMijnTaak(taak) {
-  return taak.toegewezenAan === mijnToewijsNaam;
+  return Boolean(taak.toegewezenAanId) && taak.toegewezenAanId === ingelogdeGebruiker.id;
+}
+
+// De naam van iemand uit de lijst personen ("" als we hem niet kennen)
+function naamVanPersoon(id) {
+  const persoon = personen.find(p => p.id === id);
+  return persoon ? persoon.naam : "";
 }
 
 // Mag de ingelogde gebruiker deze taak gereed melden?
@@ -294,40 +295,47 @@ function maakInvoerVeld(labelTekst, soort, waarde, bijWijzigen) {
 }
 
 // Maakt een keuzelijst (select) met namen. "" wordt getoond als "Nog niemand".
-function maakKeuzelijst(labelTekst, opties, gekozen, bijKiezen) {
+// Keuzelijst "wie doet het?" voor bestuur en coördinator.
+// Bovenaan "Nog niemand", dan de leden van de werkgroep, dan alle anderen.
+// gekozenId/gekozenNaam = wie het nu doet. bijKiezen krijgt het nummer
+// van de gekozen persoon ("" = nog niemand).
+function maakPersoonKeuzelijst(labelTekst, werkgroep, gekozenId, gekozenNaam, bijKiezen) {
   const label = document.createElement("label");
   label.className = "toewijzen";
   label.textContent = labelTekst;
 
   const keuze = document.createElement("select");
-  opties.forEach(naam => {
-    const optie = document.createElement("option");
-    optie.value = naam;
-    optie.textContent = naam || "Nog niemand";
-    optie.selected = naam === gekozen;
-    keuze.append(optie);
+  keuze.append(maakOptie("", "Nog niemand", gekozenId));
+
+  // Twee groepjes. <optgroup> = een kopje in de keuzelijst.
+  const leden = personen.filter(p => p.werkgroepen.includes(werkgroep));
+  const anderen = personen.filter(p => !p.werkgroepen.includes(werkgroep));
+  [["Werkgroep " + werkgroep, leden], ["Anderen", anderen]].forEach(([kopje, groep]) => {
+    if (groep.length === 0) return;
+    const groepje = document.createElement("optgroup");
+    groepje.label = kopje;
+    groep.forEach(p => groepje.append(maakOptie(p.id, p.naam, gekozenId)));
+    keuze.append(groepje);
   });
+
+  // Staat de taak op naam van iemand die niet in de lijst staat (bijv. gestopt)?
+  // Laat die naam dan toch zien, anders lijkt het alsof niemand hem doet.
+  if (gekozenId && !personen.some(p => p.id === gekozenId)) {
+    keuze.append(maakOptie(gekozenId, gekozenNaam || "Onbekend", gekozenId));
+  }
+
   keuze.addEventListener("change", () => bijKiezen(keuze.value));
   label.append(keuze);
   return label;
 }
 
-// Wie kun je kiezen bij een werkgroep?
-function toewijsOpties(werkgroep, huidige) {
-  const leden = vrijwilligers
-    .filter(v => v.werkgroepen.includes(werkgroep))
-    .map(v => v.naam);
-  const opties = ["", ...leden, FRION];   // "" betekent: nog niemand
-
-  // Staat de taak op naam van iemand buiten de werkgroep? Toon die ook.
-  if (huidige && !opties.includes(huidige)) {
-    opties.push(huidige);
-  }
-  // Bestuur en coördinator kunnen een taak altijd aan zichzelf toewijzen
-  if (!opties.includes(mijnToewijsNaam)) {
-    opties.push(mijnToewijsNaam);
-  }
-  return opties;
+// Eén regel in een keuzelijst
+function maakOptie(waarde, tekst, gekozen) {
+  const optie = document.createElement("option");
+  optie.value = waarde;
+  optie.textContent = tekst;
+  optie.selected = waarde === (gekozen || "");
+  return optie;
 }
 
 // ===== TAKEN =====
@@ -381,10 +389,9 @@ function maakTaakKaart(taak) {
   // Toewijzen (en wijzigen) bij open taken
   if (taak.status === "open") {
     if (ingelogdeGebruiker.magAllesZien) {
-      kaart.append(maakKeuzelijst("Toegewezen aan",
-        toewijsOpties(taak.werkgroep, taak.toegewezenAan),
-        taak.toegewezenAan,
-        naam => wijsToe(taak, naam)));
+      kaart.append(maakPersoonKeuzelijst("Toegewezen aan", taak.werkgroep,
+        taak.toegewezenAanId, taak.toegewezenAan,
+        persoonId => wijsToe(taak, persoonId)));
       kaart.append(maakTweedeKnop("✏ Wijzigen", () => openTaakWijzigen(taak)));   // NIEUW
     } else if (magZelfOppakken(taak)) {
       kaart.append(maakTweedeKnop("🙋 Ik doe dit", () => pakTaakOp(taak)));
@@ -428,6 +435,7 @@ function maakTaakKaart(taak) {
 // 🙋 "Ik doe dit"
 async function pakTaakOp(taak) {
   if (!await vraagDatabase("taak_oppakken", { taak_id: taak.id })) return;
+  taak.toegewezenAanId = ingelogdeGebruiker.id;
   taak.toegewezenAan = mijnToewijsNaam;
   takenGewijzigd();
   toonMelding("Je doet deze taak", () => geefTaakTerug(taak));
@@ -436,6 +444,7 @@ async function pakTaakOp(taak) {
 // ↩ "Teruggeven"
 async function geefTaakTerug(taak) {
   if (!await vraagDatabase("taak_teruggeven", { taak_id: taak.id })) return;
+  taak.toegewezenAanId = "";
   taak.toegewezenAan = "";
   takenGewijzigd();
   toonMelding("Taak is weer vrij", () => pakTaakOp(taak));
@@ -509,21 +518,26 @@ function isVerbindingsFout(fout) {
   return tekst.includes("fetch") || tekst.includes("network") || tekst.includes("abort");
 }
 
-// ===== KNOPPEN BIJ EEN TAAK (nog NIET bewaard) =====
-// TIJDELIJK: de keuzelijst "Toegewezen aan" (bestuur) en de foto's na afloop
-// veranderen alleen de kopie op de telefoon. Dat komt in een volgende stap.
-
-// Wijst een taak toe aan een naam ("" = aan niemand)
-function wijsToe(taak, naam) {
-  const vorige = taak.toegewezenAan;   // onthouden voor "Ongedaan maken"
-  taak.toegewezenAan = naam;
-  verversScherm();
-  const tekst = naam ? "Toegewezen aan " + naam : "Taak is weer vrij";
-  toonMelding(tekst, () => {
-    taak.toegewezenAan = vorige;
-    verversScherm();
-  });
+// 👤 Toewijzen met de keuzelijst (bestuur en coördinator).
+// persoonId = nummer van de gekozen persoon ("" = aan niemand).
+async function wijsToe(taak, persoonId) {
+  const vorigeId = taak.toegewezenAanId || "";   // onthouden voor "Ongedaan maken"
+  const vorigeNaam = taak.toegewezenAan;
+  if (!await vraagDatabase("taak_toewijzen", { taak_id: taak.id, persoon: persoonId || null })) {
+    verversScherm();   // keuzelijst terugzetten op wat er echt bewaard is
+    return;
+  }
+  taak.toegewezenAanId = persoonId;
+  taak.toegewezenAan = naamVanPersoon(persoonId);
+  takenGewijzigd();
+  let tekst = persoonId ? "Toegewezen aan " + taak.toegewezenAan : "Taak is weer vrij";
+  if (persoonId && vorigeNaam) tekst += " (was: " + vorigeNaam + ")";
+  toonMelding(tekst, () => wijsToe(taak, vorigeId));
 }
+
+// ===== FOTO NA AFLOOP (nog NIET bewaard) =====
+// TIJDELIJK: deze knoppen staan uit (TAAKFOTOS_AAN). Ze veranderen alleen
+// de kopie op de telefoon. Dat komt in een volgende stap.
 
 // Foto na afloop toevoegen, vervangen of verwijderen ("" = verwijderen)
 function zetTaakFoto(taak, url) {
@@ -826,7 +840,7 @@ function openNieuweTaak() {
     omschrijving: "",
     plek: "",
     werkgroep: gekozenWerkgroep === "Alles" ? "" : gekozenWerkgroep,
-    toegewezenAan: "",
+    toegewezenAanId: "",
     deadline: datumOver(DAGEN_NORMAAL)
   };
   toonTaakFormulier();
@@ -843,7 +857,7 @@ function openTaakUitMelding(melding) {
     omschrijving: melding.tekst,
     plek: melding.plek,
     werkgroep: PLEK_WERKGROEP[melding.plek] || "",   // "" als de plek niet in de tabel staat
-    toegewezenAan: "",
+    toegewezenAanId: "",
     deadline: datumOver(melding.gevaarlijk ? DAGEN_GEVAARLIJK : DAGEN_NORMAAL)
   };
   toonTaakFormulier();
@@ -860,7 +874,8 @@ function openTaakWijzigen(taak) {
     omschrijving: taak.omschrijving,
     plek: taak.plek || "",
     werkgroep: taak.werkgroep,
-    toegewezenAan: taak.toegewezenAan,
+    toegewezenAanId: taak.toegewezenAanId || "",
+    toegewezenAan: taak.toegewezenAan,   // naam, voor als iemand niet meer in de lijst staat
     deadline: taak.deadline
   };
   toonTaakFormulier();
@@ -900,21 +915,16 @@ function toonTaakFormulier() {
 
   inhoud.append(maakKeuzeVeld("Welke werkgroep?", alleWerkgroepen, formulier.werkgroep, werkgroep => {
     formulier.werkgroep = werkgroep;
-    // Hoort de gekozen persoon niet bij de nieuwe werkgroep? Dan weer "Nog niemand".
-    if (!toewijsOpties(werkgroep, "").includes(formulier.toegewezenAan)) {
-      formulier.toegewezenAan = "";
-    }
-    verversScherm();
+    verversScherm();   // de keuzelijst hieronder zet de leden van deze werkgroep bovenaan
   }));
 
   // Persoon kiezen kan pas als de werkgroep bekend is
   if (formulier.werkgroep) {
     const veld = document.createElement("div");
     veld.className = "veld";
-    veld.append(maakKeuzelijst("Wie gaat het doen? (niet verplicht)",
-      toewijsOpties(formulier.werkgroep, formulier.toegewezenAan),
-      formulier.toegewezenAan,
-      naam => { formulier.toegewezenAan = naam; }));
+    veld.append(maakPersoonKeuzelijst("Wie gaat het doen? (niet verplicht)", formulier.werkgroep,
+      formulier.toegewezenAanId, formulier.toegewezenAan,
+      persoonId => { formulier.toegewezenAanId = persoonId; }));
     inhoud.append(veld);
   }
 
@@ -953,7 +963,8 @@ function slaTaakOp() {
     omschrijving: formulier.omschrijving,
     plek: formulier.plek,
     werkgroep: formulier.werkgroep,
-    toegewezenAan: formulier.toegewezenAan,
+    toegewezenAanId: formulier.toegewezenAanId,
+    toegewezenAan: naamVanPersoon(formulier.toegewezenAanId) || "",
     deadline: formulier.deadline
   };
   const terug = formulier.terugScherm;
@@ -1011,9 +1022,10 @@ let takenUitleg = "";
 
 async function haalTakenOp() {
   try {
-    const { taken: nieuweTaken, mijnNaam } = await vraagTakenOpBijDatabase();
-    taken.splice(0, taken.length, ...nieuweTaken);   // lijst leegmaken en vullen
-    mijnToewijsNaam = mijnNaam;
+    const antwoord = await vraagTakenOpBijDatabase();
+    taken.splice(0, taken.length, ...antwoord.taken);   // lijst leegmaken en vullen
+    mijnToewijsNaam = antwoord.mijnNaam;
+    personen = antwoord.personen;
     takenUitleg = "";
     bewaarTakenOpToestel();
   } catch (fout) {
@@ -1022,6 +1034,7 @@ async function haalTakenOp() {
     if (bewaard && bewaard.gebruikerId === ingelogdeGebruiker.id) {
       taken.splice(0, taken.length, ...bewaard.taken);
       mijnToewijsNaam = bewaard.mijnNaam;
+      personen = bewaard.personen || [];
       takenUitleg = "Geen verbinding. Je ziet de lijst van " + leesbareTijd(bewaard.tijd) + ".";
     } else {
       taken.splice(0, taken.length);
@@ -1037,7 +1050,8 @@ function bewaarTakenOpToestel() {
     gebruikerId: ingelogdeGebruiker.id,   // zodat iemand anders ze nooit ziet
     tijd: Date.now(),
     mijnNaam: mijnToewijsNaam,
-    taken: taken
+    taken: taken,
+    personen: personen   // alleen gevuld voor bestuur en coördinator
   });
 }
 
@@ -1048,7 +1062,7 @@ async function ververs(scherm) {
   if (huidigScherm === scherm) verversScherm();
 }
 
-// Het echte werk: twee vragen aan de database.
+// Het echte werk: twee vragen aan de database (drie voor bestuur).
 // De database geeft alleen de taken die jij mag zien (regels in 03_rechten.sql).
 async function vraagTakenOpBijDatabase() {
   // Stopt het wachten na WACHTTIJD_DATABASE, zodat de app niet blijft hangen
@@ -1063,20 +1077,43 @@ async function vraagTakenOpBijDatabase() {
               "plek_naam:plekken(naam), werkgroep_naam:werkgroepen(naam)")
       .abortSignal(stopper.signal);
 
-    // 2. De namen van alle gebruikers ("Piet", of "Piet P." bij een dubbele voornaam)
+    // 2. De namen van alle gebruikers ("Piet", of "Piet P." bij een dubbele voornaam).
+    //    Ook van wie gestopt is: die naam blijft bij oude taken staan.
     const namenVraag = database
       .from("gebruikers_weergave")
-      .select("id, naam")
+      .select("id, naam, actief")
       .abortSignal(stopper.signal);
 
-    // Beide vragen tegelijk versturen, en wachten tot allebei klaar zijn
-    const [takenAntwoord, namenAntwoord] = await Promise.all([takenVraag, namenVraag]);
+    // 3. Alleen voor bestuur en coördinator: wie zit in welke werkgroep
+    //    (voor de keuzelijst bij toewijzen). Anderen: een lege lijst.
+    const ledenVraag = ingelogdeGebruiker.magAllesZien
+      ? database.from("lidmaatschappen").select("gebruiker, werkgroepen(naam)").abortSignal(stopper.signal)
+      : Promise.resolve({ data: [], error: null });
+
+    // Alle vragen tegelijk versturen, en wachten tot ze allemaal klaar zijn
+    const [takenAntwoord, namenAntwoord, ledenAntwoord] =
+      await Promise.all([takenVraag, namenVraag, ledenVraag]);
     if (takenAntwoord.error) throw takenAntwoord.error;
     if (namenAntwoord.error) throw namenAntwoord.error;
+    if (ledenAntwoord.error) throw ledenAntwoord.error;
 
     // Opzoeklijst: nummer van een gebruiker → naam
     const naamVan = {};
     namenAntwoord.data.forEach(persoon => { naamVan[persoon.id] = persoon.naam; });
+
+    // De lijst personen voor de keuzelijst: alleen wie actief is, op alfabet
+    const nieuwePersonen = ingelogdeGebruiker.magAllesZien
+      ? namenAntwoord.data
+          .filter(persoon => persoon.actief)
+          .map(persoon => ({
+            id: persoon.id,
+            naam: persoon.naam,
+            werkgroepen: ledenAntwoord.data
+              .filter(lid => lid.gebruiker === persoon.id)
+              .map(lid => lid.werkgroepen.naam)
+          }))
+          .sort((a, b) => a.naam.localeCompare(b.naam, "nl"))
+      : [];
 
     // Elke rij uit de database omzetten naar een taak zoals de app die kent
     const nieuweTaken = takenAntwoord.data.map(rij => ({
@@ -1085,7 +1122,8 @@ async function vraagTakenOpBijDatabase() {
       omschrijving: rij.omschrijving || "",
       plek: rij.plek_naam.naam,
       werkgroep: rij.werkgroep_naam.naam,
-      toegewezenAan: naamVan[rij.toegewezen_aan] || "",
+      toegewezenAanId: rij.toegewezen_aan || "",          // nummer, om te vergelijken
+      toegewezenAan: naamVan[rij.toegewezen_aan] || "",   // naam, om te laten zien
       deadline: rij.deadline || "",
       status: rij.status,
       gereedGemeldDoor: naamVan[rij.gereed_gemeld_door] || "",
@@ -1096,7 +1134,7 @@ async function vraagTakenOpBijDatabase() {
 
     // Mijn eigen naam zoals de app hem laat zien (bijv. "Piet P.")
     const mijnNaam = naamVan[ingelogdeGebruiker.id] || ingelogdeGebruiker.naam;
-    return { taken: nieuweTaken, mijnNaam };
+    return { taken: nieuweTaken, mijnNaam, personen: nieuwePersonen };
   } finally {
     clearTimeout(wekker);   // wekker uitzetten, ook als er iets misging
   }
@@ -1173,14 +1211,13 @@ function toonLijst(lijst) {
     inhoud.append(uitleg);
   }
 
-  // TIJDELIJK: wat alleen bestuur kan (toewijzen met de keuzelijst, nieuwe taak,
-  // wijzigen) verandert nog alleen iets op de eigen telefoon. Weghalen zodra
-  // dat ook in de database wordt bewaard.
+  // TIJDELIJK: wat alleen bestuur kan (nieuwe taak, wijzigen) verandert nog
+  // alleen iets op de eigen telefoon. Weghalen zodra dat ook in de database
+  // wordt bewaard.
   if (ingelogdeGebruiker.magAllesZien) {
     const tijdelijk = document.createElement("p");
     tijdelijk.className = "uitleg-bovenaan";
-    tijdelijk.textContent = "Proefversie: toewijzen met de keuzelijst, nieuwe taken en wijzigen " +
-                            "worden nog niet bewaard.";
+    tijdelijk.textContent = "Proefversie: nieuwe taken en wijzigen worden nog niet bewaard.";
     inhoud.append(tijdelijk);
   }
 

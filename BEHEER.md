@@ -2,9 +2,11 @@
 
 Deze handleiding is voor de beheerder van de app. Je hoeft geen programmeur te zijn.
 Stand: inloggen werkt met de database (Supabase). De taken komen uit de database.
-"Ik doe dit", "Teruggeven", "Gereed melden" en "Weer openen" worden bewaard.
-Nog NIET bewaard (alleen bestuur ziet deze knoppen): toewijzen met de keuzelijst,
-nieuwe taak en wijzigen. Foto's na afloop bij taken staan tijdelijk uit.
+"Ik doe dit", "Teruggeven", "Gereed melden", "Weer openen" en toewijzen met de
+keuzelijst (bestuur) worden bewaard. In de keuzelijst staan eerst de leden van de
+werkgroep van de taak, dan alle anderen; wie gestopt is staat er niet in.
+Nog NIET bewaard (alleen bestuur ziet deze knoppen): nieuwe taak en wijzigen.
+Foto's na afloop bij taken staan tijdelijk uit.
 Meldingen zijn nog voorbeeldgegevens.
 
 Lukt een knop niet, dan staat onderaan wat er mis is. Bijvoorbeeld "Iemand anders

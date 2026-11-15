@@ -193,18 +193,26 @@ Klaar (de schermen werken nog met voorbeeldgegevens; inloggen werkt met de datab
   database tonen en lijst opnieuw ophalen; geen bereik: "Er is niets veranderd";
   geen wachtrij. "Even geduld…" bij elke tik. Lijst opnieuw ophalen bij tik op
   Mijn taken of Werkgroep (ververs). Nog lokaal (TIJDELIJK, zin alleen voor
-  bestuur): keuzelijst toewijzen, nieuwe taak, wijzigen. Foto-knoppen bij taken
-  uit (TAAKFOTOS_AAN = false). Getest op telefoon en computer, ook een conflict
+  bestuur): nieuwe taak, wijzigen. Foto-knoppen bij taken uit
+  (TAAKFOTOS_AAN = false). Getest op telefoon en computer, ook een conflict
   (twee keer gereed melden): alles goed. De telefoon hield na een push de oude
   versie (GitHub Pages laat bestanden 10 minuten bewaren); opgelost in
   service-worker.js met fetch(..., { cache: "no-cache" }), nog niet getest op
-  de telefoon. Bestuur krijgt bij "nog aan niemand toegewezen" de tekst 'Kies eerst
-  "Ik doe dit"', die knop heeft bestuur niet: oplossen bij de keuzelijst-stap.
-  Meldingen en de lijst vrijwilligers (toewijzen) zijn nog voorbeeldgegevens.
+  de telefoon.
+- Toewijzen met de keuzelijst (bestuur) bewaart via nieuwe vaste actie
+  taak_toewijzen (database/05_toewijzen.sql: alleen bestuur, taak open, persoon
+  actief; omzetten van een opgepakte taak mag). In 05 ook een nieuwe tekst bij
+  gereed melden zonder toegewezen persoon. Lijst personen (actief, met
+  werkgroepen) komt uit gebruikers_weergave + lidmaatschappen, alleen voor
+  bestuur; keuzelijst: Nog niemand, "Werkgroep X", "Anderen". Taken hebben nu
+  toegewezenAanId; isMijnTaak vergelijkt het nummer. Melding: "Toegewezen aan
+  Anna (was: Piet)". Voorbeeldlijst vrijwilligers en FRION weg uit app.js.
+  05_toewijzen.sql en test_05_toewijzen.sql nog NIET uitgevoerd; app getest in
+  de browser met nagemaakte antwoorden.
+  Meldingen zijn nog voorbeeldgegevens.
 
 Besluiten (november 2026):
-- Frion valt voorlopig buiten de app (zie later-lijst). De voorbeeldgegevens in
-  app.js bevatten nog Frion; dat verdwijnt als de taken uit de database komen.
+- Frion valt voorlopig buiten de app (zie later-lijst).
 - Inloggen met een code uit de mail in plaats van een link (iPhone-probleem).
 - Alleen vooraf toegevoegde e-mailadressen kunnen inloggen.
 - Voorlopig de ingebouwde mail van Supabase; eigen e-maildienst (Brevo) vóór de
@@ -231,9 +239,10 @@ Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
 Volgende stappen:
-0. In kleine stappen verder: keuzelijst
-   toewijzen uit de database; taken aanmaken en wijzigen (dan de
-   "Proefversie"-zin weg); meldingen; foto's.
+0. 05_toewijzen.sql en test_05 uitvoeren in het testproject, toewijzen testen op
+   de telefoon. Daarna in kleine stappen: foto's na afloop bij taken (uploaden
+   naar de fotomap, TAAKFOTOS_AAN weer aan; gebruiker mist de foto-knop);
+   taken aanmaken en wijzigen (dan de "Proefversie"-zin weg); meldingen.
 1. Besluit van het bestuur afwachten. Feedback (vergadering 22 oktober 2026): eerst
    autorisaties en hosting onderzoeken, invoering stap voor stap. Daarvoor is een
    notitie gemaakt (staat buiten de repository, want het is een intern stuk) met
@@ -273,3 +282,5 @@ Volgende stappen:
     toewijzen aan "Frion" als groep.
 11. Projecten: taken bundelen in een project of groep (bijv. "Opknappen
     Speelkasteel") en op project kunnen filteren. Hangt samen met punt 6 (filters).
+12. Bericht aan een vrijwilliger als bestuur een taak die hij of zij had opgepakt
+    aan iemand anders geeft. Hangt samen met punt 4.
