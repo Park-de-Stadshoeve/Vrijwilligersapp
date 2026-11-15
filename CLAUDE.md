@@ -396,3 +396,10 @@ Volgende stappen:
 13. Welkomstmail aan een nieuwe vrijwilliger bij toevoegen in het beheerscherm
     (met uitleg hoe je inlogt). Kan pas als Brevo werkt. Tot die tijd stuurt de
     beheerder zelf een bericht (voorbeeld in BEHEER.md).
+14. Opmerking bij gereed melden (wens van Jerome, november 2026): de vrijwilliger
+    kan bij "Gereed melden" een korte opmerking invullen (niet verplicht), bijv.
+    "Nieuwe scharnieren, de oude lagen in de container." Zichtbaar voor wie de taak
+    mag zien. Klein: één tekstveld, nieuwe kolom bij taken, aanpassing in
+    taak_gereed_melden. Mag geen verplichte extra tik worden (max 3 tikken plus
+    foto). Let op: vrije tekst kan namen of andere persoonsgegevens bevatten; valt
+    onder dezelfde bewaartermijn als de taak. Kan vóór de proef als er tijd is.
