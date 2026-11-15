@@ -217,8 +217,8 @@ Klaar (de schermen werken nog met voorbeeldgegevens; inloggen werkt met de datab
   Foto's worden niet op het toestel bewaard (AVG). Upload mislukt: "De foto is
   niet verstuurd. De taak is wel gereed gemeld." Ongedaan maken koppelt de
   vorige foto weer. maakFotoKnop geeft nu de verkleinde foto (blob) door, niet
-  een adres. Getest in de browser met nagemaakte fotomap; nog niet op de
-  telefoon.
+  een adres. Getest op telefoon en computer (versturen, zien door bestuur,
+  foto in Storage, zonder bereik): alles goed.
   Meldingen zijn nog voorbeeldgegevens (foto bij melden nog alleen op toestel).
 
 Besluiten (november 2026):
@@ -249,8 +249,7 @@ Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
 Volgende stappen:
-0. Foto na afloop testen op de telefoon. Daarna in kleine stappen: taken
-   aanmaken en wijzigen (dan de "Proefversie"-zin weg); meldingen (met foto).
+0. In kleine stappen verder: taken aanmaken en wijzigen (dan de "Proefversie"-zin weg); meldingen (met foto).
 1. Besluit van het bestuur afwachten. Feedback (vergadering 22 oktober 2026): eerst
    autorisaties en hosting onderzoeken, invoering stap voor stap. Daarvoor is een
    notitie gemaakt (staat buiten de repository, want het is een intern stuk) met
