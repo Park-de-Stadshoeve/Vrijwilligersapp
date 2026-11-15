@@ -227,8 +227,8 @@ Klaar (inloggen en taken werken met de database; meldingen zijn nog voorbeeldgeg
   raakt geeft een eigen melding. Algemene hulp stuurNaarDatabase (wachttijd,
   foutmeldingen; 42501 = "Dit mag je niet doen"); vraagDatabase gebruikt hem.
   "Proefversie"-zin weg. "Maak taak" bij een melding TIJDELIJK uit (regel met //
-  in maakMeldingKaart). Getest in de browser met nagemaakte database; nog niet op
-  de telefoon.
+  in maakMeldingKaart). Getest op telefoon en computer (aanmaken, toewijzen,
+  wijzigen, plek uitzetten in Supabase): alles goed.
   Meldingen zijn nog voorbeeldgegevens (foto bij melden nog alleen op toestel).
 
 Besluiten (november 2026):
@@ -259,8 +259,7 @@ Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
 Volgende stappen:
-0. Taken aanmaken en wijzigen testen op de telefoon. Daarna: meldingen uit de
-   database (met foto, status, "Geen actie nodig", "Maak taak" weer aan).
+0. Meldingen uit de database (met foto, status, "Geen actie nodig", "Maak taak" weer aan).
 1. Besluit van het bestuur afwachten. Feedback (vergadering 22 oktober 2026): eerst
    autorisaties en hosting onderzoeken, invoering stap voor stap. Daarvoor is een
    notitie gemaakt (staat buiten de repository, want het is een intern stuk) met
