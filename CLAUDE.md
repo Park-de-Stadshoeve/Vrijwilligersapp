@@ -193,8 +193,7 @@ Klaar (de schermen werken nog met voorbeeldgegevens; inloggen werkt met de datab
   database tonen en lijst opnieuw ophalen; geen bereik: "Er is niets veranderd";
   geen wachtrij. "Even geduld…" bij elke tik. Lijst opnieuw ophalen bij tik op
   Mijn taken of Werkgroep (ververs). Nog lokaal (TIJDELIJK, zin alleen voor
-  bestuur): nieuwe taak, wijzigen. Foto-knoppen bij taken uit
-  (TAAKFOTOS_AAN = false). Getest op telefoon en computer, ook een conflict
+  bestuur): nieuwe taak, wijzigen. Getest op telefoon en computer, ook een conflict
   (twee keer gereed melden): alles goed. De telefoon hield na een push de oude
   versie (GitHub Pages laat bestanden 10 minuten bewaren); opgelost in
   service-worker.js met fetch(..., { cache: "no-cache" }), nog niet getest op
@@ -210,7 +209,17 @@ Klaar (de schermen werken nog met voorbeeldgegevens; inloggen werkt met de datab
   05_toewijzen.sql uitgevoerd in het testproject; test_05_toewijzen.sql: alles
   goed. Getest op de telefoon: toewijzen werkt en de taak staat bij de
   Testvrijwilliger onder Mijn taken.
-  Meldingen zijn nog voorbeeldgegevens.
+- Foto na afloop bij taken: verkleinde foto naar bucket "fotos" als
+  <gebruiker-id>/<randomUUID>.jpg (stuurFotoNaarDatabase, 30 s wachttijd), dan
+  koppelen met taak_foto_zetten. Bekijken via createSignedUrls (1 uur; app
+  gebruikt een link 55 minuten), opgehaald na elke haalTakenOp. Geen link
+  (geen bereik): "📷 Er is een foto. Die zie je als je weer bereik hebt."
+  Foto's worden niet op het toestel bewaard (AVG). Upload mislukt: "De foto is
+  niet verstuurd. De taak is wel gereed gemeld." Ongedaan maken koppelt de
+  vorige foto weer. maakFotoKnop geeft nu de verkleinde foto (blob) door, niet
+  een adres. Getest in de browser met nagemaakte fotomap; nog niet op de
+  telefoon.
+  Meldingen zijn nog voorbeeldgegevens (foto bij melden nog alleen op toestel).
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
@@ -240,9 +249,8 @@ Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
 Volgende stappen:
-0. In kleine stappen verder: foto's na afloop bij taken (uploaden
-   naar de fotomap, TAAKFOTOS_AAN weer aan; gebruiker mist de foto-knop);
-   taken aanmaken en wijzigen (dan de "Proefversie"-zin weg); meldingen.
+0. Foto na afloop testen op de telefoon. Daarna in kleine stappen: taken
+   aanmaken en wijzigen (dan de "Proefversie"-zin weg); meldingen (met foto).
 1. Besluit van het bestuur afwachten. Feedback (vergadering 22 oktober 2026): eerst
    autorisaties en hosting onderzoeken, invoering stap voor stap. Daarvoor is een
    notitie gemaakt (staat buiten de repository, want het is een intern stuk) met

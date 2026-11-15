@@ -56,9 +56,13 @@ const meldingen = [
   { plek: "Weides", tekst: "Hek weide 3 gaat niet meer dicht.", gevaarlijk: false, gemeldDoor: "Piet", datum: "2026-10-05", foto: "", taakId: null, geenActie: false },
   { plek: "Gebouw", tekst: "Lamp bij de ingang flikkert.", gevaarlijk: false, gemeldDoor: "Kirsten", datum: "2026-10-02", foto: "", taakId: null, geenActie: true, geenActieReden: "Lamp is al vervangen door de bistro.", geenActieDoor: "Jan" }    ];
 
-// TIJDELIJK: foto's na afloop bij taken staan uit tot ze in de fotomap van de
-// database kunnen. Daarna op true zetten.
-const TAAKFOTOS_AAN = false;
+// Hoe lang we wachten op het versturen van een foto (30000 = 30 seconden).
+// Langer dan bij andere acties: een foto is groter.
+const WACHTTIJD_FOTO = 30000;
+
+// Hoe lang we een tijdelijke fotolink gebruiken (in milliseconden: 55 minuten).
+// De link zelf verloopt na een uur; we vragen ruim op tijd een nieuwe aan.
+const FOTO_LINK_GELDIG = 55 * 60 * 1000;
 
 // Hoe lang de melding "Ongedaan maken" zichtbaar blijft (in milliseconden: 6000 = 6 seconden)
 const MELDING_DUUR = 6000;
@@ -203,8 +207,10 @@ function maakFotoKnop(knopTekst, bijFoto) {
 
     try {
       const kleineFoto = await verkleinFoto(bestand);
-      // Tijdelijk: de foto staat alleen in het geheugen van de telefoon.
-      bijFoto(URL.createObjectURL(kleineFoto));
+      // Geef de verkleinde foto door. "await": wacht tot die klaar is
+      // (bijvoorbeeld met versturen), daarna de knoptekst terugzetten.
+      await bijFoto(kleineFoto);
+      knopTekstVak.textContent = knopTekst;
     } catch (fout) {
       knopTekstVak.textContent = knopTekst;
       tip.textContent = "Deze foto kon niet worden gebruikt. Maak een nieuwe foto of kies een andere.";
@@ -408,16 +414,23 @@ function maakTaakKaart(taak) {
 
   // Foto en knoppen bij gereed gemelde taken
   if (taak.status === "gereed") {
-    if (taak.foto) {
-      kaart.append(maakFotoMetLabel(taak.foto, "Foto na afloop", "Foto na afloop: " + taak.titel));
+    if (taak.fotoPad) {
+      const link = geldigeFotoLink(taak.fotoPad);
+      if (link) {
+        kaart.append(maakFotoMetLabel(link, "Foto na afloop", "Foto na afloop: " + taak.titel));
+      } else {
+        // Geen (geldige) tijdelijke link, meestal omdat er geen bereik is
+        const zonder = document.createElement("p");
+        zonder.className = "details foto-label";
+        zonder.textContent = "📷 Er is een foto. Die zie je als je weer bereik hebt.";
+        kaart.append(zonder);
+      }
     }
     if (magGereedMelden(taak)) {
-      if (TAAKFOTOS_AAN) {
-        const fotoTekst = taak.foto ? "📷 Foto vervangen" : "📷 Foto toevoegen";
-        kaart.append(maakFotoKnop(fotoTekst, url => zetTaakFoto(taak, url)));
-        if (taak.foto) {
-          kaart.append(maakTweedeKnop("Foto verwijderen", () => zetTaakFoto(taak, "")));
-        }
+      const fotoTekst = taak.fotoPad ? "📷 Foto vervangen" : "📷 Foto toevoegen";
+      kaart.append(maakFotoKnop(fotoTekst, kleineFoto => voegTaakFotoToe(taak, kleineFoto)));
+      if (taak.fotoPad) {
+        kaart.append(maakTweedeKnop("Foto verwijderen", () => zetTaakFoto(taak, "")));
       }
       kaart.append(maakTweedeKnop("↺ Weer openen", () => heropenTaak(taak)));
     }
@@ -467,7 +480,6 @@ async function heropenTaak(taak) {
   if (!await vraagDatabase("taak_heropenen", { taak_id: taak.id })) return;
   taak.status = "open";
   taak.gereedGemeldDoor = "";
-  taak.foto = "";
   taak.fotoPad = "";
   takenGewijzigd();
   toonMelding("Taak staat weer open", () => meldGereed(taak, vorigeFotoPad));
@@ -535,21 +547,98 @@ async function wijsToe(taak, persoonId) {
   toonMelding(tekst, () => wijsToe(taak, vorigeId));
 }
 
-// ===== FOTO NA AFLOOP (nog NIET bewaard) =====
-// TIJDELIJK: deze knoppen staan uit (TAAKFOTOS_AAN). Ze veranderen alleen
-// de kopie op de telefoon. Dat komt in een volgende stap.
+// ===== FOTO NA AFLOOP =====
+// Een foto gaat in twee stappen:
+// 1. de verkleinde foto naar de afgesloten fotomap in de database
+//    (in je eigen map: <jouw nummer>/<willekeurige code>.jpg);
+// 2. de vaste actie taak_foto_zetten koppelt die foto aan de taak.
+// Bekijken gaat met een tijdelijke link die na een uur verloopt (zie
+// haalFotoLinksOp). Zonder bereik zie je de foto niet; dat is bewust,
+// zodat er geen foto's van het park op telefoons blijven staan.
 
-// Foto na afloop toevoegen, vervangen of verwijderen ("" = verwijderen)
-function zetTaakFoto(taak, url) {
-  const vorigeFoto = taak.foto;
-  taak.foto = url;
-  verversScherm();
+// Tijdelijke links die we al hebben: pad → { adres, geldigTot }
+const fotoLinks = {};
+
+// Geeft de tijdelijke link bij een foto, of "" als we die (nog) niet hebben
+function geldigeFotoLink(pad) {
+  const link = fotoLinks[pad];
+  return link && link.geldigTot > Date.now() ? link.adres : "";
+}
+
+// 📷 Een nieuwe foto: eerst versturen, dan aan de taak koppelen
+async function voegTaakFotoToe(taak, kleineFoto) {
+  const pad = await stuurFotoNaarDatabase(kleineFoto);
+  if (!pad) return;   // mislukt: de melding staat er al
+  // De foto staat al op deze telefoon; die laten we meteen zien
+  fotoLinks[pad] = { adres: URL.createObjectURL(kleineFoto), geldigTot: Date.now() + FOTO_LINK_GELDIG };
+  await zetTaakFoto(taak, pad);
+}
+
+// Koppelt een foto aan de taak ("" = foto verwijderen).
+// "Ongedaan maken" koppelt de vorige foto weer; die staat nog in de fotomap.
+async function zetTaakFoto(taak, pad) {
+  const vorigPad = taak.fotoPad || "";
+  if (!await vraagDatabase("taak_foto_zetten", { taak_id: taak.id, foto: pad })) return;
+  taak.fotoPad = pad;
+  takenGewijzigd();
   let tekst = "Foto verwijderd";
-  if (url) tekst = vorigeFoto ? "Foto vervangen" : "Foto toegevoegd";
-  toonMelding(tekst, () => {
-    taak.foto = vorigeFoto;
-    verversScherm();
-  });
+  if (pad) tekst = vorigPad ? "Foto vervangen" : "Foto toegevoegd";
+  toonMelding(tekst, () => zetTaakFoto(taak, vorigPad));
+}
+
+// Stuurt een foto naar de fotomap. Geeft het pad terug, of "" als het mislukt.
+async function stuurFotoNaarDatabase(kleineFoto) {
+  toonMelding("Foto versturen…");
+  // crypto.randomUUID() maakt een willekeurige code die niemand kan raden
+  const pad = ingelogdeGebruiker.id + "/" + crypto.randomUUID() + ".jpg";
+  const versturen = database.storage
+    .from("fotos")
+    .upload(pad, kleineFoto, { contentType: "image/jpeg", upsert: false });
+  // Na WACHTTIJD_FOTO geven we het op (de wekker "wint" dan de race)
+  const teLaat = new Promise(klaar =>
+    setTimeout(() => klaar({ error: { message: "abort: duurde te lang" } }), WACHTTIJD_FOTO));
+
+  let fout;
+  try {
+    ({ error: fout } = await Promise.race([versturen, teLaat]));
+  } catch (probleem) {
+    fout = probleem;
+  }
+  if (!fout) return pad;
+
+  console.warn("Foto versturen mislukt:", fout);
+  if (isVerbindingsFout(fout)) {
+    toonMelding("De foto is niet verstuurd. De taak is wel gereed gemeld. " +
+                "Probeer de foto opnieuw als je bereik hebt.");
+  } else {
+    toonMelding("De foto is niet verstuurd (" + fout.message + "). De taak is wel gereed gemeld. " +
+                "Probeer het opnieuw.");
+  }
+  return "";
+}
+
+// Vraagt tijdelijke links aan voor alle foto's na afloop waar we er nog
+// geen (geldige) van hebben. De database geeft alleen links voor foto's die
+// jij mag zien (regels in 04_fotos.sql). Lukt het niet, dan geen links:
+// de kaartjes zeggen dan "Die zie je als je weer bereik hebt".
+async function haalFotoLinksOp() {
+  const paden = taken
+    .filter(taak => taak.fotoPad && !geldigeFotoLink(taak.fotoPad))
+    .map(taak => taak.fotoPad);
+  if (paden.length === 0) return;
+  try {
+    const { data, error } = await database.storage
+      .from("fotos")
+      .createSignedUrls(paden, 60 * 60);   // 60 × 60 seconden = een uur
+    if (error) throw error;
+    data.forEach(link => {
+      if (link.signedUrl) {
+        fotoLinks[link.path] = { adres: link.signedUrl, geldigTot: Date.now() + FOTO_LINK_GELDIG };
+      }
+    });
+  } catch (fout) {
+    console.warn("Fotolinks ophalen mislukt:", fout);
+  }
 }
 
 // ===== GEBREKEN MELDEN =====
@@ -578,8 +667,9 @@ function toonMelden() {
     fotoVeld.append(foto);
   }
   const fotoTekst = nieuweMelding.foto ? "📷 Andere foto" : "📷 Foto maken";
-  fotoVeld.append(maakFotoKnop(fotoTekst, url => {
-    nieuweMelding.foto = url;
+  fotoVeld.append(maakFotoKnop(fotoTekst, kleineFoto => {
+    // Tijdelijk: de foto staat alleen in het geheugen van de telefoon.
+    nieuweMelding.foto = URL.createObjectURL(kleineFoto);
     verversScherm();
   }));
   inhoud.append(fotoVeld);
@@ -1028,6 +1118,7 @@ async function haalTakenOp() {
     personen = antwoord.personen;
     takenUitleg = "";
     bewaarTakenOpToestel();
+    await haalFotoLinksOp();   // tijdelijke links voor de foto's na afloop
   } catch (fout) {
     console.warn("Taken ophalen mislukt:", fout);
     const bewaard = leesOpslag(OPSLAG_TAKEN);
@@ -1127,8 +1218,7 @@ async function vraagTakenOpBijDatabase() {
       deadline: rij.deadline || "",
       status: rij.status,
       gereedGemeldDoor: naamVan[rij.gereed_gemeld_door] || "",
-      foto: "",          // foto laten zien komt in een latere stap
-      fotoPad: rij.foto_na_afloop || "",   // waar de foto in de fotomap staat
+      fotoPad: rij.foto_na_afloop || "",   // waar de foto na afloop in de fotomap staat
       meldingFoto: ""
     }));
 

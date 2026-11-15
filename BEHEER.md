@@ -6,8 +6,8 @@ Stand: inloggen werkt met de database (Supabase). De taken komen uit de database
 keuzelijst (bestuur) worden bewaard. In de keuzelijst staan eerst de leden van de
 werkgroep van de taak, dan alle anderen; wie gestopt is staat er niet in.
 Nog NIET bewaard (alleen bestuur ziet deze knoppen): nieuwe taak en wijzigen.
-Foto's na afloop bij taken staan tijdelijk uit.
-Meldingen zijn nog voorbeeldgegevens.
+Een foto na afloop bij een gereed gemelde taak wordt bewaard in de afgesloten
+fotomap. Meldingen zijn nog voorbeeldgegevens.
 
 Lukt een knop niet, dan staat onderaan wat er mis is. Bijvoorbeeld "Iemand anders
 heeft deze taak al opgepakt" (de app haalt dan de nieuwste lijst op) of "Geen
@@ -131,6 +131,17 @@ alle verborgen gegevens eruit, ook de plek waar de foto is gemaakt (gps), het me
 telefoon en de datum. Een foto van een paar MB wordt zo ongeveer 150–300 kB.
 Let op: wat er óp de foto staat blijft natuurlijk wel staan. Daarom staat bij elke
 fotoknop: "Fotografeer alleen het werk, geen mensen."
+
+Foto's na afloop (bij taken):
+- Ze staan in de afgesloten fotomap `fotos` in Supabase (Storage). Er is geen
+  openbare link. Wie de taak mag zien, mag ook de foto zien.
+- De app vraagt per foto een tijdelijke link aan die na een uur verloopt. Zonder
+  bereik zie je bij de taak: "Er is een foto. Die zie je als je weer bereik hebt."
+  Foto's worden niet op de telefoon bewaard.
+- Lukt het versturen niet (slecht bereik), dan zegt de app dat. De taak blijft
+  gereed gemeld; probeer de foto later opnieuw.
+- Een vervangen of verwijderde foto blijft in de fotomap staan (voor "Ongedaan
+  maken"). Ruim die maandelijks op: zie "Foto's opruimen" in `database/LEESMIJ.md`.
 
 ## Kleuren aanpassen (in `stijl.css`)
 Alle kleuren staan bovenaan bij `:root`. Houd voldoende contrast, zodat alles buiten in
