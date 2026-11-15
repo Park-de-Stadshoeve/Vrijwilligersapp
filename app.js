@@ -534,7 +534,9 @@ async function stuurNaarDatabase(maakVraag, geenVerbindingTekst) {
 // Komt een fout door slecht of geen bereik? (of duurde het te lang)
 function isVerbindingsFout(fout) {
   const tekst = ((fout.name || "") + " " + (fout.message || "")).toLowerCase();
-  return tekst.includes("fetch") || tekst.includes("network") || tekst.includes("abort");
+  // "load failed" is hoe Safari (iPhone) zegt dat er geen verbinding is
+  return tekst.includes("fetch") || tekst.includes("network") || tekst.includes("abort")
+      || tekst.includes("load failed");
 }
 
 // 👤 Toewijzen met de keuzelijst (bestuur en coördinator).
@@ -595,8 +597,10 @@ async function zetTaakFoto(taak, pad) {
 
 // Stuurt een foto naar de fotomap. Geeft het pad terug, of "" als het mislukt.
 // "watMislukt" = de eerste zin van de melding als het mislukt, bijvoorbeeld
-// "De melding is niet verstuurd."
-async function stuurFotoNaarDatabase(kleineFoto, watMislukt) {
+// "De melding is niet verstuurd." "bijGeenBereik" (niet verplicht) = wat er
+// bij geen bereik achter komt.
+async function stuurFotoNaarDatabase(kleineFoto, watMislukt,
+                                     bijGeenBereik = "Probeer het opnieuw als je bereik hebt.") {
   toonMelding("Foto versturen…");
   // crypto.randomUUID() maakt een willekeurige code die niemand kan raden
   const pad = ingelogdeGebruiker.id + "/" + crypto.randomUUID() + ".jpg";
@@ -617,7 +621,7 @@ async function stuurFotoNaarDatabase(kleineFoto, watMislukt) {
 
   console.warn("Foto versturen mislukt:", fout);
   if (isVerbindingsFout(fout)) {
-    toonMelding(watMislukt + " Probeer het opnieuw als je bereik hebt.");
+    toonMelding(watMislukt + " " + bijGeenBereik);
   } else {
     toonMelding(watMislukt + " (" + fout.message + ") Probeer het opnieuw.");
   }
@@ -720,6 +724,9 @@ function toonMelden() {
 
 // Wat er staat als een melding niet verstuurd kon worden
 const MELDING_NIET_VERSTUURD = "De melding is niet verstuurd. Je hoeft niets opnieuw in te vullen.";
+// Wat er bij geen bereik achter komt. Na de vliegtuigstand duurde het in een
+// test ongeveer 2 minuten voordat versturen weer lukte.
+const MELDING_BEREIK_TIP = "Is je bereik net terug? Wacht dan een minuut of twee en probeer het opnieuw.";
 
 // Controleert het formulier en verstuurt de melding, in twee stappen:
 // 1. de foto naar de fotomap (als dat nog niet gelukt was);
@@ -737,7 +744,8 @@ async function verstuurMelding() {
 
   // 1. De foto. Is hij bij een eerdere poging al verstuurd, dan niet nog eens.
   if (!formulier.fotoPad) {
-    formulier.fotoPad = await stuurFotoNaarDatabase(formulier.fotoBestand, MELDING_NIET_VERSTUURD);
+    formulier.fotoPad = await stuurFotoNaarDatabase(formulier.fotoBestand, MELDING_NIET_VERSTUURD,
+                                                    MELDING_BEREIK_TIP);
     if (!formulier.fotoPad) { knop.disabled = false; return; }
   }
 
@@ -750,7 +758,7 @@ async function verstuurMelding() {
   };
   const antwoord = await stuurNaarDatabase(signaal =>
     database.from("meldingen").insert(rij).select("id, gemeld_op").single().abortSignal(signaal),
-    MELDING_NIET_VERSTUURD + " Probeer het opnieuw als je bereik hebt.");
+    MELDING_NIET_VERSTUURD + " " + MELDING_BEREIK_TIP);
   if (!antwoord.gelukt) { knop.disabled = false; return; }
 
   // Gelukt: de melding komt in de lijst, het formulier wordt leeg

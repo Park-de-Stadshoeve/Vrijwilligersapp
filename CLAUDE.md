@@ -239,7 +239,13 @@ Klaar (inloggen, taken en melden werken met de database; afhandelen van meldinge
   link. Afhandelknoppen TIJDELIJK uit (AFHANDELEN_AAN = false); zetGeenActie en
   openTaakUitMelding gebruiken nog oude velden (geenActie, melding.foto) en
   moeten in stap 2 naar de database. Getest op telefoon en computer (melden,
-  intrekken, bestuur ziet alle meldingen, geen bereik): alles goed.
+  intrekken, bestuur ziet alle meldingen, geen bereik): alles goed. Wel: na de
+  vliegtuigstand duurde het ~2 minuten voordat opnieuw versturen lukte (oorzaak
+  onzeker: telefoon of supabase-js die blijft hangen op het verversen van de
+  inlog). Voorlopig alleen de tekst aangepast (MELDING_BEREIK_TIP: "wacht een
+  minuut of twee"). In de eerste week van de proef navragen of vrijwilligers hier
+  last van hebben; zo ja, verder uitzoeken. isVerbindingsFout herkent nu ook
+  "Load failed" (Safari).
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
