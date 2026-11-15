@@ -257,6 +257,11 @@ Klaar (inloggen, taken en meldingen werken met de database):
   06_meldingen.sql uitgevoerd in het testproject; test_06_meldingen.sql: alles
   goed. Getest op de telefoon (Maak taak, taak met meldingsfoto, status bij de
   melder, Geen actie nodig): alles goed.
+- Wakker houden: database/07_ping.sql (functie ping, geeft 'ok', ook voor anon)
+  en .github/workflows/supabase-wakker-houden.yml (elke 3 dagen, plus met de hand;
+  leest adres en sleutel uit instellingen.js). Mail bij mislukken naar Jerome.
+  GitHub zet de taak uit na 60 dagen zonder wijziging (uitleg in BEHEER.md).
+  NOG TE DOEN: 07 uitvoeren in het testproject en de taak met de hand starten.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
@@ -303,7 +308,8 @@ Volgende stappen:
      beheerders);
    - eigen e-maildienst voor de inlogcodes (de ingebouwde mail van Supabase stuurt
      maar 2 berichten per uur en alleen naar beheerders);
-   - voorkomen dat het gratis Supabase-project na een week stilte op pauze gaat;
+   - voorkomen dat het gratis Supabase-project na een week stilte op pauze gaat
+     (gebouwd, nog testen);
    - maandelijkse back-up (de gratis versie maakt er geen).
 
 ## Later-lijst

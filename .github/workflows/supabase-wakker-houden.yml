@@ -1,0 +1,72 @@
+# =====================================================================
+# Supabase wakker houden
+# =====================================================================
+# Wat doet dit?
+#   Een gratis Supabase-project gaat op pauze na een week zonder
+#   activiteit. Deze automatische taak roept elke 3 dagen de functie
+#   "ping" in de database aan (zie database/07_ping.sql). Daarmee
+#   blijft het project wakker.
+#
+# Welke database?
+#   Het adres en de publieke sleutel worden uit instellingen.js gelezen.
+#   Zet je daar een ander project in, dan gaat deze taak vanzelf mee.
+#   (Let op: voer dan ook 07_ping.sql uit in dat project.)
+#
+# Mislukt het?
+#   Dan stuurt GitHub een mail aan degene die deze taak het laatst
+#   heeft aangezet of aangepast. Zie BEHEER.md, "Supabase wakker houden".
+#
+# Met de hand starten:
+#   GitHub > tabblad Actions > "Supabase wakker houden" > Run workflow.
+# =====================================================================
+
+name: Supabase wakker houden
+
+on:
+  schedule:
+    # Om 06:17 (Nederlandse wintertijd 07:17) op dag 1, 4, 7, ... van de maand.
+    # De rare minuut 17 is expres: op het hele uur is het druk bij GitHub.
+    - cron: "17 6 */3 * *"
+  workflow_dispatch: # maakt de knop "Run workflow" mogelijk
+
+permissions:
+  contents: read # deze taak mag alleen lezen, niets veranderen
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code ophalen (voor instellingen.js)
+        uses: actions/checkout@v4
+
+      - name: Database aanroepen
+        run: |
+          # Adres en sleutel uit instellingen.js halen (de tekst tussen de aanhalingstekens).
+          ADRES=$(grep 'const SUPABASE_ADRES' instellingen.js | cut -d '"' -f 2)
+          SLEUTEL=$(grep 'const SUPABASE_SLEUTEL' instellingen.js | cut -d '"' -f 2)
+
+          if [ -z "$ADRES" ] || [ -z "$SLEUTEL" ]; then
+            echo "Adres of sleutel niet gevonden in instellingen.js."
+            exit 1
+          fi
+
+          echo "Database: $ADRES"
+
+          # De functie ping aanroepen. Bij een tijdelijke storing 3 keer opnieuw proberen.
+          ANTWOORD=$(curl --silent --show-error --fail --retry 3 --retry-delay 20 \
+            --request POST "$ADRES/rest/v1/rpc/ping" \
+            --header "apikey: $SLEUTEL" \
+            --header "Content-Type: application/json" \
+            --data '{}') || {
+              echo "De database antwoordt niet. Staat het project op pauze? Zie BEHEER.md."
+              exit 1
+            }
+
+          echo "Antwoord: $ANTWOORD"
+
+          if [ "$ANTWOORD" != '"ok"' ]; then
+            echo "Onverwacht antwoord. Is database/07_ping.sql uitgevoerd?"
+            exit 1
+          fi
+
+          echo "Gelukt: de database is wakker."
