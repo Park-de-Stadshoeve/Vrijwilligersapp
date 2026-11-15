@@ -194,8 +194,11 @@ Klaar (de schermen werken nog met voorbeeldgegevens; inloggen werkt met de datab
   geen wachtrij. "Even geduld…" bij elke tik. Lijst opnieuw ophalen bij tik op
   Mijn taken of Werkgroep (ververs). Nog lokaal (TIJDELIJK, zin alleen voor
   bestuur): keuzelijst toewijzen, nieuwe taak, wijzigen. Foto-knoppen bij taken
-  uit (TAAKFOTOS_AAN = false). Getest in de browser met nagemaakte
-  database-antwoorden; nog niet op de telefoon.
+  uit (TAAKFOTOS_AAN = false). Getest op telefoon en computer, ook een conflict
+  (twee keer gereed melden): alles goed. Let op: na een push kan de telefoon tot
+  10 minuten de oude versie houden (GitHub Pages laat bestanden 10 minuten
+  bewaren). Bestuur krijgt bij "nog aan niemand toegewezen" de tekst 'Kies eerst
+  "Ik doe dit"', die knop heeft bestuur niet: oplossen bij de keuzelijst-stap.
   Meldingen en de lijst vrijwilligers (toewijzen) zijn nog voorbeeldgegevens.
 
 Besluiten (november 2026):
@@ -227,7 +230,7 @@ Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
 Volgende stappen:
-0. Knoppen bij taken testen op de telefoon. Daarna in kleine stappen: keuzelijst
+0. In kleine stappen verder: keuzelijst
    toewijzen uit de database; taken aanmaken en wijzigen (dan de
    "Proefversie"-zin weg); meldingen; foto's.
 1. Besluit van het bestuur afwachten. Feedback (vergadering 22 oktober 2026): eerst
