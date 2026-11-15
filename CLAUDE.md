@@ -303,6 +303,19 @@ Klaar (inloggen, taken en meldingen werken met de database):
   dashboard (Verify JWT aan). Getest op de telefoon (toevoegen, Ongedaan maken,
   inloggen met nieuw account, adres al in gebruik, e-mailadres wijzigen en
   inloggen met nieuw adres): alles goed.
+  Stap 4 gebouwd: Edge Function "beheer" kreeg acties stoppen (niet jezelf;
+  e-mailadres onthouden, rpc zet_gebruiker_stop, dan deleteUser; mislukt =
+  terugzetten) en terugzetten (createUser met HETZELFDE id, dan rpc
+  zet_gebruiker_terug; mislukt = account weer weg). database/10_stoppen.sql:
+  zet_gebruiker_stop (open taken vrij, vinkjes uit, actief nee; rol en
+  werkgroepen blijven; geeft taken en oude vinkjes terug) en zet_gebruiker_terug
+  (actief ja, vinkjes, taken terug als nog open en vrij); alleen service_role.
+  beheer.js: knop "Laten stoppen" (rood, onderaan Wijzigen, niet bij jezelf),
+  melding "X is gestopt. N taken staan weer open." met Ongedaan maken; bij
+  gestopten "Weer laten meedoen" (alleen e-mailadres; Ongedaan = weer stoppen).
+  Getest: test_10 lokaal (7 tests), functie met nep-Supabase (6 gevallen),
+  knoppen in de browser: alles goed. NOG TE DOEN: 10 uitvoeren, functie
+  opnieuw plakken, testen op de telefoon.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).

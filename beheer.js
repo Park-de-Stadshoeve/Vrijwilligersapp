@@ -2,7 +2,8 @@
 // Dit bestand wordt geladen door index.html, vóór app.js.
 //
 // Stap 1: bekijken. Stap 2: naam, rol, vinkjes en werkgroepen wijzigen.
-// Stap 3: iemand toevoegen en het e-mailadres wijzigen. Laten stoppen komt later.
+// Stap 3: iemand toevoegen en het e-mailadres wijzigen.
+// Stap 4: iemand laten stoppen en weer laten meedoen.
 //
 // Veilig? De knop "Beheer" zie je alleen met het vinkje is_beheerder. Maar ook
 // als iemand anders dit scherm zou openen, geeft de database alleen zijn eigen
@@ -150,9 +151,11 @@ function maakGebruikerKaart(gebruiker) {
   if (gebruiker.krijgtGevaarMail) kaart.append(maakLabel("⚠️ Krijgt mail bij gevaar"));
   if (!gebruiker.actief) kaart.append(maakLabel("Gestopt"));
 
-  // Wie gestopt is, kun je (nog) niet wijzigen. Dat komt bij "laten stoppen".
+  // Wie meedoet, kun je wijzigen. Wie gestopt is, kan weer meedoen.
   if (gebruiker.actief) {
     kaart.append(maakTweedeKnop("Wijzigen", () => openGebruikerFormulier(gebruiker)));
+  } else {
+    kaart.append(maakTweedeKnop("Weer laten meedoen", () => openWeerMeedoen(gebruiker)));
   }
 
   return kaart;
@@ -245,6 +248,7 @@ function toonGebruikerFormulier() {
   if (!gebruikerFormulier) { toonBeheer(); return; }   // geen formulier open: terug
   huidigScherm = "gebruiker-formulier";
   const formulier = gebruikerFormulier;
+  if (formulier.modus === "terug") { toonWeerMeedoenFormulier(); return; }
   const isNieuw = formulier.modus === "nieuw";
   document.getElementById("titel").textContent = isNieuw ? "Iemand toevoegen" : "Gebruiker wijzigen";
   const inhoud = document.getElementById("inhoud");
@@ -289,6 +293,13 @@ function toonGebruikerFormulier() {
     gebruikerFormulier = null;
     toonBeheer();
   }));
+
+  // Laten stoppen: apart, helemaal onderaan. Niet voor jezelf.
+  if (!isNieuw && formulier.id !== ingelogdeGebruiker.id) {
+    const stoppen = maakTweedeKnop("Laten stoppen", () => laatGebruikerStoppen(formulier.origineel));
+    stoppen.classList.add("knop-stoppen");
+    inhoud.append(stoppen);
+  }
 
   markeerMenu("beheer");
 }
@@ -446,6 +457,113 @@ async function slaGebruikerOp() {
     }
     if (await bewaarGebruiker(oud)) {
       toonMelding("Teruggezet: " + oud.naam);
+      if (huidigScherm === "beheer") toonBeheer();
+    }
+  });
+}
+
+// ===== LATEN STOPPEN EN WEER LATEN MEEDOEN =====
+// Allebei via de Edge Function "beheer" (acties "stoppen" en "terugzetten").
+// Bij stoppen: open taken weer vrij, vinkjes uit, inlogaccount en e-mailadres
+// weg. Naam, rol en werkgroepen blijven, zodat iemand later weer mee kan doen.
+
+// 🚪 Iemand laten stoppen. Geen "Weet je het zeker?", wel "Ongedaan maken".
+async function laatGebruikerStoppen(gebruiker) {
+  const antwoord = await roepBeheerFunctieAan({ actie: "stoppen", gebruikerId: gebruiker.id });
+  if (!antwoord.gelukt) return;   // formulier blijft staan; de melding zegt wat er mis is
+
+  const uitslag = antwoord.data;
+  const aantal = uitslag.taken.length;
+  gebruikerFormulier = null;
+  await toonBeheer();
+  toonMelding(gebruiker.naam + " is gestopt." +
+    (aantal === 1 ? " 1 taak staat weer open." : aantal > 1 ? " " + aantal + " taken staan weer open." : ""),
+    async () => {
+      // Ongedaan maken: alles terug zoals het was, ook de taken en de vinkjes
+      const terug = await roepBeheerFunctieAan({
+        actie: "terugzetten",
+        gebruikerId: gebruiker.id,
+        email: uitslag.email,
+        taken: uitslag.taken,
+        wordtBeheerder: uitslag.wasBeheerder,
+        krijgtGevaarMail: uitslag.kreegGevaarMail
+      });
+      if (terug.gelukt) {
+        toonMelding("Teruggezet: " + gebruiker.naam + " doet weer mee.");
+        if (huidigScherm === "beheer") toonBeheer();
+      }
+    });
+}
+
+// Opent het korte formulier "Weer laten meedoen": alleen het e-mailadres
+function openWeerMeedoen(gebruiker) {
+  gebruikerFormulier = {
+    modus: "terug",
+    id: gebruiker.id,
+    email: "",
+    emailStatus: "klaar",
+    origineel: gebruiker
+  };
+  toonGebruikerFormulier();
+}
+
+function toonWeerMeedoenFormulier() {
+  huidigScherm = "gebruiker-formulier";
+  const formulier = gebruikerFormulier;
+  const gebruiker = formulier.origineel;
+  document.getElementById("titel").textContent = "Weer laten meedoen";
+  const inhoud = document.getElementById("inhoud");
+  inhoud.replaceChildren();
+
+  const uitleg = document.createElement("p");
+  uitleg.textContent = gebruiker.naam + " doet weer mee, met dezelfde naam en de oude taken " +
+    "en meldingen. Rol en werkgroepen staan zoals vroeger; pas ze daarna aan met Wijzigen.";
+  inhoud.append(uitleg);
+
+  inhoud.append(maakEmailVeld(formulier));
+
+  const fout = document.createElement("p");
+  fout.id = "gebruiker-fout";
+  fout.className = "fout";
+  fout.setAttribute("role", "alert");
+  inhoud.append(fout);
+
+  const knop = maakHoofdKnop("Weer laten meedoen", laatWeerMeedoen);
+  knop.id = "knop-gebruiker-opslaan";
+  inhoud.append(knop);
+  inhoud.append(maakTweedeKnop("Annuleren", () => {
+    gebruikerFormulier = null;
+    toonBeheer();
+  }));
+  markeerMenu("beheer");
+}
+
+// ↩️ Iemand weer laten meedoen
+async function laatWeerMeedoen() {
+  const formulier = gebruikerFormulier;
+  const gebruiker = formulier.origineel;
+  const fout = document.getElementById("gebruiker-fout");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formulier.email.trim())) {
+    fout.textContent = "Vul een geldig e-mailadres in, bijvoorbeeld naam@voorbeeld.nl.";
+    return;
+  }
+  const knop = document.getElementById("knop-gebruiker-opslaan");
+  if (knop) knop.disabled = true;
+
+  const antwoord = await roepBeheerFunctieAan({
+    actie: "terugzetten", gebruikerId: gebruiker.id, email: formulier.email
+  });
+  if (!antwoord.gelukt) {
+    if (knop) knop.disabled = false;
+    return;
+  }
+
+  gebruikerFormulier = null;
+  await toonBeheer();
+  toonMelding(gebruiker.naam + " doet weer mee.", async () => {
+    const terug = await roepBeheerFunctieAan({ actie: "stoppen", gebruikerId: gebruiker.id });
+    if (terug.gelukt) {
+      toonMelding("Teruggezet: " + gebruiker.naam + " is weer gestopt.");
       if (huidigScherm === "beheer") toonBeheer();
     }
   });

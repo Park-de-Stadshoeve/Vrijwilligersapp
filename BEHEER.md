@@ -107,14 +107,25 @@ de knop **Beheer**. Daar staan alle gebruikers: naam, rol, werkgroepen en de vin
   naam staat ook bij oude taken en meldingen.
 - **Er blijft altijd minstens één beheerder.** Wil je je eigen vinkje uitzetten, maak
   dan eerst iemand anders beheerder. Advies: zorg voor twee beheerders.
-- Laten stoppen komt in de volgende stap.
+- **Iemand laten stoppen:** tik op **Wijzigen** bij de persoon en helemaal onderaan
+  op **Laten stoppen**. Dan gebeurt dit:
+  - open taken op naam van de persoon staan weer open voor de werkgroep;
+  - de vinkjes "Beheerder" en "Mail bij gevaar" gaan uit;
+  - het inlogaccount en het e-mailadres worden verwijderd: inloggen kan niet meer;
+  - de voornaam blijft bij oude taken en meldingen staan.
+  Vergist? Tik meteen op **Ongedaan maken**: alles komt terug, ook de taken.
+  Jezelf laten stoppen kan niet; vraag dat aan een andere beheerder.
+- **Iemand weer laten meedoen:** onderaan de lijst staat wie gestopt is. Tik op
+  **Weer laten meedoen** en vul het e-mailadres in. De persoon krijgt dezelfde naam
+  en zijn of haar oude taken en meldingen terug. Rol en werkgroepen staan zoals
+  vroeger; pas ze aan met **Wijzigen**. De vinkjes staan uit.
 - **Foutmelding "Er ging iets mis" of "Geen verbinding" bij toevoegen, terwijl je
   wel bereik hebt?** Kijk dan of de Edge Function "beheer" bij Supabase staat (zie
   hieronder).
 
 ## Edge Function "beheer" (bij Supabase)
-Toevoegen en e-mailadressen wijzigen gaat via een klein programma dat bij Supabase
-draait: de Edge Function **beheer**. De code staat in
+Toevoegen, e-mailadressen wijzigen, laten stoppen en weer laten meedoen gaat via een
+klein programma dat bij Supabase draait: de Edge Function **beheer**. De code staat in
 `supabase/functions/beheer/index.ts`. Er staat geen geheime sleutel in: die geeft
 Supabase zelf aan de functie.
 

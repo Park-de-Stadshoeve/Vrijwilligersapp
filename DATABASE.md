@@ -260,8 +260,12 @@ De app bewaart persoonsgegevens niet langer dan nodig. Dit zijn de afspraken:
   Voor het archief geldt de bewaartermijn die de stichting voor SharePoint afspreekt.
 
 **Iemand stopt als vrijwilliger**
-1. De beheerder zet de persoon op "niet actief". Het inlogaccount en het e-mailadres
-   worden direct verwijderd; inloggen kan niet meer.
+1. De beheerder kiest in het beheerscherm "Laten stoppen". De persoon staat dan op
+   "niet actief". Het inlogaccount en het e-mailadres worden direct verwijderd;
+   inloggen kan niet meer. Open taken op naam van de persoon staan weer open voor de
+   werkgroep, en de vinkjes "beheerder" en "krijgt mail bij gevaar" gaan uit. Rol en
+   werkgroepen blijven bewaard, zodat de persoon later weer mee kan doen ("Weer
+   laten meedoen": nieuw inlogaccount, zelfde naam en geschiedenis).
 2. De voornaam blijft in de app staan bij taken en meldingen, zolang die nog in de app
    staan. Zo blijft zichtbaar wie wat deed.
 3. Zodra er geen taken of meldingen meer naar de persoon verwijzen (alles is
