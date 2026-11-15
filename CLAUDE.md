@@ -81,6 +81,8 @@ Ik bouw deze app zelf om te leren hoe je een app maakt. Claude schrijft code, ma
   op de iPhone opent een link in Safari en niet in de app op het beginscherm.)
 - Code staat in GitHub: organisatie park-de-stadshoeve, repository Vrijwilligersapp.
   Hosting via GitHub Pages: https://park-de-stadshoeve.github.io/Vrijwilligersapp/
+  Wordt (besluit november 2026): https://app.parkdestadshoeve.nl via een CNAME bij
+  Digiworks. Nog niet actief.
   Budget: hooguit een paar euro per maand.
 - De repository is openbaar. Zet er nooit echte namen, persoonsgegevens, wachtwoorden,
   geheime sleutels of interne stukken van de stichting in. Een publieke sleutel die
@@ -200,6 +202,14 @@ Besluiten (november 2026):
 - Beheerder is geen rol maar een vinkje (is_beheerder); alleen beheerders gebruiken
   het beheerscherm. Advies: twee beheerders.
 - Bij een dubbele voornaam toont de app "Piet P." (kolom achternaam_letter).
+- Hosting: de app-bestanden blijven op GitHub Pages (gratis, automatisch publiceren,
+  makkelijk terugdraaien), met het eigen adres app.parkdestadshoeve.nl. Digiworks
+  zet alleen de DNS-regels; het hostingpakket daar wordt niet voor de app gebruikt.
+  Geen automatische FTP-upload naar Digiworks (dan staat het FTP-wachtwoord van de
+  hele website in GitHub). Het adres staat vast vóór de proef met Klussen, omdat
+  de geïnstalleerde app en de inlog aan het adres vastzitten.
+  Na het omzetten: eigen domein instellen in GitHub (repo) en domein verifiëren
+  (organisatie), Site URL en Redirect URLs in Supabase aanpassen, BEHEER.md bijwerken.
 
 Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg).
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
