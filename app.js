@@ -41,13 +41,16 @@ let werkgroepBijPlek = {};   // bij welke werkgroep hoort een plek meestal? bijv
 let plekNummer = {};
 let werkgroepNummer = {};
 
-// Voorbeeldmeldingen.
+// De meldingen. Eerst leeg; haalTakenOp vult de lijst uit de database.
+// Vrijwilligers krijgen alleen hun eigen meldingen, bestuur en coördinator alle.
 // taakId = het nummer van de taak die van deze melding is gemaakt (null = nog geen taak).
-// geenActie = true als het bestuur heeft besloten dat er niets hoeft te gebeuren.
-const meldingen = [
-  { plek: "Speelkasteel", tekst: "Splinter in de leuning van de trap.", gevaarlijk: true, gemeldDoor: "Kirsten", datum: "2026-10-09", foto: "", taakId: null, geenActie: false },
-  { plek: "Weides", tekst: "Hek weide 3 gaat niet meer dicht.", gevaarlijk: false, gemeldDoor: "Piet", datum: "2026-10-05", foto: "", taakId: null, geenActie: false },
-  { plek: "Gebouw", tekst: "Lamp bij de ingang flikkert.", gevaarlijk: false, gemeldDoor: "Kirsten", datum: "2026-10-02", foto: "", taakId: null, geenActie: true, geenActieReden: "Lamp is al vervangen door de bistro.", geenActieDoor: "Jan" }    ];
+// status = "Nieuw", "Taak gemaakt", "Toegewezen", "Gereed" of "Geen actie nodig"
+//          (rekent de database uit, zie melding_status in 03_rechten.sql).
+const meldingen = [];
+
+// TIJDELIJK: de knoppen om een melding af te handelen ("Maak taak", "Geen actie
+// nodig") staan uit tot de volgende stap. Dan op true zetten.
+const AFHANDELEN_AAN = false;
 
 // Hoe lang we wachten op het versturen van een foto (30000 = 30 seconden).
 // Langer dan bij andere acties: een foto is groter.
@@ -490,7 +493,8 @@ async function vraagDatabase(actie, gegevens) {
 // Stuurt een vraag naar de database, met wachttijd en foutmeldingen.
 // "maakVraag" bouwt de vraag; hij krijgt het signaal om te stoppen mee.
 // Geeft { gelukt: true/false, data: wat de database terugstuurt }.
-async function stuurNaarDatabase(maakVraag) {
+// "geenVerbindingTekst" (niet verplicht) = eigen melding bij geen bereik.
+async function stuurNaarDatabase(maakVraag, geenVerbindingTekst) {
   toonMelding("Even geduld…");   // direct laten zien dat de tik is aangekomen
   const stopper = new AbortController();
   const wekker = setTimeout(() => stopper.abort(), WACHTTIJD_DATABASE);
@@ -519,7 +523,8 @@ async function stuurNaarDatabase(maakVraag) {
     verversScherm();
     toonMelding(fout.message);
   } else if (isVerbindingsFout(fout)) {
-    toonMelding("Geen verbinding. Er is niets veranderd. Probeer het opnieuw als je bereik hebt.");
+    toonMelding(geenVerbindingTekst ||
+      "Geen verbinding. Er is niets veranderd. Probeer het opnieuw als je bereik hebt.");
   } else {
     toonMelding("Er ging iets mis (" + fout.message + "). Er is niets veranderd. Probeer het opnieuw.");
   }
@@ -569,7 +574,7 @@ function geldigeFotoLink(pad) {
 
 // 📷 Een nieuwe foto: eerst versturen, dan aan de taak koppelen
 async function voegTaakFotoToe(taak, kleineFoto) {
-  const pad = await stuurFotoNaarDatabase(kleineFoto);
+  const pad = await stuurFotoNaarDatabase(kleineFoto, "De foto is niet verstuurd. De taak is wel gereed gemeld.");
   if (!pad) return;   // mislukt: de melding staat er al
   // De foto staat al op deze telefoon; die laten we meteen zien
   fotoLinks[pad] = { adres: URL.createObjectURL(kleineFoto), geldigTot: Date.now() + FOTO_LINK_GELDIG };
@@ -589,7 +594,9 @@ async function zetTaakFoto(taak, pad) {
 }
 
 // Stuurt een foto naar de fotomap. Geeft het pad terug, of "" als het mislukt.
-async function stuurFotoNaarDatabase(kleineFoto) {
+// "watMislukt" = de eerste zin van de melding als het mislukt, bijvoorbeeld
+// "De melding is niet verstuurd."
+async function stuurFotoNaarDatabase(kleineFoto, watMislukt) {
   toonMelding("Foto versturen…");
   // crypto.randomUUID() maakt een willekeurige code die niemand kan raden
   const pad = ingelogdeGebruiker.id + "/" + crypto.randomUUID() + ".jpg";
@@ -610,23 +617,21 @@ async function stuurFotoNaarDatabase(kleineFoto) {
 
   console.warn("Foto versturen mislukt:", fout);
   if (isVerbindingsFout(fout)) {
-    toonMelding("De foto is niet verstuurd. De taak is wel gereed gemeld. " +
-                "Probeer de foto opnieuw als je bereik hebt.");
+    toonMelding(watMislukt + " Probeer het opnieuw als je bereik hebt.");
   } else {
-    toonMelding("De foto is niet verstuurd (" + fout.message + "). De taak is wel gereed gemeld. " +
-                "Probeer het opnieuw.");
+    toonMelding(watMislukt + " (" + fout.message + ") Probeer het opnieuw.");
   }
   return "";
 }
 
-// Vraagt tijdelijke links aan voor alle foto's na afloop waar we er nog
+// Vraagt tijdelijke links aan voor alle foto's (na afloop en bij meldingen) waar we er nog
 // geen (geldige) van hebben. De database geeft alleen links voor foto's die
 // jij mag zien (regels in 04_fotos.sql). Lukt het niet, dan geen links:
 // de kaartjes zeggen dan "Die zie je als je weer bereik hebt".
 async function haalFotoLinksOp() {
-  const paden = taken
-    .filter(taak => taak.fotoPad && !geldigeFotoLink(taak.fotoPad))
-    .map(taak => taak.fotoPad);
+  const paden = [...taken, ...meldingen]
+    .filter(item => item.fotoPad && !geldigeFotoLink(item.fotoPad))
+    .map(item => item.fotoPad);
   if (paden.length === 0) return;
   try {
     const { data, error } = await database.storage
@@ -645,9 +650,12 @@ async function haalFotoLinksOp() {
 
 // ===== GEBREKEN MELDEN =====
 
-// Wat er tot nu toe is ingevuld in het meldformulier
+// Wat er tot nu toe is ingevuld in het meldformulier.
+// foto = adres om de foto te laten zien; fotoBestand = de verkleinde foto zelf;
+// fotoPad = waar hij in de fotomap staat, zodra hij is verstuurd.
+// Lukt versturen niet, dan blijft alles hier staan zolang de app open is.
 function leegFormulier() {
-  return { foto: "", plek: "", tekst: "", gevaarlijk: false };
+  return { foto: "", fotoBestand: null, fotoPad: "", plek: "", tekst: "", gevaarlijk: false };
 }
 let nieuweMelding = leegFormulier();
 
@@ -670,8 +678,10 @@ function toonMelden() {
   }
   const fotoTekst = nieuweMelding.foto ? "📷 Andere foto" : "📷 Foto maken";
   fotoVeld.append(maakFotoKnop(fotoTekst, kleineFoto => {
-    // Tijdelijk: de foto staat alleen in het geheugen van de telefoon.
+    // De foto gaat pas naar de database bij "Melding versturen"
     nieuweMelding.foto = URL.createObjectURL(kleineFoto);
+    nieuweMelding.fotoBestand = kleineFoto;
+    nieuweMelding.fotoPad = "";   // nieuwe foto: nog niet verstuurd
     verversScherm();
   }));
   inhoud.append(fotoVeld);
@@ -702,42 +712,93 @@ function toonMelden() {
   fout.setAttribute("role", "alert");
   inhoud.append(fout);
 
-  inhoud.append(maakHoofdKnop("Melding versturen", verstuurMelding));
+  const versturen = maakHoofdKnop("Melding versturen", verstuurMelding);
+  versturen.id = "knop-melding-versturen";
+  inhoud.append(versturen);
   markeerMenu("melden");
 }
 
-// Controleert het formulier en verstuurt de melding
-function verstuurMelding() {
+// Wat er staat als een melding niet verstuurd kon worden
+const MELDING_NIET_VERSTUURD = "De melding is niet verstuurd. Je hoeft niets opnieuw in te vullen.";
+
+// Controleert het formulier en verstuurt de melding, in twee stappen:
+// 1. de foto naar de fotomap (als dat nog niet gelukt was);
+// 2. de melding zelf naar de tabel meldingen.
+async function verstuurMelding() {
   const fout = document.getElementById("melden-fout");
   if (!nieuweMelding.foto) { fout.textContent = "Maak eerst een foto van het gebrek."; return; }
   if (!nieuweMelding.plek) { fout.textContent = "Kies waar het is."; return; }
+  fout.textContent = "";
 
-  // "...nieuweMelding" kopieert alles wat is ingevuld; daarna vullen we de rest aan
-  const melding = {
-    ...nieuweMelding,
-    gemeldDoor: ingelogdeGebruiker.naam,
-    datum: vandaag,
-    taakId: null,
-    geenActie: false
+  // De knop uitzetten, zodat een tweede tik niet twee meldingen maakt
+  const knop = document.getElementById("knop-melding-versturen");
+  knop.disabled = true;
+  const formulier = nieuweMelding;
+
+  // 1. De foto. Is hij bij een eerdere poging al verstuurd, dan niet nog eens.
+  if (!formulier.fotoPad) {
+    formulier.fotoPad = await stuurFotoNaarDatabase(formulier.fotoBestand, MELDING_NIET_VERSTUURD);
+    if (!formulier.fotoPad) { knop.disabled = false; return; }
+  }
+
+  // 2. De melding. Wie meldt en wanneer vult de database zelf in.
+  const rij = {
+    plek: plekNummer[formulier.plek],
+    foto: formulier.fotoPad,
+    toelichting: formulier.tekst.trim() || null,
+    gevaarlijk: formulier.gevaarlijk
   };
+  const antwoord = await stuurNaarDatabase(signaal =>
+    database.from("meldingen").insert(rij).select("id, gemeld_op").single().abortSignal(signaal),
+    MELDING_NIET_VERSTUURD + " Probeer het opnieuw als je bereik hebt.");
+  if (!antwoord.gelukt) { knop.disabled = false; return; }
+
+  // Gelukt: de melding komt in de lijst, het formulier wordt leeg
+  const melding = {
+    id: antwoord.data.id,
+    plek: formulier.plek,
+    fotoPad: formulier.fotoPad,
+    tekst: rij.toelichting || "",
+    gevaarlijk: formulier.gevaarlijk,
+    gemeldDoorId: ingelogdeGebruiker.id,
+    gemeldDoor: mijnToewijsNaam,
+    datum: antwoord.data.gemeld_op,
+    taakId: null,
+    status: "Nieuw",
+    geenActieReden: "",
+    geenActieDoor: ""
+  };
+  // De foto staat al op deze telefoon; die laten we meteen zien
+  fotoLinks[melding.fotoPad] = { adres: formulier.foto, geldigTot: Date.now() + FOTO_LINK_GELDIG };
   meldingen.push(melding);
   nieuweMelding = leegFormulier();   // formulier leegmaken voor de volgende keer
+  bewaarTakenOpToestel();
   toonMeldingen();
-  toonMelding("Melding verstuurd", () => {
-    meldingen.splice(meldingen.indexOf(melding), 1);   // melding weer weghalen
-    verversScherm();
-  });
+  toonMelding("Melding verstuurd", () => trekMeldingIn(melding));
+}
+
+// Trekt een melding in (alleen voor "Ongedaan maken"). Mag zolang de
+// melding nog "Nieuw" is (regel in 03_rechten.sql).
+async function trekMeldingIn(melding) {
+  const antwoord = await stuurNaarDatabase(signaal =>
+    database.from("meldingen").delete().eq("id", melding.id).select("id").abortSignal(signaal));
+  if (!antwoord.gelukt) return;
+  if (antwoord.data.length === 0) {
+    toonMelding("Deze melding kon niet worden ingetrokken. Misschien is er al iets mee gedaan.");
+    return;
+  }
+  meldingen.splice(meldingen.indexOf(melding), 1);
+  bewaarTakenOpToestel();
+  verversScherm();
+  toonMelding("Melding ingetrokken");
 }
 
 // ===== STATUS VAN EEN MELDING =====
-// De status wordt niet apart bewaard, maar afgeleid van de gekoppelde taak.
+// De status rekent de database uit (melding_status in 03_rechten.sql), op
+// basis van de gekoppelde taak. Zo ziet de melder ook de status van een taak
+// die hij of zij zelf niet mag zien.
 function meldingStatus(melding) {
-  if (melding.geenActie) return "Geen actie nodig";
-  const taak = vindTaak(melding.taakId);
-  if (!taak) return "Nieuw";
-  if (taak.status === "gereed") return "Gereed";
-  if (taak.toegewezenAan) return "Toegewezen";
-  return "Taak gemaakt";
+  return melding.status || "Nieuw";
 }
 
 // Hoe elke status op het scherm staat (met teken, zodat het niet alleen kleur is)
@@ -763,10 +824,20 @@ function toonMeldingen() {
   const inhoud = document.getElementById("inhoud");
   inhoud.replaceChildren();
 
-  // Vrijwilligers zien alleen hun eigen meldingen
+  // Geen verbinding? Zeg dat boven de lijst.
+  if (takenUitleg) {
+    const uitleg = document.createElement("p");
+    uitleg.className = "uitleg-bovenaan";
+    uitleg.setAttribute("role", "status");
+    uitleg.textContent = "📶 " + takenUitleg;
+    inhoud.append(uitleg);
+  }
+
+  // Vrijwilligers zien alleen hun eigen meldingen (de database stuurt ook
+  // alleen die; dit is een extra controle)
   const lijst = alles
     ? [...meldingen]
-    : meldingen.filter(m => m.gemeldDoor === ingelogdeGebruiker.naam);
+    : meldingen.filter(m => m.gemeldDoorId === ingelogdeGebruiker.id);
 
   if (lijst.length === 0) {
     const leeg = document.createElement("p");
@@ -798,12 +869,19 @@ function maakMeldingKaart(melding) {
   const kaart = document.createElement("article");
   kaart.className = "taak";
 
-  if (melding.foto) {
+  // De foto, via een tijdelijke link. Geen link (meestal geen bereik)? Dan een zin.
+  const link = geldigeFotoLink(melding.fotoPad);
+  if (link) {
     const foto = document.createElement("img");
     foto.className = "foto";
-    foto.src = melding.foto;
+    foto.src = link;
     foto.alt = "Foto van het gebrek bij " + melding.plek;
     kaart.append(foto);
+  } else if (melding.fotoPad) {
+    const zonder = document.createElement("p");
+    zonder.className = "details";
+    zonder.textContent = "📷 Er is een foto. Die zie je als je weer bereik hebt.";
+    kaart.append(zonder);
   }
 
   const titel = document.createElement("h2");
@@ -843,15 +921,15 @@ function maakMeldingKaart(melding) {
   statusLabel.textContent = STATUS_TEKST[status];
   kaart.append(statusLabel);
 
-  // NIEUW: de toelichting bij "Geen actie nodig" (ziet de melder ook)
-  if (melding.geenActie && melding.geenActieReden) {
+  // De toelichting bij "Geen actie nodig" (ziet de melder ook)
+  if (status === "Geen actie nodig" && melding.geenActieReden) {
     const reden = document.createElement("p");
     reden.textContent = "Toelichting van " + melding.geenActieDoor + ": " + melding.geenActieReden;
     kaart.append(reden);
   }
 
-  // Knoppen voor bestuur en coördinator
-  if (ingelogdeGebruiker.magAllesZien) {
+  // Knoppen voor bestuur en coördinator (TIJDELIJK uit, zie AFHANDELEN_AAN)
+  if (AFHANDELEN_AAN && ingelogdeGebruiker.magAllesZien) {
     if (status === "Nieuw" && meldingMetRedenOpen === melding) {
       // NIEUW: vak om uit te leggen waarom er geen actie nodig is
       kaart.append(maakInvoerVeld("Waarom is er geen actie nodig? De melder ziet dit.", "lang",
@@ -868,10 +946,7 @@ function maakMeldingKaart(melding) {
         verversScherm();
       }));
     } else if (status === "Nieuw") {
-      // TIJDELIJK uit: zolang meldingen nog voorbeeldgegevens zijn, kan een echte
-      // taak niet aan een melding gekoppeld worden. Weer aanzetten in de stap
-      // met meldingen uit de database (dan deze regel zonder // ervoor).
-      // kaart.append(maakHoofdKnop("📋 Maak taak", () => openTaakUitMelding(melding)));
+      kaart.append(maakHoofdKnop("📋 Maak taak", () => openTaakUitMelding(melding)));
       // NIEUW: opent eerst het vak voor de toelichting
       kaart.append(maakTweedeKnop("Geen actie nodig", () => {
         meldingMetRedenOpen = melding;
@@ -1189,6 +1264,7 @@ async function haalTakenOp() {
     personen = antwoord.personen;
     lijsten = antwoord.lijsten;
     zetLijsten(lijsten);
+    meldingen.splice(0, meldingen.length, ...antwoord.meldingen);
     takenUitleg = "";
     bewaarTakenOpToestel();
     await haalFotoLinksOp();   // tijdelijke links voor de foto's na afloop
@@ -1201,6 +1277,7 @@ async function haalTakenOp() {
       personen = bewaard.personen || [];
       lijsten = bewaard.lijsten || lijsten;
       zetLijsten(lijsten);
+      meldingen.splice(0, meldingen.length, ...(bewaard.meldingen || []));
       takenUitleg = "Geen verbinding. Je ziet de lijst van " + leesbareTijd(bewaard.tijd) + ".";
     } else {
       taken.splice(0, taken.length);
@@ -1218,7 +1295,8 @@ function bewaarTakenOpToestel() {
     mijnNaam: mijnToewijsNaam,
     taken: taken,
     personen: personen,   // alleen gevuld voor bestuur en coördinator
-    lijsten: lijsten      // werkgroepen en plekken
+    lijsten: lijsten,     // werkgroepen en plekken
+    meldingen: meldingen  // zonder foto's: alleen waar de foto staat
   });
 }
 
@@ -1238,16 +1316,25 @@ function zetLijsten(lijsten) {
   werkgroepNummer = {};
   lijsten.werkgroepen.forEach(w => { werkgroepNummer[w.naam] = w.id; });
 
-  plekNamen = lijsten.plekken.map(p => p.naam);
+  // Alleen plekken die meedoen worden knoppen. De namen van alle plekken
+  // (ook oude) zijn nodig om oude meldingen te kunnen laten zien.
+  const actievePlekken = lijsten.plekken.filter(p => p.actief !== false);
+  plekNamen = actievePlekken.map(p => p.naam);
   plekNummer = {};
+  plekNaamVan = {};
   werkgroepBijPlek = {};
-  lijsten.plekken.forEach(p => {
+  lijsten.plekken.forEach(p => { plekNaamVan[p.id] = p.naam; });
+  actievePlekken.forEach(p => {
     plekNummer[p.naam] = p.id;
     if (p.werkgroep) werkgroepBijPlek[p.naam] = p.werkgroep;
   });
 }
 
-// Het echte werk: vier vragen aan de database (vijf voor bestuur).
+// Opzoektabel: nummer van een plek → naam (ook van plekken die niet meer meedoen)
+let plekNaamVan = {};
+
+// Het echte werk: vijf vragen aan de database (zes voor bestuur), voor taken,
+// meldingen, namen, werkgroepen en plekken.
 // De database geeft alleen de taken die jij mag zien (regels in 03_rechten.sql).
 async function vraagTakenOpBijDatabase() {
   // Stopt het wachten na WACHTTIJD_DATABASE, zodat de app niet blijft hangen
@@ -1283,21 +1370,33 @@ async function vraagTakenOpBijDatabase() {
       .order("id")
       .abortSignal(stopper.signal);
 
-    // 5. De plekken die meedoen, in de volgorde van de knoppen, met de
-    //    werkgroep die er meestal bij hoort
+    // 5. Alle plekken, in de volgorde van de knoppen, met de werkgroep die
+    //    er meestal bij hoort. Ook plekken die niet meer meedoen (actief =
+    //    false): die worden geen knop, maar oude meldingen hebben hun naam nodig.
     const plekkenVraag = database
       .from("plekken")
-      .select("id, naam, volgorde, werkgroep:werkgroepen(naam)")
-      .eq("actief", true)
+      .select("id, naam, volgorde, actief, werkgroep:werkgroepen(naam)")
       .order("volgorde")
       .abortSignal(stopper.signal);
 
+    // 6. Meldingen, met hun status. Vrijwilligers: alleen hun eigen.
+    let meldingenVraag = database
+      .from("meldingen_met_status")
+      .select("id, plek, foto, toelichting, gevaarlijk, gemeld_door, gemeld_op, taak, " +
+              "geen_actie_reden, geen_actie_door, status");
+    if (!ingelogdeGebruiker.magAllesZien) {
+      meldingenVraag = meldingenVraag.eq("gemeld_door", ingelogdeGebruiker.id);
+    }
+    meldingenVraag = meldingenVraag.abortSignal(stopper.signal);
+
     // Alle vragen tegelijk versturen, en wachten tot ze allemaal klaar zijn
-    const [takenAntwoord, namenAntwoord, ledenAntwoord, werkgroepenAntwoord, plekkenAntwoord] =
-      await Promise.all([takenVraag, namenVraag, ledenVraag, werkgroepenVraag, plekkenVraag]);
-    for (const antwoord of [takenAntwoord, namenAntwoord, ledenAntwoord, werkgroepenAntwoord, plekkenAntwoord]) {
+    const antwoorden = await Promise.all(
+      [takenVraag, namenVraag, ledenVraag, werkgroepenVraag, plekkenVraag, meldingenVraag]);
+    for (const antwoord of antwoorden) {
       if (antwoord.error) throw antwoord.error;
     }
+    const [takenAntwoord, namenAntwoord, ledenAntwoord, werkgroepenAntwoord, plekkenAntwoord,
+           meldingenAntwoord] = antwoorden;
 
     // Werkgroepen en plekken, in een eenvoudige vorm
     const lijsten = {
@@ -1305,9 +1404,12 @@ async function vraagTakenOpBijDatabase() {
       plekken: plekkenAntwoord.data.map(p => ({
         id: p.id,
         naam: p.naam,
+        actief: p.actief,
         werkgroep: p.werkgroep ? p.werkgroep.naam : ""   // "" bij bijv. "Overig"
       }))
     };
+    const plekNaam = {};
+    lijsten.plekken.forEach(p => { plekNaam[p.id] = p.naam; });
 
     // Opzoeklijst: nummer van een gebruiker → naam
     const naamVan = {};
@@ -1345,7 +1447,23 @@ async function vraagTakenOpBijDatabase() {
 
     // Mijn eigen naam zoals de app hem laat zien (bijv. "Piet P.")
     const mijnNaam = naamVan[ingelogdeGebruiker.id] || ingelogdeGebruiker.naam;
-    return { taken: nieuweTaken, mijnNaam, personen: nieuwePersonen, lijsten };
+    // Elke melding omzetten naar de vorm die de app kent
+    const nieuweMeldingen = meldingenAntwoord.data.map(rij => ({
+      id: rij.id,
+      plek: plekNaam[rij.plek] || "Onbekende plek",
+      fotoPad: rij.foto,                 // waar de foto in de fotomap staat
+      tekst: rij.toelichting || "",
+      gevaarlijk: rij.gevaarlijk,
+      gemeldDoorId: rij.gemeld_door,
+      gemeldDoor: naamVan[rij.gemeld_door] || "",
+      datum: rij.gemeld_op,              // datum en tijd, bijv. "2026-11-15T10:32:00+00:00"
+      taakId: rij.taak,
+      status: rij.status,
+      geenActieReden: rij.geen_actie_reden || "",
+      geenActieDoor: naamVan[rij.geen_actie_door] || ""
+    }));
+
+    return { taken: nieuweTaken, mijnNaam, personen: nieuwePersonen, lijsten, meldingen: nieuweMeldingen };
   } finally {
     clearTimeout(wekker);   // wekker uitzetten, ook als er iets misging
   }
@@ -1492,7 +1610,7 @@ document.querySelectorAll("nav button").forEach(knop => {
   knop.addEventListener("click", () => {
     const scherm = knop.dataset.scherm;
     toonScherm(scherm);
-    if (scherm === "mijn" || scherm === "werkgroep") ververs(scherm);
+    if (scherm === "mijn" || scherm === "werkgroep" || scherm === "meldingen") ververs(scherm);
   });
 });
 

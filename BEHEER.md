@@ -6,8 +6,11 @@ Stand: inloggen en alles rond taken werkt met de database (Supabase): bekijken,
 keuzelijst, nieuwe taak, wijzigen en de foto na afloop. In de keuzelijst staan eerst
 de leden van de werkgroep van de taak, dan alle anderen; wie gestopt is staat er
 niet in. Plekken en werkgroepen komen ook uit de database.
-Meldingen zijn nog voorbeeldgegevens; de knop "Maak taak" bij een melding staat
-daarom tijdelijk uit.
+Meldingen werken ook met de database: melden met foto, en op "Meldingen" de status
+(vrijwilligers zien alleen hun eigen meldingen, bestuur alle). "Ongedaan maken" na
+het melden trekt de melding in. Afhandelen door bestuur ("Maak taak", "Geen actie
+nodig") staat nog tijdelijk uit. De e-mail bij een gevaarlijke melding komt later
+(daarvoor is eerst de e-maildienst nodig).
 
 Lukt een knop niet, dan staat onderaan wat er mis is. Bijvoorbeeld "Iemand anders
 heeft deze taak al opgepakt" (de app haalt dan de nieuwste lijst op) of "Geen
@@ -122,7 +125,8 @@ Tot het beheerscherm er is, doe je dit in Supabase > **Table Editor**:
   tabel `werkgroepen`, kolom `id`), en bij `volgorde` een getal: de knoppen staan op
   volgorde van klein naar groot ("Overig" heeft 999, dus blijft achteraan).
 - **Plek of werkgroep niet meer gebruiken:** zet `actief` op false. Niet
-  verwijderen: oude taken verwijzen er nog naar.
+  verwijderen: oude taken en meldingen verwijzen er nog naar (en laten de naam
+  nog zien).
 - **Werkgroep toevoegen:** tabel `werkgroepen` > **Insert row**, alleen `naam`.
 De app haalt de nieuwe lijst op bij de volgende keer openen.
 

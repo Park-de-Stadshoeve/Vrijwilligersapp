@@ -126,9 +126,9 @@ Ik bouw deze app zelf om te leren hoe je een app maakt. Claude schrijft code, ma
 ## Stand van zaken
 Werk deze sectie bij aan het eind van elke stap.
 
-Klaar (inloggen en taken werken met de database; meldingen zijn nog voorbeeldgegevens):
+Klaar (inloggen, taken en melden werken met de database; afhandelen van meldingen nog niet):
 - Alle vijf de functies, verdeeld over: index.html (geraamte), stijl.css (uiterlijk),
-  app.js (logica en voorbeeldmeldingen), instellingen.js (adres en publishable
+  app.js (logica en praten met de database), instellingen.js (adres en publishable
   sleutel van Supabase) en inloggen.js (inloggen met code, uitloggen, profiel).
 - Inloggen: signInWithOtp met shouldCreateUser: false, daarna verifyOtp met de code.
   Profiel (voornaam, rol, werkgroepen) uit de database, bewaard op het toestel voor
@@ -151,7 +151,6 @@ Klaar (inloggen en taken werken met de database; meldingen zijn nog voorbeeldgeg
   alleen actief; plekken op volgorde) en staan in plekNamen, werkgroepBijPlek,
   alleWerkgroepen, plekNummer en werkgroepNummer (zetLijsten in app.js), ook
   bewaard op het toestel. Onderdelen nog niet in de app.
-- De voorbeeldmeldingen gebruiken verzonnen namen (Kirsten, Piet, Jan).
 - Installeerbaar als app (PWA): manifest.json, iconen/ (logo in 180, 192, 512) en
   service-worker.js ("eerst internet, na 3 seconden de bewaarde kopie"). Alleen de
   app zelf wordt bewaard, nog geen taken of meldingen.
@@ -229,7 +228,18 @@ Klaar (inloggen en taken werken met de database; meldingen zijn nog voorbeeldgeg
   "Proefversie"-zin weg. "Maak taak" bij een melding TIJDELIJK uit (regel met //
   in maakMeldingKaart). Getest op telefoon en computer (aanmaken, toewijzen,
   wijzigen, plek uitzetten in Supabase): alles goed.
-  Meldingen zijn nog voorbeeldgegevens (foto bij melden nog alleen op toestel).
+- Meldingen uit de database (stap 1 van 2): ophalen uit meldingen_met_status
+  (status uit de database; vrijwilliger alleen eigen via eq gemeld_door, bestuur
+  alles), mee in haalTakenOp en bewaard op het toestel (zonder foto's). Plekken
+  worden nu allemaal opgehaald (ook niet-actief) voor plekNaamVan; alleen actieve
+  worden knoppen. Melden: eerst foto (stuurFotoNaarDatabase, nu met eigen
+  fouttekst), dan insert in meldingen; mislukt: formulier blijft staan, een al
+  verstuurde foto wordt niet opnieuw verstuurd. Ongedaan maken = intrekken
+  (trekMeldingIn, delete; mag zolang Nieuw). Foto bij melding via tijdelijke
+  link. Afhandelknoppen TIJDELIJK uit (AFHANDELEN_AAN = false); zetGeenActie en
+  openTaakUitMelding gebruiken nog oude velden (geenActie, melding.foto) en
+  moeten in stap 2 naar de database. Getest in de browser met nagemaakte
+  database; nog niet op de telefoon.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
@@ -259,7 +269,9 @@ Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
 Volgende stappen:
-0. Meldingen uit de database (met foto, status, "Geen actie nodig", "Maak taak" weer aan).
+0. Melden testen op de telefoon. Daarna stap 2 van meldingen: afhandelen door
+   bestuur ("Maak taak" met koppeling taak ↔ melding en foto bij de taak, "Geen
+   actie nodig" met toelichting, weer openen), AFHANDELEN_AAN weer aan.
 1. Besluit van het bestuur afwachten. Feedback (vergadering 22 oktober 2026): eerst
    autorisaties en hosting onderzoeken, invoering stap voor stap. Daarvoor is een
    notitie gemaakt (staat buiten de repository, want het is een intern stuk) met
