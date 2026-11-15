@@ -238,8 +238,8 @@ Klaar (inloggen, taken en melden werken met de database; afhandelen van meldinge
   (trekMeldingIn, delete; mag zolang Nieuw). Foto bij melding via tijdelijke
   link. Afhandelknoppen TIJDELIJK uit (AFHANDELEN_AAN = false); zetGeenActie en
   openTaakUitMelding gebruiken nog oude velden (geenActie, melding.foto) en
-  moeten in stap 2 naar de database. Getest in de browser met nagemaakte
-  database; nog niet op de telefoon.
+  moeten in stap 2 naar de database. Getest op telefoon en computer (melden,
+  intrekken, bestuur ziet alle meldingen, geen bereik): alles goed.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
@@ -269,7 +269,7 @@ Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
 Volgende stappen:
-0. Melden testen op de telefoon. Daarna stap 2 van meldingen: afhandelen door
+0. Stap 2 van meldingen: afhandelen door
    bestuur ("Maak taak" met koppeling taak ↔ melding en foto bij de taak, "Geen
    actie nodig" met toelichting, weer openen), AFHANDELEN_AAN weer aan.
 1. Besluit van het bestuur afwachten. Feedback (vergadering 22 oktober 2026): eerst
