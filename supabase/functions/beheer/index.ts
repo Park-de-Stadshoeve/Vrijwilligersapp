@@ -19,6 +19,8 @@
 //   - "terugzetten":         weer laten meedoen (ook "Ongedaan maken" na
 //                            stoppen): nieuw inlogaccount met hetzelfde nummer,
 //                            zodat naam en geschiedenis blijven kloppen
+//   - "backup":              alle gegevens en inlogaccounts ophalen voor de
+//                            back-up (de app maakt er een zip-bestand van)
 //
 // Wie mag het?
 //   Alleen een ingelogde, actieve beheerder (vinkje is_beheerder). Dat
@@ -97,6 +99,7 @@ Deno.serve(async (verzoek) => {
     if (vraag.actie === "email_wijzigen") return antwoord(await wijzigEmail(beheer, vraag));
     if (vraag.actie === "stoppen") return antwoord(await laatStoppen(beheer, vraag, vrager.id));
     if (vraag.actie === "terugzetten") return antwoord(await zetTerug(beheer, vraag));
+    if (vraag.actie === "backup") return antwoord(await maakBackup(beheer, vrager.id));
     throw new BeheerFout("Onbekende actie.");
   } catch (fout) {
     if (fout instanceof BeheerFout) return antwoord({ fout: fout.message }, fout.status);
@@ -265,6 +268,73 @@ async function zetTerug(beheer: any, vraag: any) {
     throw vertaalDatabaseFout(error);
   }
   return { gelukt: true };
+}
+
+
+// ----- BACK-UP -----
+// Haalt ALLE gegevens op (de geheime sleutel ziet alles, ook wat een
+// beheerder in de app niet ziet) plus de inlogaccounts (nummer en
+// e-mailadres). De app maakt daar een zip-bestand van; dat zet de
+// beheerder op SharePoint. Zie BEHEER.md, "Back-up".
+//
+// Welke tabellen, en waarop ze gesorteerd worden. Komt er later een tabel
+// bij, zet hem dan hier ook bij (en in de knop "Back-up terugzetten").
+const BACKUP_TABELLEN: Record<string, string[]> = {
+  werkgroepen: ["id"],
+  plekken: ["id"],
+  onderdelen: ["id"],
+  gebruikers: ["id"],
+  lidmaatschappen: ["gebruiker", "werkgroep"],
+  taken: ["id"],
+  meldingen: ["id"],
+  back_ups: ["id"],
+};
+const BACKUP_VERSIE = 1;   // verhogen als de opbouw van de back-up verandert
+
+// deno-lint-ignore no-explicit-any
+async function maakBackup(beheer: any, vragerId: string) {
+  const tabellen: Record<string, unknown[]> = {};
+  for (const [tabel, sortering] of Object.entries(BACKUP_TABELLEN)) {
+    tabellen[tabel] = await haalHeleTabel(beheer, tabel, sortering);
+  }
+
+  // De inlogaccounts, per 1000 tegelijk
+  const accounts: { id: string; email: string }[] = [];
+  for (let pagina = 1; ; pagina++) {
+    const { data, error } = await beheer.auth.admin.listUsers({ page: pagina, perPage: 1000 });
+    if (error) throw vertaalAccountFout(error);
+    // deno-lint-ignore no-explicit-any
+    data.users.forEach((u: any) => accounts.push({ id: u.id, email: u.email }));
+    if (data.users.length < 1000) break;
+  }
+
+  // Onthouden dat er een back-up is gemaakt (tabel back_ups, 12_backup.sql)
+  const { error } = await beheer.from("back_ups").insert({ gemaakt_door: vragerId });
+  if (error) throw vertaalDatabaseFout(error);
+
+  return {
+    gelukt: true,
+    versie: BACKUP_VERSIE,
+    gemaakt_op: new Date().toISOString(),
+    tabellen,
+    accounts,
+  };
+}
+
+// Haalt een hele tabel op. De database geeft hooguit 1000 rijen per keer,
+// dus we vragen in stukjes van 1000 tot alles binnen is.
+// deno-lint-ignore no-explicit-any
+async function haalHeleTabel(beheer: any, tabel: string, sortering: string[]) {
+  const alles: unknown[] = [];
+  for (let van = 0; ; van += 1000) {
+    let vraag = beheer.from(tabel).select("*");
+    for (const kolom of sortering) vraag = vraag.order(kolom);
+    const { data, error } = await vraag.range(van, van + 999);
+    if (error) throw vertaalDatabaseFout(error);
+    alles.push(...data);
+    if (data.length < 1000) break;
+  }
+  return alles;
 }
 
 

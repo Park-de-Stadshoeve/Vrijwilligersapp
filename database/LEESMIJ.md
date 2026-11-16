@@ -16,7 +16,8 @@ database opbouwt en bevraagt. Het ontwerp in gewone taal staat in `../DATABASE.m
 | `08_beheer.sql` | Vaste actie "gebruiker wijzigen" voor het beheerscherm, en een bewaker: er blijft altijd minstens één beheerder | uitgevoerd in testproject |
 | `09_email.sql` | Beheerders kunnen het e-mailadres van een gebruiker zien (in het formulier "Wijzigen") | uitgevoerd in testproject |
 | `10_stoppen.sql` | Database-deel van "Laten stoppen" en "Weer laten meedoen" (alleen voor de Edge Function) | uitgevoerd in testproject |
-| `11_opmerking.sql` | Opmerking bij een gereed gemelde taak: twee kolommen, vaste actie "opmerking zetten", en Weer openen maakt hem leeg | nog uitvoeren |
+| `11_opmerking.sql` | Opmerking bij een gereed gemelde taak: twee kolommen, vaste actie "opmerking zetten", en Weer openen maakt hem leeg | uitgevoerd in testproject |
+| `12_backup.sql` | Tabel back_ups: wanneer en door wie een back-up is gemaakt (alleen beheerders zien hem) | nog uitvoeren |
 
 ## Testbestanden
 Deze mag je zo vaak uitvoeren als je wilt. Ze ruimen hun eigen testgegevens op.
@@ -32,7 +33,8 @@ Gebruik ze na een wijziging, om te zien of alles nog werkt.
 | `test_08_beheer.sql` | Wie gebruikers mag wijzigen, en of er altijd een beheerder overblijft (9 tests). Zet de echte beheerders heel even uit en daarna terug. Getest: alles goed. |
 | `test_09_email.sql` | Wie e-mailadressen mag zien (4 tests). Gebruikt een verzonnen adres op `voorbeeld.invalid`; daar gaat nooit mail heen. Getest: alles goed. |
 | `test_10_stoppen.sql` | Laten stoppen en weer laten meedoen: taken, vinkjes, wie het mag (7 tests). Zet de echte beheerders heel even uit en daarna terug. Getest: alles goed. |
-| `test_11_opmerking.sql` | Wie een opmerking mag zetten, lengte, weghalen en Weer openen (8 tests). |
+| `test_11_opmerking.sql` | Wie een opmerking mag zetten, lengte, weghalen en Weer openen (8 tests). Getest: alles goed. |
+| `test_12_backup.sql` | Wie de back-up-regels mag zien en wijzigen (4 tests). |
 
 Let op: na `08_beheer.sql` heeft het project minstens één echte beheerder nodig om de
 tests uit te voeren. Anders houdt de bewaker het opruimen van de testgebruikers tegen.

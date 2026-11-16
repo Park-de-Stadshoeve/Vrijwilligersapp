@@ -327,7 +327,22 @@ Klaar (inloggen, taken en meldingen werken met de database):
   met tekstvak (maakOpmerkingDeel, slaOpmerkingOp, Ongedaan maken); Weer openen
   ongedaan zet foto én opmerking terug (meldGereed met derde parameter).
   Getest: test_11 lokaal (8 tests), 03/06/10 nog goed, kaartje in de browser.
-  NOG TE DOEN: 11 uitvoeren, testen op de telefoon.
+  11 uitgevoerd, test_11 goed. Getest op de telefoon (toevoegen, verversen,
+  wijzigen/weghalen met Ongedaan maken, Weer openen met Ongedaan maken,
+  bestuur ziet en wijzigt): alles goed.
+- Back-up, in 3 stappen: (a) gegevens en inlogaccounts, (b) foto's erbij,
+  (c) knop "Back-up terugzetten" (alleen in een lege database; één keer testen
+  door het testproject leeg te maken en terug te zetten).
+  Stap (a) gebouwd: database/12_backup.sql (tabel back_ups: gemaakt_op,
+  gemaakt_door; zien alleen beheerders; toevoegen alleen service_role). Edge
+  Function "beheer" actie backup: alle tabellen uit BACKUP_TABELLEN (per 1000,
+  gesorteerd) + accounts (listUsers: id, email), schrijft regel in back_ups,
+  versie 1. beheer.js: onderaan beheerscherm "Back-up" met laatste datum en
+  knop; waarschuwing bovenaan na 31 dagen; JSZip 3.10.1 van jsdelivr met
+  integrity (alleen geladen bij de knop); zip met gegevens.json en LEESMIJ.txt.
+  Getest: test_12 lokaal (4 tests), functie met nep-Supabase (2500 rijen,
+  1200 accounts), download in de browser: alles goed. NOG TE DOEN: 12
+  uitvoeren, functie opnieuw plakken, testen op een computer.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
@@ -352,6 +367,12 @@ Besluiten (november 2026):
   de geïnstalleerde app en de inlog aan het adres vastzitten.
   Na het omzetten: eigen domein instellen in GitHub (repo) en domein verifiëren
   (organisatie), Site URL en Redirect URLs in Supabase aanpassen, BEHEER.md bijwerken.
+
+- Back-up: maandelijks door een beheerder via het beheerscherm, op een computer,
+  naar een afgeschermde map op de SharePoint van de stichting (alleen bestuur en
+  beheerders; toegang is geregeld). Laatste 3 bewaren. Foto's gaan mee (hele
+  database moet herstelbaar zijn), elke maand alle foto's. Geen automatische
+  back-up via GitHub (dan databasewachtwoord en persoonsgegevens bij GitHub).
 
 Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg).
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.

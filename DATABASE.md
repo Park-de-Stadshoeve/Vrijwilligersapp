@@ -265,6 +265,16 @@ De app bewaart persoonsgegevens niet langer dan nodig. Dit zijn de afspraken:
 - In het archief blijven de voornamen staan, zodat je later kunt nalezen wie wat deed.
   Voor het archief geldt de bewaartermijn die de stichting voor SharePoint afspreekt.
 
+**Back-up**
+- Eén keer per maand maakt een beheerder een back-up van alle gegevens, inclusief de
+  inlogaccounts (e-mailadressen); vanaf de volgende stap ook de foto's.
+- De back-up staat in een afgeschermde map op de SharePoint van de stichting (alleen
+  bestuur en beheerders). De laatste 3 back-ups blijven bewaard; oudere worden
+  verwijderd.
+- Gevolg: gegevens die in de app worden verwijderd (bijv. het e-mailadres van iemand
+  die stopt), staan nog maximaal 3 maanden in een oude back-up.
+- De tabel `back_ups` onthoudt alleen wanneer en door wie een back-up is gemaakt.
+
 **Iemand stopt als vrijwilliger**
 1. De beheerder kiest in het beheerscherm "Laten stoppen". De persoon staat dan op
    "niet actief". Het inlogaccount en het e-mailadres worden direct verwijderd;

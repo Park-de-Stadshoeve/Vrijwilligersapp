@@ -4,6 +4,7 @@
 // Stap 1: bekijken. Stap 2: naam, rol, vinkjes en werkgroepen wijzigen.
 // Stap 3: iemand toevoegen en het e-mailadres wijzigen.
 // Stap 4: iemand laten stoppen en weer laten meedoen.
+// Daarna: back-up downloaden (zie "BACK-UP" onderaan).
 //
 // Veilig? De knop "Beheer" zie je alleen met het vinkje is_beheerder. Maar ook
 // als iemand anders dit scherm zou openen, geeft de database alleen zijn eigen
@@ -47,8 +48,9 @@ async function toonBeheer() {
     inhoud.replaceChildren(melding, maakTweedeKnop("Opnieuw proberen", toonBeheer));
     return;
   }
+  const laatsteBackup = await haalLaatsteBackupOp();   // lukt dit niet: null
   if (huidigScherm !== "beheer") return;   // intussen een ander scherm gekozen
-  toonGebruikersLijst(gebruikers);
+  toonGebruikersLijst(gebruikers, laatsteBackup);
 }
 
 // Vraagt alle gebruikers en hun werkgroepen op bij de database.
@@ -102,9 +104,13 @@ async function haalGebruikersOp() {
 }
 
 // Zet de lijst op het scherm: eerst wie meedoet, onderaan wie gestopt is
-function toonGebruikersLijst(gebruikers) {
+function toonGebruikersLijst(gebruikers, laatsteBackup) {
   const inhoud = document.getElementById("inhoud");
   inhoud.replaceChildren();
+
+  // Te lang geen back-up? Dan bovenaan een waarschuwing.
+  const waarschuwing = maakBackupWaarschuwing(laatsteBackup);
+  if (waarschuwing) inhoud.append(waarschuwing);
 
   const actief = gebruikers.filter(g => g.actief);
   const gestopt = gebruikers.filter(g => !g.actief);
@@ -124,6 +130,8 @@ function toonGebruikersLijst(gebruikers) {
     inhoud.append(kopGestopt);
     gestopt.forEach(gebruiker => inhoud.append(maakGebruikerKaart(gebruiker)));
   }
+
+  inhoud.append(maakBackupDeel(laatsteBackup));
 }
 
 // Eén kaartje per persoon: naam, rol, werkgroepen en de vinkjes
@@ -624,6 +632,156 @@ async function roepBeheerFunctieAan(gegevens) {
   } finally {
     clearTimeout(wekker);
   }
+}
+
+// ===== BACK-UP =====
+// Eén keer per maand downloadt een beheerder een back-up: een zip-bestand
+// met alle gegevens en inlogaccounts (gegevens.json) en een uitleg
+// (LEESMIJ.txt). De beheerder zet het bestand op de afgeschermde map op
+// SharePoint. Zie BEHEER.md, "Back-up".
+// De gegevens komen van de Edge Function "beheer" (actie "backup").
+
+const BACKUP_WAARSCHUW_NA_DAGEN = 31;
+
+// Hulpbestand om zip-bestanden te maken. Wordt alleen geladen als een
+// beheerder op "Back-up downloaden" tikt. De "integrity"-code zorgt dat de
+// browser het bestand weigert als iemand het bij jsdelivr zou veranderen.
+// Nieuwe versie? Dan verandert ook de code (zie BEHEER.md).
+const JSZIP_ADRES = "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js";
+const JSZIP_CONTROLE = "sha384-+mbV2IY1Zk/X1p/nWllGySJSUN8uMs+gUAN10Or95UBH0fpj6GfKgPmgC5EXieXG";
+
+// Wanneer is de laatste back-up gemaakt? Geeft een datum, of null als er
+// nog nooit een is gemaakt of als het ophalen niet lukt.
+async function haalLaatsteBackupOp() {
+  try {
+    const { data, error } = await database
+      .from("back_ups").select("gemaakt_op")
+      .order("gemaakt_op", { ascending: false }).limit(1);
+    if (error) throw error;
+    return data.length > 0 ? new Date(data[0].gemaakt_op) : null;
+  } catch (fout) {
+    console.warn("Laatste back-up ophalen mislukt:", fout);
+    return null;
+  }
+}
+
+// Hoeveel hele dagen geleden?
+function dagenGeleden(datum) {
+  return Math.floor((Date.now() - datum.getTime()) / (24 * 60 * 60 * 1000));
+}
+
+// Waarschuwing bovenaan als het te lang geleden is (anders niets)
+function maakBackupWaarschuwing(laatsteBackup) {
+  if (laatsteBackup && dagenGeleden(laatsteBackup) <= BACKUP_WAARSCHUW_NA_DAGEN) return null;
+  const melding = document.createElement("p");
+  melding.className = "uitleg-bovenaan";
+  melding.setAttribute("role", "status");
+  melding.textContent = laatsteBackup
+    ? "⚠️ De laatste back-up is " + dagenGeleden(laatsteBackup) + " dagen oud. Maak een nieuwe (knop onderaan)."
+    : "⚠️ Er is nog geen back-up gemaakt. Maak er een (knop onderaan).";
+  return melding;
+}
+
+// Onderaan het beheerscherm: wanneer de laatste back-up was, en de knop
+function maakBackupDeel(laatsteBackup) {
+  const deel = document.createElement("section");
+  const kop = document.createElement("h2");
+  kop.className = "beheer-kop";
+  kop.textContent = "Back-up";
+  deel.append(kop);
+
+  const wanneer = document.createElement("p");
+  wanneer.textContent = laatsteBackup
+    ? "Laatste back-up: " + leesbareTijd(laatsteBackup) + " (" + dagenGeleden(laatsteBackup) + " dagen geleden)."
+    : "Er is nog geen back-up gemaakt.";
+  deel.append(wanneer);
+
+  const uitleg = document.createElement("p");
+  uitleg.className = "details";
+  uitleg.textContent = "Doe dit één keer per maand, op een computer. Zet het bestand daarna in de " +
+    "afgeschermde map op SharePoint en verwijder het uit je map Downloads.";
+  deel.append(uitleg);
+
+  const knop = maakTweedeKnop("💾 Back-up downloaden", () => downloadBackup(knop));
+  deel.append(knop);
+  return deel;
+}
+
+// 💾 Maakt het zip-bestand en laat de browser het downloaden
+async function downloadBackup(knop) {
+  knop.disabled = true;   // een tweede tik maakt niet twee back-ups
+  try {
+    toonMelding("Back-up maken… even geduld");
+    await laadJSZip();
+    const antwoord = await roepBeheerFunctieAan({ actie: "backup" });
+    if (!antwoord.gelukt) return;   // de melding zegt wat er mis is
+
+    const { gelukt, ...gegevens } = antwoord.data;   // "gelukt" hoort niet in het bestand
+    const datum = gegevens.gemaakt_op.slice(0, 10);   // bijv. 2026-11-16
+    const zip = new JSZip();
+    zip.file("gegevens.json", JSON.stringify(gegevens, null, 1));
+    zip.file("LEESMIJ.txt", backupLeesmij(gegevens));
+    const bestand = await zip.generateAsync({ type: "blob", compression: "DEFLATE" });
+    bewaarBestand(bestand, "stadshoeve-backup-" + datum + ".zip");
+
+    toonMelding("Back-up gedownload. Zet hem op SharePoint en haal hem uit je Downloads.");
+    if (huidigScherm === "beheer") toonBeheer();   // "laatste back-up" bijwerken
+  } catch (fout) {
+    console.warn("Back-up mislukt:", fout);
+    toonMelding("De back-up is niet gelukt (" + fout.message + "). Probeer het opnieuw op een computer met internet.");
+  } finally {
+    knop.disabled = false;
+  }
+}
+
+// Laadt het hulpbestand JSZip (één keer)
+function laadJSZip() {
+  if (window.JSZip) return Promise.resolve();
+  return new Promise((klaar, mislukt) => {
+    const script = document.createElement("script");
+    script.src = JSZIP_ADRES;
+    script.integrity = JSZIP_CONTROLE;
+    script.crossOrigin = "anonymous";
+    script.onload = klaar;
+    script.onerror = () => mislukt(new Error("hulpbestand voor zip niet geladen"));
+    document.head.append(script);
+  });
+}
+
+// Laat de browser een bestand downloaden
+function bewaarBestand(bestand, naam) {
+  const adres = URL.createObjectURL(bestand);
+  const link = document.createElement("a");
+  link.href = adres;
+  link.download = naam;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(adres), 60000);   // na een minuut opruimen
+}
+
+// De tekst van LEESMIJ.txt in de back-up
+function backupLeesmij(gegevens) {
+  const aantallen = Object.entries(gegevens.tabellen)
+    .map(([tabel, rijen]) => "  " + tabel + ": " + rijen.length)
+    .join("\n");
+  return [
+    "Back-up Vrijwilligersapp Park de Stadshoeve",
+    "Gemaakt op: " + gegevens.gemaakt_op,
+    "",
+    "LET OP: dit bestand bevat persoonsgegevens (voornamen en e-mailadressen).",
+    "Bewaar het alleen in de afgeschermde map op SharePoint. Bewaar de laatste 3",
+    "back-ups en verwijder oudere. Zie BEHEER.md in de repository, kopje 'Back-up'.",
+    "",
+    "Wat zit erin?",
+    "  gegevens.json: alle tabellen en de inlogaccounts (nummer en e-mailadres).",
+    "",
+    "Aantal rijen per tabel:",
+    aantallen,
+    "  inlogaccounts: " + gegevens.accounts.length,
+    "",
+    "Terugzetten: zie BEHEER.md, kopje 'Back-up'."
+  ].join("\n");
 }
 
 // De knop "Beheer" bovenin. Of hij te zien is, regelt startApp (app.js).
