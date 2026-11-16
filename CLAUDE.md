@@ -319,6 +319,15 @@ Klaar (inloggen, taken en meldingen werken met de database):
   weg in Authentication, Ongedaan maken, Weer laten meedoen met inloggen,
   inloggen na stoppen geweigerd): alles goed. createUser met hetzelfde id
   werkt in Supabase. Beheerscherm voor gebruikers is klaar.
+- Opmerking na afloop (later-lijst 14): database/11_opmerking.sql (kolommen
+  opmerking (max 500) en opmerking_door in taken, regel: alleen bij gereed;
+  vaste actie taak_opmerking_zetten, zelfde rechten als foto, leeg = weghalen;
+  taak_heropenen maakt ook opmerking leeg). app.js: haalTakenOp haalt opmerking
+  op; gereed kaartje toont "💬 Naam: tekst" en knop Opmerking toevoegen/wijzigen
+  met tekstvak (maakOpmerkingDeel, slaOpmerkingOp, Ongedaan maken); Weer openen
+  ongedaan zet foto én opmerking terug (meldGereed met derde parameter).
+  Getest: test_11 lokaal (8 tests), 03/06/10 nog goed, kaartje in de browser.
+  NOG TE DOEN: 11 uitvoeren, testen op de telefoon.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
@@ -385,7 +394,7 @@ Volgende stappen:
    en minder betrouwbaar dan e-mail).
 9. Exporteren en archiveren van taken en meldingen die meer dan 12 maanden geleden
    zijn afgesloten, met foto's en voornamen, naar SharePoint van de stichting (ter
-   naslag). Daarna uit de app verwijderen. Nodig vóór de eerste foto's 12 maanden
+   naslag), inclusief de opmerking na afloop. Daarna uit de app verwijderen. Nodig vóór de eerste foto's 12 maanden
    oud zijn: foto's worden pas verwijderd nadat ze zijn geëxporteerd.
 10. Frion toevoegen: rol Frion-begeleider (ziet Dieren, Klussen en Tuinen) en taken
     toewijzen aan "Frion" als groep.
@@ -396,7 +405,7 @@ Volgende stappen:
 13. Welkomstmail aan een nieuwe vrijwilliger bij toevoegen in het beheerscherm
     (met uitleg hoe je inlogt). Kan pas als Brevo werkt. Tot die tijd stuurt de
     beheerder zelf een bericht (voorbeeld in BEHEER.md).
-14. Opmerking bij gereed melden (eigen wens, november 2026): de vrijwilliger
+14. GEBOUWD (zie stand van zaken). Opmerking bij gereed melden (eigen wens, november 2026): de vrijwilliger
     kan bij "Gereed melden" een korte opmerking invullen (niet verplicht), bijv.
     "Nieuwe scharnieren, de oude lagen in de container." Zichtbaar voor wie de taak
     mag zien. Klein: één tekstveld, nieuwe kolom bij taken, aanpassing in

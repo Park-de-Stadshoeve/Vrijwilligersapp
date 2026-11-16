@@ -435,7 +435,15 @@ function maakTaakKaart(taak) {
         kaart.append(zonder);
       }
     }
+    // De opmerking na afloop (als die er is), met wie hem schreef
+    if (taak.opmerking) {
+      const opmerking = document.createElement("p");
+      opmerking.className = "opmerking";
+      opmerking.textContent = "💬 " + (taak.opmerkingDoor ? taak.opmerkingDoor + ": " : "") + taak.opmerking;
+      kaart.append(opmerking);
+    }
     if (magGereedMelden(taak)) {
+      kaart.append(maakOpmerkingDeel(taak));
       const fotoTekst = taak.fotoPad ? "📷 Foto vervangen" : "📷 Foto toevoegen";
       kaart.append(maakFotoKnop(fotoTekst, kleineFoto => voegTaakFotoToe(taak, kleineFoto)));
       if (taak.fotoPad) {
@@ -472,26 +480,89 @@ async function geefTaakTerug(taak) {
   toonMelding("Taak is weer vrij", () => pakTaakOp(taak));
 }
 
-// ✓ "Gereed melden". "fotoPad" is alleen nodig bij het ongedaan maken van
-// "Weer openen": dan komt de oude foto terug. Anders leeg (null).
-async function meldGereed(taak, fotoPad = null) {
+// ✓ "Gereed melden". "fotoPad" en "opmerking" zijn alleen nodig bij het
+// ongedaan maken van "Weer openen": dan komen de oude foto en opmerking terug.
+// Anders leeg (null).
+async function meldGereed(taak, fotoPad = null, opmerking = null) {
   if (!await vraagDatabase("taak_gereed_melden", { taak_id: taak.id, foto: fotoPad })) return;
   taak.status = "gereed";
   taak.gereedGemeldDoor = mijnToewijsNaam;
   taak.fotoPad = fotoPad || "";
+  taak.opmerking = "";
+  taak.opmerkingDoor = "";
+  if (opmerking && await vraagDatabase("taak_opmerking_zetten", { taak_id: taak.id, opmerking })) {
+    taak.opmerking = opmerking;
+    taak.opmerkingDoor = mijnToewijsNaam;
+  }
   takenGewijzigd();
   toonMelding("Taak gereed gemeld", () => heropenTaak(taak));
 }
 
 // ↺ "Weer openen"
 async function heropenTaak(taak) {
-  const vorigeFotoPad = taak.fotoPad || null;   // onthouden voor "Ongedaan maken"
+  const vorigeFotoPad = taak.fotoPad || null;        // onthouden voor "Ongedaan maken"
+  const vorigeOpmerking = taak.opmerking || null;    // idem
   if (!await vraagDatabase("taak_heropenen", { taak_id: taak.id })) return;
   taak.status = "open";
   taak.gereedGemeldDoor = "";
   taak.fotoPad = "";
+  taak.opmerking = "";       // de database maakt hem ook leeg (11_opmerking.sql)
+  taak.opmerkingDoor = "";
   takenGewijzigd();
-  toonMelding("Taak staat weer open", () => meldGereed(taak, vorigeFotoPad));
+  toonMelding("Taak staat weer open", () => meldGereed(taak, vorigeFotoPad, vorigeOpmerking));
+}
+
+// ===== OPMERKING NA AFLOOP =====
+// Bij een gereed gemelde taak kun je een korte opmerking zetten, bijvoorbeeld
+// "Nieuwe scharnieren, de oude lagen in de container." Niet verplicht.
+// De database bewaart hem bij de taak (database/11_opmerking.sql).
+
+const OPMERKING_MAX = 500;      // tekens; de database bewaakt dit ook
+
+let opmerkingOpenBij = null;    // nummer van de taak waar het tekstvak open staat
+let opmerkingTekst = "";        // wat er in het tekstvak staat
+
+// De knop "Opmerking toevoegen/wijzigen", of het open tekstvak met Opslaan
+function maakOpmerkingDeel(taak) {
+  const deel = document.createElement("div");
+  if (opmerkingOpenBij !== taak.id) {
+    const knopTekst = taak.opmerking ? "💬 Opmerking wijzigen" : "💬 Opmerking toevoegen";
+    deel.append(maakTweedeKnop(knopTekst, () => {
+      opmerkingOpenBij = taak.id;
+      opmerkingTekst = taak.opmerking;
+      verversScherm();
+    }));
+    return deel;
+  }
+
+  const veld = maakInvoerVeld("Opmerking (niet verplicht, hooguit " + OPMERKING_MAX + " tekens)",
+    "lang", opmerkingTekst, waarde => { opmerkingTekst = waarde; });
+  veld.classList.add("opmerking-veld");
+  veld.querySelector("textarea").maxLength = OPMERKING_MAX;
+  deel.append(veld);
+  if (taak.opmerking) {
+    const tip = document.createElement("p");
+    tip.className = "foto-tip";
+    tip.textContent = "Maak het vak leeg en tik op Opslaan om de opmerking weg te halen.";
+    deel.append(tip);
+  }
+  deel.append(maakHoofdKnop("Opmerking opslaan", () => slaOpmerkingOp(taak, opmerkingTekst.trim())));
+  deel.append(maakTweedeKnop("Annuleren", () => {
+    opmerkingOpenBij = null;
+    verversScherm();
+  }));
+  return deel;
+}
+
+// 💬 Opmerking opslaan (leeg = weghalen), met "Ongedaan maken"
+async function slaOpmerkingOp(taak, tekst) {
+  const vorige = taak.opmerking;   // onthouden voor "Ongedaan maken"
+  if (!await vraagDatabase("taak_opmerking_zetten", { taak_id: taak.id, opmerking: tekst })) return;
+  opmerkingOpenBij = null;
+  taak.opmerking = tekst;
+  taak.opmerkingDoor = tekst ? mijnToewijsNaam : "";
+  takenGewijzigd();
+  toonMelding(tekst ? "Opmerking opgeslagen" : "Opmerking weggehaald", () => slaOpmerkingOp(taak, vorige));
 }
 
 // Na een gelukte actie: lijst op de telefoon bijwerken en scherm opnieuw tekenen
@@ -1431,6 +1502,7 @@ async function vraagTakenOpBijDatabase() {
     const takenVraag = database
       .from("taken")
       .select("id, titel, omschrijving, deadline, status, toegewezen_aan, gereed_gemeld_door, foto_na_afloop, " +
+              "opmerking, opmerking_door, " +
               "plek_naam:plekken(naam), werkgroep_naam:werkgroepen(naam), " +
               // de melding waar de taak uit komt (als die er is)
               "melding:meldingen(id, foto, toelichting, gemeld_door)")
@@ -1532,6 +1604,8 @@ async function vraagTakenOpBijDatabase() {
         deadline: rij.deadline || "",
         status: rij.status,
         gereedGemeldDoor: naamVan[rij.gereed_gemeld_door] || "",
+        opmerking: rij.opmerking || "",                          // opmerking na afloop
+        opmerkingDoor: naamVan[rij.opmerking_door] || "",
         fotoPad: rij.foto_na_afloop || "",   // waar de foto na afloop in de fotomap staat
         // Van de melding (leeg als de taak niet uit een melding komt):
         meldingFotoPad: melding ? melding.foto : "",

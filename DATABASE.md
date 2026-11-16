@@ -146,6 +146,8 @@ beheerder ziet de tabel zelf nooit. Dezelfde combinatie kan maar één keer voor
 | foto_na_afloop | waar de foto bij het gereed melden staat | nee |
 | gereed_gemeld_door | nummer uit gebruikers | alleen als status gereed is |
 | gereed_gemeld_op | datum en tijd | alleen als status gereed is |
+| opmerking | korte opmerking na afloop (hooguit 500 tekens) | nee, en alleen als status gereed is |
+| opmerking_door | nummer uit gebruikers: wie de opmerking schreef | alleen als er een opmerking is |
 | aangemaakt_door | nummer uit gebruikers | ja |
 | aangemaakt_op | datum en tijd (gaat vanzelf) | ja |
 
@@ -153,7 +155,11 @@ beheerder ziet de tabel zelf nooit. Dezelfde combinatie kan maar één keer voor
 - Een taak is aan hooguit één persoon toegewezen.
 - Het onderdeel hoort bij de gekozen plek (dat geldt ook voor meldingen).
 - Alleen een toegewezen taak kan op `gereed`.
-- Terug naar `open`: de gereed-gegevens worden leeg gemaakt.
+- Terug naar `open`: de gereed-gegevens worden leeg gemaakt, ook de foto en de
+  opmerking.
+- De opmerking is vrije tekst. Er kunnen namen of andere persoonsgegevens in staan.
+  Hij hoort bij de taak: dezelfde mensen zien hem, en hij wordt bewaard,
+  gearchiveerd en verwijderd samen met de taak.
 
 ## 7. meldingen
 
