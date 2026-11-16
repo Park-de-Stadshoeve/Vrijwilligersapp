@@ -341,8 +341,9 @@ Klaar (inloggen, taken en meldingen werken met de database):
   knop; waarschuwing bovenaan na 31 dagen; JSZip 3.10.1 van jsdelivr met
   integrity (alleen geladen bij de knop); zip met gegevens.json en LEESMIJ.txt.
   Getest: test_12 lokaal (4 tests), functie met nep-Supabase (2500 rijen,
-  1200 accounts), download in de browser: alles goed. NOG TE DOEN: 12
-  uitvoeren, functie opnieuw plakken, testen op een computer.
+  1200 accounts), download in de browser: alles goed. 12 uitgevoerd, test_12
+  goed; functie opnieuw geplakt. Getest op een computer (waarschuwing, download,
+  inhoud zip, Testvrijwilliger ziet niets): alles goed.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
