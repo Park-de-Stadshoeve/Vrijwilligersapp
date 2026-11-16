@@ -123,9 +123,36 @@ de knop **Beheer**. Daar staan alle gebruikers: naam, rol, werkgroepen en de vin
   wel bereik hebt?** Kijk dan of de Edge Function "beheer" bij Supabase staat (zie
   hieronder).
 
+## Back-up (één keer per maand)
+De gratis versie van Supabase maakt zelf geen back-ups. Daarom maakt een beheerder
+elke maand een back-up en zet die op de SharePoint van de stichting.
+
+**Zo maak je een back-up:**
+1. Open de app op een **computer** (niet op de telefoon) en log in als beheerder.
+2. Tik op **Beheer** en scroll naar beneden naar **Back-up**.
+3. Klik op **💾 Back-up downloaden**. Na een paar seconden staat er een bestand
+   `stadshoeve-backup-JJJJ-MM-DD.zip` in je map Downloads.
+4. Zet dat bestand in de **afgeschermde map op SharePoint** (alleen bestuur en
+   beheerders kunnen erbij).
+5. Verwijder in die map de oudste back-up, zodat er **3** overblijven.
+6. Verwijder het bestand uit je map **Downloads** (en uit de prullenbak).
+
+Het beheerscherm laat zien wanneer de laatste back-up is gemaakt, en waarschuwt
+bovenaan als dat meer dan 31 dagen geleden is. Tip: zet ook een maandelijkse
+herinnering in je agenda.
+
+**Wat zit erin?** Alle gegevens van de app (werkgroepen, plekken, gebruikers, taken,
+meldingen) en de inlogaccounts (e-mailadressen). Het bestand bevat dus
+persoonsgegevens: zet het nooit op GitHub, in een mail of op een gedeelde plek.
+De foto's gaan er nog niet in mee (dat komt in de volgende stap), net als de knop
+om een back-up terug te zetten.
+
+**Lukt het niet?** Kijk of de nieuwste versie van de Edge Function **beheer** bij
+Supabase staat (zie hieronder) en of `database/12_backup.sql` is uitgevoerd.
+
 ## Edge Function "beheer" (bij Supabase)
-Toevoegen, e-mailadressen wijzigen, laten stoppen en weer laten meedoen gaat via een
-klein programma dat bij Supabase draait: de Edge Function **beheer**. De code staat in
+Toevoegen, e-mailadressen wijzigen, laten stoppen, weer laten meedoen en de back-up
+gaan via een klein programma dat bij Supabase draait: de Edge Function **beheer**. De code staat in
 `supabase/functions/beheer/index.ts`. Er staat geen geheime sleutel in: die geeft
 Supabase zelf aan de functie.
 
