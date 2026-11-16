@@ -327,7 +327,9 @@ Klaar (inloggen, taken en meldingen werken met de database):
   met tekstvak (maakOpmerkingDeel, slaOpmerkingOp, Ongedaan maken); Weer openen
   ongedaan zet foto én opmerking terug (meldGereed met derde parameter).
   Getest: test_11 lokaal (8 tests), 03/06/10 nog goed, kaartje in de browser.
-  NOG TE DOEN: 11 uitvoeren, testen op de telefoon.
+  11 uitgevoerd, test_11 goed. Getest op de telefoon (toevoegen, verversen,
+  wijzigen/weghalen met Ongedaan maken, Weer openen met Ongedaan maken,
+  bestuur ziet en wijzigt): alles goed.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
