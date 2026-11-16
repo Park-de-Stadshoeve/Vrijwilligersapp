@@ -350,8 +350,9 @@ Klaar (inloggen, taken en meldingen werken met de database):
   2 pogingen per foto, voortgang onderaan), foto's in zip als fotos/<pad>
   (STORE), foto_links niet in gegevens.json; ontbrekende foto's in LEESMIJ.txt
   en waarschuwing. Getest: functie met nep-opslag (1502 foto's, map > 1000,
-  losse foto), browser met 30 nepfoto's waarvan 1 kapot: alles goed. NOG TE
-  DOEN: functie opnieuw plakken, testen op een computer met echte foto's.
+  losse foto), browser met 30 nepfoto's waarvan 1 kapot: alles goed. Functie
+  opnieuw geplakt; getest op een computer met echte foto's (voortgang, mapjes,
+  foto's openen, aantal klopt met Storage): alles goed.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
