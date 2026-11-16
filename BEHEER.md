@@ -167,6 +167,15 @@ Alleen nodig als het beheerscherm niet werkt.
 
 Zet deze SQL met echte namen en adressen **nooit** in GitHub.
 
+## Opmerking bij een gereed gemelde taak
+Bij een taak die gereed is gemeld, staat de knop **💬 Opmerking toevoegen**. Daar kan
+de vrijwilliger kort opschrijven wat er gedaan is of nog nodig is (hooguit 500
+tekens, niet verplicht). Wie de taak ziet, ziet ook de opmerking, met de naam van wie
+hem schreef. Wijzigen of weghalen kan via **💬 Opmerking wijzigen** (vak leeg maken
+en opslaan). Bij **Weer openen** verdwijnt de opmerking, net als de foto;
+**Ongedaan maken** zet hem terug. Vraag vrijwilligers geen namen van bezoekers of
+andere persoonsgegevens in de opmerking te zetten.
+
 ## Werken bij slecht bereik
 De telefoon bewaart een kopie van de app. Is er bereik, dan haalt de app altijd eerst
 de nieuwste versie op. Is er na 3 seconden nog niets, dan opent de bewaarde kopie.

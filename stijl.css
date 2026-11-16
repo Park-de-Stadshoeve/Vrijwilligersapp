@@ -81,6 +81,10 @@ main { padding: 16px; padding-bottom: 180px; } /* ruimte vrij voor menu én meld
 .foto { display: block; width: 100%; margin-top: 4px; border-radius: 8px; }
 .foto-label { margin-top: 12px; }
 
+/* Opmerking na afloop: met een streep links, zodat hij opvalt als aparte tekst */
+.opmerking { margin-top: 12px; padding: 8px 12px; border-left: 4px solid var(--groen); background: #f4f4f2; }
+.opmerking-veld { margin: 12px 0 0; }
+
 /* Tweede knoppen: alleen een grijze rand */
 .knop-tweede {
   display: block; width: 100%; min-height: 48px; margin-top: 12px;
