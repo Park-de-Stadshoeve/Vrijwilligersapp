@@ -636,12 +636,14 @@ async function roepBeheerFunctieAan(gegevens) {
 
 // ===== BACK-UP =====
 // Eén keer per maand downloadt een beheerder een back-up: een zip-bestand
-// met alle gegevens en inlogaccounts (gegevens.json) en een uitleg
-// (LEESMIJ.txt). De beheerder zet het bestand op de afgeschermde map op
+// met alle gegevens en inlogaccounts (gegevens.json), alle foto's (map
+// fotos/, met dezelfde mapjes als in Supabase) en een uitleg (LEESMIJ.txt). De beheerder zet het bestand op de afgeschermde map op
 // SharePoint. Zie BEHEER.md, "Back-up".
 // De gegevens komen van de Edge Function "beheer" (actie "backup").
 
 const BACKUP_WAARSCHUW_NA_DAGEN = 31;
+const FOTOS_TEGELIJK = 4;          // zoveel foto's tegelijk ophalen
+const FOTO_POGINGEN = 2;           // zo vaak proberen per foto
 
 // Hulpbestand om zip-bestanden te maken. Wordt alleen geladen als een
 // beheerder op "Back-up downloaden" tikt. De "integrity"-code zorgt dat de
@@ -716,15 +718,28 @@ async function downloadBackup(knop) {
     const antwoord = await roepBeheerFunctieAan({ actie: "backup" });
     if (!antwoord.gelukt) return;   // de melding zegt wat er mis is
 
-    const { gelukt, ...gegevens } = antwoord.data;   // "gelukt" hoort niet in het bestand
+    // "gelukt" en de tijdelijke links horen niet in het bestand
+    const { gelukt, foto_links, ...gegevens } = antwoord.data;
     const datum = gegevens.gemaakt_op.slice(0, 10);   // bijv. 2026-11-16
     const zip = new JSZip();
+
+    // De foto's. Foto's zijn al ingepakt (JPEG), dus "STORE" = niet nog eens inpakken.
+    const ontbreekt = await haalFotosOp(foto_links, (pad, foto) => {
+      zip.file("fotos/" + pad, foto, { compression: "STORE" });
+    });
+
     zip.file("gegevens.json", JSON.stringify(gegevens, null, 1));
-    zip.file("LEESMIJ.txt", backupLeesmij(gegevens));
+    zip.file("LEESMIJ.txt", backupLeesmij(gegevens, ontbreekt));
+    toonMelding("Zip-bestand maken… even geduld");
     const bestand = await zip.generateAsync({ type: "blob", compression: "DEFLATE" });
     bewaarBestand(bestand, "stadshoeve-backup-" + datum + ".zip");
 
-    toonMelding("Back-up gedownload. Zet hem op SharePoint en haal hem uit je Downloads.");
+    if (ontbreekt.length > 0) {
+      toonMelding("⚠️ Back-up gedownload, maar " + ontbreekt.length + " foto('s) ontbreken. " +
+                  "Maak de back-up opnieuw als je goed internet hebt.");
+    } else {
+      toonMelding("Back-up gedownload (" + foto_links.length + " foto's). Zet hem op SharePoint en haal hem uit je Downloads.");
+    }
     if (huidigScherm === "beheer") toonBeheer();   // "laatste back-up" bijwerken
   } catch (fout) {
     console.warn("Back-up mislukt:", fout);
@@ -732,6 +747,44 @@ async function downloadBackup(knop) {
   } finally {
     knop.disabled = false;
   }
+}
+
+// Haalt alle foto's op via hun tijdelijke link, een paar tegelijk.
+// "bijFoto(pad, foto)" krijgt elke gelukte foto. Laat onderaan zien hoe ver
+// het is. Geeft de paden van de foto's die niet gelukt zijn.
+async function haalFotosOp(links, bijFoto) {
+  const ontbreekt = [];
+  let klaar = 0;
+  let volgende = 0;
+  toonMelding("Foto's ophalen: 0 van " + links.length);
+
+  // Eén "ophaler" pakt steeds de volgende foto uit de lijst
+  async function ophaler() {
+    while (volgende < links.length) {
+      const { pad, url } = links[volgende++];
+      const foto = url ? await haalEenFotoOp(url) : null;
+      if (foto) bijFoto(pad, foto);
+      else ontbreekt.push(pad);
+      klaar++;
+      toonMelding("Foto's ophalen: " + klaar + " van " + links.length);
+    }
+  }
+  // Een paar ophalers tegelijk laten werken (sneller dan één voor één)
+  await Promise.all(Array.from({ length: FOTOS_TEGELIJK }, ophaler));
+  return ontbreekt;
+}
+
+// Haalt één foto op. Geeft de foto, of null als het na FOTO_POGINGEN keer niet lukt.
+async function haalEenFotoOp(url) {
+  for (let poging = 1; poging <= FOTO_POGINGEN; poging++) {
+    try {
+      const antwoord = await fetch(url);
+      if (antwoord.ok) return await antwoord.blob();
+    } catch (fout) {
+      console.warn("Foto ophalen mislukt (poging " + poging + "):", fout);
+    }
+  }
+  return null;
 }
 
 // Laadt het hulpbestand JSZip (één keer)
@@ -761,7 +814,7 @@ function bewaarBestand(bestand, naam) {
 }
 
 // De tekst van LEESMIJ.txt in de back-up
-function backupLeesmij(gegevens) {
+function backupLeesmij(gegevens, ontbreekt) {
   const aantallen = Object.entries(gegevens.tabellen)
     .map(([tabel, rijen]) => "  " + tabel + ": " + rijen.length)
     .join("\n");
@@ -775,11 +828,17 @@ function backupLeesmij(gegevens) {
     "",
     "Wat zit erin?",
     "  gegevens.json: alle tabellen en de inlogaccounts (nummer en e-mailadres).",
+    "  fotos/:        alle foto's, in dezelfde mapjes als in Supabase.",
     "",
     "Aantal rijen per tabel:",
     aantallen,
     "  inlogaccounts: " + gegevens.accounts.length,
+    "  foto's: " + (gegevens.fotos.length - ontbreekt.length) + " van " + gegevens.fotos.length,
     "",
+    ...(ontbreekt.length > 0
+      ? ["LET OP: deze foto's konden niet worden opgehaald en ontbreken:",
+         ...ontbreekt.map(pad => "  " + pad), ""]
+      : []),
     "Terugzetten: zie BEHEER.md, kopje 'Back-up'."
   ].join("\n");
 }

@@ -344,6 +344,14 @@ Klaar (inloggen, taken en meldingen werken met de database):
   1200 accounts), download in de browser: alles goed. 12 uitgevoerd, test_12
   goed; functie opnieuw geplakt. Getest op een computer (waarschuwing, download,
   inhoud zip, Testvrijwilliger ziet niets): alles goed.
+  Stap (b) gebouwd: actie backup geeft nu ook fotos (alle paden in bucket
+  "fotos", via storage list per map, per 1000) en foto_links (createSignedUrls
+  per 100, 1 uur geldig); BACKUP_VERSIE 2. beheer.js: haalFotosOp (4 tegelijk,
+  2 pogingen per foto, voortgang onderaan), foto's in zip als fotos/<pad>
+  (STORE), foto_links niet in gegevens.json; ontbrekende foto's in LEESMIJ.txt
+  en waarschuwing. Getest: functie met nep-opslag (1502 foto's, map > 1000,
+  losse foto), browser met 30 nepfoto's waarvan 1 kapot: alles goed. NOG TE
+  DOEN: functie opnieuw plakken, testen op een computer met echte foto's.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).

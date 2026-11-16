@@ -19,8 +19,9 @@
 //   - "terugzetten":         weer laten meedoen (ook "Ongedaan maken" na
 //                            stoppen): nieuw inlogaccount met hetzelfde nummer,
 //                            zodat naam en geschiedenis blijven kloppen
-//   - "backup":              alle gegevens en inlogaccounts ophalen voor de
-//                            back-up (de app maakt er een zip-bestand van)
+//   - "backup":              alle gegevens, inlogaccounts en tijdelijke
+//                            links naar alle foto's ophalen voor de back-up
+//                            (de app maakt er een zip-bestand van)
 //
 // Wie mag het?
 //   Alleen een ingelogde, actieve beheerder (vinkje is_beheerder). Dat
@@ -274,7 +275,8 @@ async function zetTerug(beheer: any, vraag: any) {
 // ----- BACK-UP -----
 // Haalt ALLE gegevens op (de geheime sleutel ziet alles, ook wat een
 // beheerder in de app niet ziet) plus de inlogaccounts (nummer en
-// e-mailadres). De app maakt daar een zip-bestand van; dat zet de
+// e-mailadres) en een tijdelijke link naar elke foto. De app haalt de
+// foto's op en maakt er met de gegevens een zip-bestand van; dat zet de
 // beheerder op SharePoint. Zie BEHEER.md, "Back-up".
 //
 // Welke tabellen, en waarop ze gesorteerd worden. Komt er later een tabel
@@ -289,7 +291,10 @@ const BACKUP_TABELLEN: Record<string, string[]> = {
   meldingen: ["id"],
   back_ups: ["id"],
 };
-const BACKUP_VERSIE = 1;   // verhogen als de opbouw van de back-up verandert
+const BACKUP_VERSIE = 2;   // verhogen als de opbouw van de back-up verandert
+                           // (1 = zonder foto's, 2 = met foto's)
+const FOTO_MAP = "fotos";
+const FOTO_LINK_SECONDEN = 60 * 60;   // de links zijn een uur geldig
 
 // deno-lint-ignore no-explicit-any
 async function maakBackup(beheer: any, vragerId: string) {
@@ -308,6 +313,10 @@ async function maakBackup(beheer: any, vragerId: string) {
     if (data.users.length < 1000) break;
   }
 
+  // Alle foto's, met een tijdelijke link per foto
+  const fotoPaden = await lijstAlleFotos(beheer);
+  const fotoLinks = await maakFotoLinks(beheer, fotoPaden);
+
   // Onthouden dat er een back-up is gemaakt (tabel back_ups, 12_backup.sql)
   const { error } = await beheer.from("back_ups").insert({ gemaakt_door: vragerId });
   if (error) throw vertaalDatabaseFout(error);
@@ -318,7 +327,57 @@ async function maakBackup(beheer: any, vragerId: string) {
     gemaakt_op: new Date().toISOString(),
     tabellen,
     accounts,
+    fotos: fotoPaden,         // welke foto's er zijn (komt in gegevens.json)
+    foto_links: fotoLinks,    // alleen om op te halen (niet in gegevens.json)
   };
+}
+
+// Alle foto's in de fotomap. Ze staan in mapjes per gebruiker:
+// <gebruiker-nummer>/<foto-nummer>.jpg. Geeft een lijst met paden.
+// deno-lint-ignore no-explicit-any
+async function lijstAlleFotos(beheer: any) {
+  const paden: string[] = [];
+  for (const ding of await lijstMap(beheer, "")) {
+    if (ding.id === null) {
+      // Een mapje (mapjes hebben geen id): kijk wat erin zit
+      for (const bestand of await lijstMap(beheer, ding.name)) {
+        if (bestand.id !== null) paden.push(ding.name + "/" + bestand.name);
+      }
+    } else {
+      paden.push(ding.name);   // een losse foto, niet in een mapje
+    }
+  }
+  return paden;
+}
+
+// Wat staat er in één map? Per 1000 tegelijk, tot alles binnen is.
+// deno-lint-ignore no-explicit-any
+async function lijstMap(beheer: any, map: string) {
+  // deno-lint-ignore no-explicit-any
+  const alles: any[] = [];
+  for (let van = 0; ; van += 1000) {
+    const { data, error } = await beheer.storage.from(FOTO_MAP)
+      .list(map, { limit: 1000, offset: van, sortBy: { column: "name", order: "asc" } });
+    if (error) throw new BeheerFout("De fotomap kon niet worden gelezen. Probeer het opnieuw.", 500);
+    alles.push(...data);
+    if (data.length < 1000) break;
+  }
+  return alles;
+}
+
+// Maakt een tijdelijke link per foto, per 100 tegelijk.
+// Geeft een lijst { pad, url }. Lukt een link niet, dan is url leeg.
+// deno-lint-ignore no-explicit-any
+async function maakFotoLinks(beheer: any, paden: string[]) {
+  const links: { pad: string; url: string }[] = [];
+  for (let van = 0; van < paden.length; van += 100) {
+    const stukje = paden.slice(van, van + 100);
+    const { data, error } = await beheer.storage.from(FOTO_MAP).createSignedUrls(stukje, FOTO_LINK_SECONDEN);
+    if (error) throw new BeheerFout("De links naar de foto's konden niet worden gemaakt. Probeer het opnieuw.", 500);
+    // deno-lint-ignore no-explicit-any
+    data.forEach((link: any, i: number) => links.push({ pad: stukje[i], url: link.signedUrl || "" }));
+  }
+  return links;
 }
 
 // Haalt een hele tabel op. De database geeft hooguit 1000 rijen per keer,

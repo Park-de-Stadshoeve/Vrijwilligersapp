@@ -267,7 +267,7 @@ De app bewaart persoonsgegevens niet langer dan nodig. Dit zijn de afspraken:
 
 **Back-up**
 - Eén keer per maand maakt een beheerder een back-up van alle gegevens, inclusief de
-  inlogaccounts (e-mailadressen); vanaf de volgende stap ook de foto's.
+  inlogaccounts (e-mailadressen) en alle foto's.
 - De back-up staat in een afgeschermde map op de SharePoint van de stichting (alleen
   bestuur en beheerders). De laatste 3 back-ups blijven bewaard; oudere worden
   verwijderd.
