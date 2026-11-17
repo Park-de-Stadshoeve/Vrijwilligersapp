@@ -7,6 +7,8 @@
 //    de kopie op de telefoon meteen bijgewerkt.
 // 3. Lukt dat niet (geen of slecht bereik), dan krijg je de laatst bewaarde kopie.
 // Daardoor zie je na een wijziging in GitHub altijd de nieuwe versie zodra je bereik hebt.
+// Staat de app nog open op de achtergrond? Dan merkt app.js de nieuwe versie op
+// en vraagt hij dit bestand om alles vers op te halen (zie "message" hieronder).
 //
 // Let op: dit bewaart alleen de app zelf (schermen, kleuren, iconen),
 // geen taken of meldingen uit de database.
@@ -64,6 +66,29 @@ self.addEventListener("fetch", gebeurtenis => {
   if (verzoek.method !== "GET" || !(vanOns || verzoek.url === SUPABASE_HULPBESTAND)) return;
   gebeurtenis.respondWith(eerstInternetDanKopie(verzoek));
 });
+
+// De app vraagt dit als er een nieuwe versie is (zie "NIEUWE VERSIE" in
+// app.js): haal alle app-bestanden vers op en bewaar ze, en zeg dan "klaar".
+// Daarna herlaadt de app, en krijgt hij zeker de nieuwe bestanden.
+self.addEventListener("message", gebeurtenis => {
+  if (gebeurtenis.data !== "haal-nieuwe-versie") return;
+  const antwoordPoort = gebeurtenis.ports[0];
+  gebeurtenis.waitUntil(haalAlleBestandenVers().then(() => {
+    if (antwoordPoort) antwoordPoort.postMessage("klaar");
+  }));
+});
+
+async function haalAlleBestandenVers() {
+  const opslag = await caches.open(OPSLAG_NAAM);
+  await Promise.all(APP_BESTANDEN.map(async bestand => {
+    try {
+      const antwoord = await fetch(bestand, { cache: "no-cache" });
+      if (antwoord.ok) await opslag.put(bestand, antwoord);
+    } catch (fout) {
+      // Geen bereik voor dit bestand: dan blijft de oude kopie staan
+    }
+  }));
+}
 
 async function eerstInternetDanKopie(verzoek) {
   const opslag = await caches.open(OPSLAG_NAAM);

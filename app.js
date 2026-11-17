@@ -1684,6 +1684,8 @@ function toonScherm(scherm) {
   else if (scherm === "beheer") toonBeheer();                  // staat in beheer.js
   else if (scherm === "gebruiker-formulier") toonGebruikerFormulier();   // ook in beheer.js
   else if (scherm === "herstel") toonHerstelScherm();                     // ook in beheer.js
+  // Staat er een nieuwe versie klaar? Dan nu laden, als het een rustig moment is.
+  if (nieuweVersieKlaar) laadNieuweVersieAlsHetKan();
 }
 
 // Tekent het huidige scherm opnieuw (na een wijziging)
@@ -1818,3 +1820,103 @@ startMetInloggen();
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
+
+// ===== NIEUWE VERSIE VAN DE APP =====
+// Een app op het beginscherm wordt vaak niet echt opnieuw geopend: de telefoon
+// haalt hem terug van de achtergrond, met de oude versie nog in het geheugen.
+// Daarom kijkt de app elke keer dat hij weer in beeld komt (hooguit één keer
+// per minuut) of de bestanden bij GitHub veranderd zijn. Zo ja, dan laadt hij
+// de nieuwe versie, maar alleen op een rustig moment (niet midden in een
+// formulier).
+//
+// Hoe weet de app of er iets veranderd is? Hij vraagt per bestand alleen de
+// "kopregels" op (HEAD), niet het bestand zelf. Daarin staat een kenmerk dat
+// verandert zodra het bestand verandert (ETag, of anders datum en grootte).
+
+const VERSIE_BESTANDEN = ["index.html", "stijl.css", "instellingen.js", "inloggen.js",
+                          "beheer.js", "app.js", "service-worker.js"];
+const VERSIE_CONTROLE_ELKE = 60 * 1000;   // hooguit één keer per minuut kijken
+
+let geladenVersie = "";          // kenmerk van de versie die nu draait
+let laatsteVersieControle = 0;   // wanneer we het laatst keken
+let nieuweVersieKlaar = false;   // true = er staat een nieuwe versie klaar
+
+// Het kenmerk van de bestanden zoals ze nu bij GitHub staan.
+// Geeft "" als het niet lukt (bijv. geen bereik).
+async function haalVersieKenmerkOp() {
+  try {
+    const delen = await Promise.all(VERSIE_BESTANDEN.map(async bestand => {
+      const antwoord = await fetch(bestand, { method: "HEAD", cache: "no-cache" });
+      if (!antwoord.ok) throw new Error(bestand + ": " + antwoord.status);
+      const kop = antwoord.headers;
+      return kop.get("etag") || (kop.get("last-modified") + "/" + kop.get("content-length"));
+    }));
+    return delen.join("|");
+  } catch (fout) {
+    console.warn("Versie controleren lukt niet:", fout);
+    return "";
+  }
+}
+
+// Kijkt of er een nieuwe versie is (en onthoudt bij de eerste keer de huidige)
+async function controleerVersie() {
+  if (nieuweVersieKlaar || Date.now() - laatsteVersieControle < VERSIE_CONTROLE_ELKE) return;
+  laatsteVersieControle = Date.now();
+  const kenmerk = await haalVersieKenmerkOp();
+  if (!kenmerk) return;                                 // geen bereik: volgende keer
+  if (!geladenVersie) { geladenVersie = kenmerk; return; }
+  if (kenmerk !== geladenVersie) {
+    nieuweVersieKlaar = true;
+    laadNieuweVersieAlsHetKan();
+  }
+}
+
+// Is dit een rustig moment? (Niet midden in een formulier of tekstvak.)
+function isRustigMoment() {
+  const rustigeSchermen = ["mijn", "werkgroep", "meldingen", "beheer"];
+  return ingelogdeGebruiker.id !== null          // niet op het inlogscherm
+      && rustigeSchermen.includes(huidigScherm)
+      && opmerkingOpenBij === null && meldingMetRedenOpen === null;
+}
+
+let versieMeldingGetoond = false;
+
+// Laadt de nieuwe versie, of zegt dat dat straks gebeurt
+async function laadNieuweVersieAlsHetKan() {
+  if (!isRustigMoment()) {
+    if (!versieMeldingGetoond) {
+      toonMelding("Er is een nieuwe versie van de app. Die wordt geladen als je klaar bent.");
+      versieMeldingGetoond = true;
+    }
+    return;
+  }
+  toonMelding("Nieuwe versie van de app laden…");
+  await vraagServiceWorkerNieuweKopie();
+  location.reload();
+}
+
+// Vraagt de service worker om eerst alle nieuwe bestanden op te halen, zodat
+// het herladen zeker de nieuwe versie geeft (ook bij een trage verbinding).
+// Wacht hooguit 15 seconden.
+function vraagServiceWorkerNieuweKopie() {
+  const werker = navigator.serviceWorker && navigator.serviceWorker.controller;
+  if (!werker) return Promise.resolve();
+  return new Promise(klaar => {
+    const kanaal = new MessageChannel();
+    kanaal.port1.onmessage = () => klaar();
+    werker.postMessage("haal-nieuwe-versie", [kanaal.port2]);
+    setTimeout(klaar, 15000);
+  });
+}
+
+// Bij het starten: de huidige versie onthouden
+controleerVersie();
+// Elke keer dat de app weer in beeld komt: kijken of er iets nieuws is.
+// Ook de service worker zelf laten kijken of hij een nieuwe versie heeft.
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "visible") return;
+  controleerVersie();
+  if (navigator.serviceWorker) {
+    navigator.serviceWorker.getRegistration().then(r => r && r.update()).catch(() => {});
+  }
+});

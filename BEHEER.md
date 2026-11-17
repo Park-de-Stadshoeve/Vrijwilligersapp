@@ -259,9 +259,13 @@ De telefoon bewaart een kopie van de app. Is er bereik, dan haalt de app altijd 
 de nieuwste versie op. Is er na 3 seconden nog niets, dan opent de bewaarde kopie.
 Je hoeft na een wijziging dus niets bij te houden of op te hogen.
 Na een wijziging in GitHub duurt het een minuut of twee voordat GitHub de nieuwe
-versie online heeft. Daarna krijgt de telefoon hem bij de volgende keer openen. Zie
-je hem nog niet? Sluit de app helemaal af (niet alleen wegvegen naar de achtergrond)
-en open hem opnieuw.
+versie online heeft. Daarna laadt de app de nieuwe versie vanzelf, de volgende keer
+dat iemand de app weer voor zich haalt (ook als hij nog op de achtergrond openstond).
+Is iemand op dat moment iets aan het invullen, dan verschijnt "Er is een nieuwe
+versie van de app. Die wordt geladen als je klaar bent", en gebeurt het zodra die
+persoon weer op Mijn taken, Werkgroep, Meldingen of Beheer is. Na het laden staat de
+app op Mijn taken. Zie je de nieuwe versie na een paar minuten nog niet? Sluit de app
+helemaal af en open hem opnieuw.
 - **Nieuw bestand toegevoegd** (bijvoorbeeld een extra plaatje)? Zet de naam erbij in
   de lijst `APP_BESTANDEN` in `service-worker.js`.
 - **Logo vervangen?** Vervang de drie bestanden in `iconen/` door nieuwe met precies
