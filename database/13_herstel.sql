@@ -26,13 +26,14 @@
 --   gecontroleerd dat je een beheerder bent.
 --
 -- Hoe gebruik je het?
---   Eén keer uitvoeren, na 12_backup.sql. Daarna test_13_herstel.sql.
+--   Uitvoeren na 12_backup.sql. Daarna test_13_herstel.sql.
+--   Opnieuw uitvoeren mag ("create or replace" vervangt de oude versie).
 --   Hoe je een back-up terugzet: zie BEHEER.md, "Back-up terugzetten".
 -- =====================================================================
 
 
 -- ♻️ Alle tabellen uit de back-up terugzetten
-create function herstel_backup(gegevens jsonb, hersteller uuid) returns jsonb
+create or replace function herstel_backup(gegevens jsonb, hersteller uuid) returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare
   t  jsonb := gegevens->'tabellen';
@@ -58,12 +59,15 @@ begin
   end if;
 
   -- Wat er nu staat, opruimen (behalve de hersteller zelf, die moet
-  -- ingelogd blijven tot het eind)
-  delete from lidmaatschappen;
-  delete from back_ups;
-  delete from onderdelen;
-  delete from plekken;
-  delete from werkgroepen;
+  -- ingelogd blijven tot het eind).
+  -- "where true" = alles. Supabase weigert een delete zonder "where" als
+  -- die via de app of de Edge Function binnenkomt (bescherming tegen per
+  -- ongeluk een hele tabel leegmaken). Hier is "alles" de bedoeling.
+  delete from lidmaatschappen where true;
+  delete from back_ups where true;
+  delete from onderdelen where true;
+  delete from plekken where true;
+  delete from werkgroepen where true;
 
   -- Terugzetten, in een volgorde waarin alles waar naar verwezen wordt er
   -- al staat. "overriding system value" = de nummers uit de back-up
@@ -107,7 +111,7 @@ $$;
 -- 🧹 Aan het eind: de tijdelijke gebruiker van de hersteller weghalen.
 -- Alleen als die zelf niet in de terugzette gegevens voorkomt (dan heeft
 -- hij of zij een ander nummer) en nergens naar verwezen wordt.
-create function herstel_tijdelijke_gebruiker_weg(hersteller uuid) returns void
+create or replace function herstel_tijdelijke_gebruiker_weg(hersteller uuid) returns void
 language plpgsql security definer set search_path = public as $$
 begin
   delete from lidmaatschappen where gebruiker = hersteller;

@@ -369,8 +369,13 @@ Klaar (inloggen, taken en meldingen werken met de database):
   uploadToSignedUrl (4 tegelijk, 2 pogingen). Getest lokaal: volledige
   rondgang (alles exact gelijk, nieuwe taak krijgt vrij nummer, tweede keer
   geweigerd), test_13 (5 tests), oude tests goed; functie met nep-Supabase;
-  scherm in de browser met 29 foto's. NOG TE DOEN: 13 uitvoeren, functie
-  opnieuw plakken, hersteltest op het testproject.
+  scherm in de browser met 29 foto's. 13 uitgevoerd, test_13 goed, functie
+  geplakt, samengevoegd. Hersteltest: eerste poging gaf "Er ging iets mis bij de
+  database" (waarschijnlijk pg_safeupdate: Supabase weigert DELETE zonder WHERE
+  via PostgREST, ook binnen functies; lokaal niet nagebootst). Opgelost met
+  "where true" en create or replace in 13_herstel.sql. LET OP voor later:
+  delete/update in functies die via rpc lopen altijd met een where.
+  NOG TE DOEN: 13 opnieuw uitvoeren, hersteltest afmaken.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
