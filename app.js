@@ -1683,6 +1683,7 @@ function toonScherm(scherm) {
   else if (scherm === "taak-formulier") toonTaakFormulier();   // NIEUW (nieuwe naam)
   else if (scherm === "beheer") toonBeheer();                  // staat in beheer.js
   else if (scherm === "gebruiker-formulier") toonGebruikerFormulier();   // ook in beheer.js
+  else if (scherm === "herstel") toonHerstelScherm();                     // ook in beheer.js
 }
 
 // Tekent het huidige scherm opnieuw (na een wijziging)

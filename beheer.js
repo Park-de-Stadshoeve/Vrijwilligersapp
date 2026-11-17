@@ -4,7 +4,8 @@
 // Stap 1: bekijken. Stap 2: naam, rol, vinkjes en werkgroepen wijzigen.
 // Stap 3: iemand toevoegen en het e-mailadres wijzigen.
 // Stap 4: iemand laten stoppen en weer laten meedoen.
-// Daarna: back-up downloaden (zie "BACK-UP" onderaan).
+// Daarna: back-up downloaden en terugzetten (zie "BACK-UP" en
+// "BACK-UP TERUGZETTEN" onderaan).
 //
 // Veilig? De knop "Beheer" zie je alleen met het vinkje is_beheerder. Maar ook
 // als iemand anders dit scherm zou openen, geeft de database alleen zijn eigen
@@ -597,11 +598,12 @@ const WACHTTIJD_BEHEER_FUNCTIE = 20000;
 
 // Roept de Edge Function "beheer" aan en laat onderaan zien hoe het ging.
 // Geeft { gelukt: true/false, data: het antwoord van de functie }.
-async function roepBeheerFunctieAan(gegevens) {
+// "wachttijd" (niet verplicht): langer wachten, bijv. bij terugzetten.
+async function roepBeheerFunctieAan(gegevens, wachttijd = WACHTTIJD_BEHEER_FUNCTIE) {
   toonMelding("Even geduld…");
   let wekker;
   const teLang = new Promise(klaar => {
-    wekker = setTimeout(() => klaar({ teLang: true }), WACHTTIJD_BEHEER_FUNCTIE);
+    wekker = setTimeout(() => klaar({ teLang: true }), wachttijd);
   });
   try {
     const antwoord = await Promise.race([database.functions.invoke("beheer", { body: gegevens }), teLang]);
@@ -706,6 +708,9 @@ function maakBackupDeel(laatsteBackup) {
 
   const knop = maakTweedeKnop("💾 Back-up downloaden", () => downloadBackup(knop));
   deel.append(knop);
+
+  // Terugzetten: alleen nodig bij een ramp, in een nieuw, leeg project
+  deel.append(maakTweedeKnop("♻️ Back-up terugzetten", toonHerstelScherm));
   return deel;
 }
 
@@ -841,6 +846,170 @@ function backupLeesmij(gegevens, ontbreekt) {
       : []),
     "Terugzetten: zie BEHEER.md, kopje 'Back-up'."
   ].join("\n");
+}
+
+// ===== BACK-UP TERUGZETTEN =====
+// Alleen voor een ramp: het project is weg of leeg, en je zet alles terug in
+// een nieuw, leeg project. Werkt alleen als er nog geen taken en meldingen
+// zijn, en hooguit één gebruiker (jij, met de hand neergezet). Zie BEHEER.md,
+// "Back-up terugzetten". Kan NIET ongedaan gemaakt worden; daarom kan het
+// alleen in een lege database.
+//
+// Drie delen, allemaal via de Edge Function "beheer":
+//   1. tabellen en inlogaccounts  (actie "herstel_gegevens")
+//   2. foto's                     (actie "foto_upload_links", dan uploaden)
+//   3. afronden: je tijdelijke account wordt je eigen account uit de back-up
+//      (actie "herstel_afronden"); daarna log je opnieuw in.
+
+const WACHTTIJD_HERSTEL = 120000;   // 2 minuten: veel accounts kost tijd
+
+function toonHerstelScherm() {
+  huidigScherm = "herstel";
+  document.getElementById("titel").textContent = "Back-up terugzetten";
+  const inhoud = document.getElementById("inhoud");
+  inhoud.replaceChildren();
+
+  const uitleg = document.createElement("p");
+  uitleg.className = "uitleg-bovenaan";
+  uitleg.textContent = "⚠️ Alleen gebruiken bij een ramp, in een nieuw, leeg project. " +
+    "Het werkt alleen als er nog geen taken en meldingen zijn, en jij de enige gebruiker bent. " +
+    "Doe dit op een computer. Volg het stappenplan in BEHEER.md.";
+  inhoud.append(uitleg);
+
+  // Bestand kiezen: een verborgen invoer achter een gewone knop
+  const kiezer = document.createElement("input");
+  kiezer.type = "file";
+  kiezer.accept = ".zip";
+  kiezer.className = "verborgen";
+  const gekozen = document.createElement("p");
+  gekozen.className = "details";
+  gekozen.textContent = "Nog geen bestand gekozen.";
+  const start = maakHoofdKnop("Terugzetten", () => zetBackupTerug(kiezer.files[0], start));
+  start.disabled = true;
+  kiezer.addEventListener("change", () => {
+    gekozen.textContent = kiezer.files[0] ? "Gekozen: " + kiezer.files[0].name : "Nog geen bestand gekozen.";
+    start.disabled = !kiezer.files[0];
+  });
+  inhoud.append(kiezer, maakTweedeKnop("📁 Kies het back-upbestand (.zip)", () => kiezer.click()), gekozen, start);
+
+  // Hier komt te staan hoe het gaat
+  const stappen = document.createElement("ol");
+  stappen.id = "herstel-stappen";
+  inhoud.append(stappen);
+
+  inhoud.append(maakTweedeKnop("Terug naar Beheer", toonBeheer));
+  markeerMenu("beheer");
+}
+
+// Zet een regel in het lijstje "hoe gaat het"
+function herstelStap(tekst) {
+  const regel = document.createElement("li");
+  regel.textContent = tekst;
+  document.getElementById("herstel-stappen")?.append(regel);
+  return regel;
+}
+
+// ♻️ Het echte terugzetten
+async function zetBackupTerug(bestand, knop) {
+  if (!bestand) return;
+  knop.disabled = true;   // nooit twee keer tegelijk
+  try {
+    // Het zip-bestand openen en gegevens.json lezen
+    await laadJSZip();
+    const zip = await JSZip.loadAsync(bestand);
+    const gegevensBestand = zip.file("gegevens.json");
+    if (!gegevensBestand) throw new Error("Dit is geen back-up van de app: gegevens.json ontbreekt");
+    const gegevens = JSON.parse(await gegevensBestand.async("string"));
+
+    // Deel 1: tabellen en inlogaccounts
+    const stap1 = herstelStap("Gegevens en inlogaccounts terugzetten…");
+    const deel1 = await roepBeheerFunctieAan({ actie: "herstel_gegevens", gegevens }, WACHTTIJD_HERSTEL);
+    if (!deel1.gelukt) {
+      stap1.textContent = "Gestopt bij de gegevens. Er is niets veranderd. Lees de melding onderaan.";
+      return;
+    }
+    const a = deel1.data.aantallen;
+    stap1.textContent = "✓ Gegevens terug: " + a.taken + " taken, " + a.meldingen + " meldingen, " +
+      a.gebruikers + " gebruikers. " + deel1.data.accountsTerug + " inlogaccounts terug.";
+    if (deel1.data.nietGelukt.length > 0) {
+      herstelStap("⚠️ Deze inlogaccounts konden niet terug: " + deel1.data.nietGelukt.join(", ") +
+        ". Laat die personen in het beheerscherm stoppen en daarna weer meedoen.");
+    }
+
+    // Deel 2: de foto's
+    const fotos = zip.file(/^fotos\/.+\.jpg$/);   // alle foto's in de map fotos/
+    const stap2 = herstelStap("Foto's terugzetten: 0 van " + fotos.length + "…");
+    const ontbreekt = await zetFotosTerug(fotos, (klaar) => {
+      stap2.textContent = "Foto's terugzetten: " + klaar + " van " + fotos.length + "…";
+    });
+    stap2.textContent = "✓ Foto's terug: " + (fotos.length - ontbreekt.length) + " van " + fotos.length + ".";
+    if (ontbreekt.length > 0) {
+      herstelStap("⚠️ Deze foto's konden niet terug: " + ontbreekt.join(", "));
+    }
+
+    // Deel 3: afronden
+    const stap3 = herstelStap("Afronden…");
+    const deel3 = await roepBeheerFunctieAan({ actie: "herstel_afronden", mijnOudeId: deel1.data.mijnOudeId });
+    if (!deel3.gelukt) {
+      stap3.textContent = "⚠️ Afronden is niet gelukt. Lees de melding onderaan en kijk in BEHEER.md.";
+      return;
+    }
+    if (deel3.data.uitloggen) {
+      stap3.textContent = "✓ Klaar! Log nu uit en log opnieuw in met je eigen e-mailadres.";
+      document.getElementById("herstel-stappen").after(maakHoofdKnop("Uitloggen", uitloggen));
+      toonMelding("Back-up teruggezet. Log opnieuw in.");
+    } else {
+      stap3.textContent = "✓ Klaar!";
+      toonMelding("Back-up teruggezet.");
+    }
+  } catch (fout) {
+    console.warn("Terugzetten mislukt:", fout);
+    herstelStap("⚠️ Gestopt: " + fout.message + ".");
+    toonMelding("Terugzetten is gestopt (" + fout.message + ").");
+  }
+}
+
+// Zet de foto's uit het zip-bestand terug, een paar tegelijk.
+// Geeft de paden van de foto's die niet gelukt zijn.
+async function zetFotosTerug(fotos, bijVoortgang) {
+  const ontbreekt = [];
+  let klaar = 0;
+  // Per 100 een setje uploadlinks vragen
+  for (let van = 0; van < fotos.length; van += 100) {
+    const setje = fotos.slice(van, van + 100);
+    const paden = setje.map(f => f.name.slice("fotos/".length));
+    const antwoord = await roepBeheerFunctieAan({ actie: "foto_upload_links", paden });
+    const links = antwoord.gelukt ? antwoord.data.links : paden.map(pad => ({ pad, token: "" }));
+
+    let volgende = 0;
+    async function uploader() {
+      while (volgende < setje.length) {
+        const i = volgende++;
+        const { pad, token } = links[i];
+        if (!await zetEenFotoTerug(setje[i], pad, token)) ontbreekt.push(pad);
+        klaar++;
+        bijVoortgang(klaar);
+      }
+    }
+    await Promise.all(Array.from({ length: FOTOS_TEGELIJK }, uploader));
+  }
+  return ontbreekt;
+}
+
+// Zet één foto terug. Geeft true als het gelukt is (of als hij er al stond).
+async function zetEenFotoTerug(zipFoto, pad, token) {
+  if (token === "BESTAAT_AL") return true;
+  if (!token) return false;
+  const inhoud = await zipFoto.async("blob");
+  const foto = new Blob([inhoud], { type: "image/jpeg" });
+  for (let poging = 1; poging <= FOTO_POGINGEN; poging++) {
+    const { error } = await database.storage.from("fotos")
+      .uploadToSignedUrl(pad, token, foto, { contentType: "image/jpeg" });
+    if (!error) return true;
+    if (String(error.message || "").toLowerCase().includes("exist")) return true;   // stond er al
+    console.warn("Foto terugzetten mislukt (poging " + poging + "):", error);
+  }
+  return false;
 }
 
 // De knop "Beheer" bovenin. Of hij te zien is, regelt startApp (app.js).

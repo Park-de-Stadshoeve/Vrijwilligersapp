@@ -22,6 +22,12 @@
 //   - "backup":              alle gegevens, inlogaccounts en tijdelijke
 //                            links naar alle foto's ophalen voor de back-up
 //                            (de app maakt er een zip-bestand van)
+//   - "herstel_gegevens":    back-up terugzetten, deel 1: tabellen en
+//                            inlogaccounts (alleen in een lege database)
+//   - "foto_upload_links":   deel 2: tijdelijke uploadlinks om de foto's
+//                            terug te zetten
+//   - "herstel_afronden":    deel 3: je tijdelijke account vervangen door je
+//                            eigen account uit de back-up
 //
 // Wie mag het?
 //   Alleen een ingelogde, actieve beheerder (vinkje is_beheerder). Dat
@@ -101,6 +107,9 @@ Deno.serve(async (verzoek) => {
     if (vraag.actie === "stoppen") return antwoord(await laatStoppen(beheer, vraag, vrager.id));
     if (vraag.actie === "terugzetten") return antwoord(await zetTerug(beheer, vraag));
     if (vraag.actie === "backup") return antwoord(await maakBackup(beheer, vrager.id));
+    if (vraag.actie === "herstel_gegevens") return antwoord(await herstelGegevens(beheer, vraag, vrager));
+    if (vraag.actie === "foto_upload_links") return antwoord(await maakUploadLinks(beheer, vraag));
+    if (vraag.actie === "herstel_afronden") return antwoord(await rondHerstelAf(beheer, vraag, vrager));
     throw new BeheerFout("Onbekende actie.");
   } catch (fout) {
     if (fout instanceof BeheerFout) return antwoord({ fout: fout.message }, fout.status);
@@ -394,6 +403,101 @@ async function haalHeleTabel(beheer: any, tabel: string, sortering: string[]) {
     if (data.length < 1000) break;
   }
   return alles;
+}
+
+
+// ----- BACK-UP TERUGZETTEN -----
+// Gaat in drie delen, zodat de app tussendoor de voortgang kan laten zien.
+// Zie BEHEER.md, "Back-up terugzetten".
+
+// Deel 1: de tabellen (vaste actie herstel_backup in database/13_herstel.sql)
+// en daarna de inlogaccounts, met hun oude nummer en e-mailadres.
+// Je eigen account (zelfde e-mailadres als waarmee je nu bent ingelogd)
+// slaan we hier over: dat wisselen we pas in deel 3, anders word je
+// halverwege uitgelogd.
+// vraag: { gegevens }  (de inhoud van gegevens.json)
+// deno-lint-ignore no-explicit-any
+async function herstelGegevens(beheer: any, vraag: any, vrager: any) {
+  const gegevens = vraag.gegevens;
+  const { data: aantallen, error } = await beheer.rpc("herstel_backup", {
+    gegevens,
+    hersteller: vrager.id,
+  });
+  if (error) throw vertaalDatabaseFout(error);
+
+  const mijnEmail = String(vrager.email || "").toLowerCase();
+  let mijnOudeId = "";
+  let accountsTerug = 0;
+  const nietGelukt: string[] = [];
+  for (const account of gegevens.accounts || []) {
+    const email = String(account.email || "").toLowerCase();
+    if (account.id === vrager.id) continue;                        // dat ben jij al
+    if (email === mijnEmail) { mijnOudeId = account.id; continue; } // jij, in deel 3
+    const { error: fout } = await beheer.auth.admin.createUser({
+      id: account.id,
+      email,
+      email_confirm: true,
+    });
+    if (fout) {
+      console.error(fout);
+      nietGelukt.push(email);
+    } else {
+      accountsTerug++;
+    }
+  }
+
+  return { gelukt: true, aantallen, accountsTerug, nietGelukt, mijnOudeId };
+}
+
+// Deel 2: per foto een tijdelijke uploadlink (2 uur geldig). De app zet de
+// foto's daarmee één voor één terug in de fotomap.
+// vraag: { paden: ["<gebruiker>/<foto>.jpg", …] }  (hooguit 100 tegelijk)
+// deno-lint-ignore no-explicit-any
+async function maakUploadLinks(beheer: any, vraag: any) {
+  const paden: string[] = Array.isArray(vraag.paden) ? vraag.paden.slice(0, 100) : [];
+  const links: { pad: string; token: string }[] = [];
+  for (const pad of paden) {
+    // Alleen gewone fotopaden: "mapje/naam.jpg", geen ".." of rare tekens
+    if (!/^[\w-]+\/[\w-]+\.jpg$/.test(pad) && !/^[\w-]+\.jpg$/.test(pad)) {
+      links.push({ pad, token: "" });
+      continue;
+    }
+    const { data, error } = await beheer.storage.from(FOTO_MAP).createSignedUploadUrl(pad);
+    // Bestaat de foto al? Dan hoeft hij niet terug (token blijft leeg, pad telt als gelukt)
+    if (error) {
+      const bestaatAl = String(error.message || "").toLowerCase().includes("exist");
+      links.push({ pad, token: bestaatAl ? "BESTAAT_AL" : "" });
+    } else {
+      links.push({ pad, token: data.token });
+    }
+  }
+  return { gelukt: true, links };
+}
+
+// Deel 3: je tijdelijke account vervangen door je eigen account uit de
+// back-up (zelfde e-mailadres, oud nummer). Daarna ben je uitgelogd en log
+// je opnieuw in.
+// vraag: { mijnOudeId }  (uit deel 1; leeg = je stond niet in de back-up)
+// deno-lint-ignore no-explicit-any
+async function rondHerstelAf(beheer: any, vraag: any, vrager: any) {
+  const oudeId = String(vraag.mijnOudeId || "");
+  if (!oudeId || oudeId === vrager.id) {
+    // Je stond niet (met een ander nummer) in de back-up: je blijft zoals je bent
+    return { gelukt: true, uitloggen: false };
+  }
+  // Veiligheid: dat oude nummer moet echt in de teruggezette gegevens staan
+  const { data: oud } = await beheer.from("gebruikers").select("id").eq("id", oudeId).maybeSingle();
+  if (!oud) throw new BeheerFout("Je eigen gegevens staan niet in de back-up. Er is niets veranderd.");
+  // En er mag nog geen inlogaccount met dat oude nummer bestaan
+  const { data: bestaand } = await beheer.auth.admin.getUserById(oudeId);
+  if (bestaand?.user) throw new BeheerFout("Je oude account bestaat al. Log uit en log opnieuw in.");
+
+  const { error: wegFout } = await beheer.rpc("herstel_tijdelijke_gebruiker_weg", { hersteller: vrager.id });
+  if (wegFout) throw vertaalDatabaseFout(wegFout);
+  await beheer.auth.admin.deleteUser(vrager.id);
+  const { error } = await beheer.auth.admin.createUser({ id: oudeId, email: vrager.email, email_confirm: true });
+  if (error) throw vertaalAccountFout(error);
+  return { gelukt: true, uitloggen: true };
 }
 
 
