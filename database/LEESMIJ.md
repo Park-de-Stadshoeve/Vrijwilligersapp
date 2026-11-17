@@ -18,6 +18,7 @@ database opbouwt en bevraagt. Het ontwerp in gewone taal staat in `../DATABASE.m
 | `10_stoppen.sql` | Database-deel van "Laten stoppen" en "Weer laten meedoen" (alleen voor de Edge Function) | uitgevoerd in testproject |
 | `11_opmerking.sql` | Opmerking bij een gereed gemelde taak: twee kolommen, vaste actie "opmerking zetten", en Weer openen maakt hem leeg | uitgevoerd in testproject |
 | `12_backup.sql` | Tabel back_ups: wanneer en door wie een back-up is gemaakt (alleen beheerders zien hem) | uitgevoerd in testproject |
+| `13_herstel.sql` | Back-up terugzetten in een lege database (alleen voor de Edge Function) | nog uitvoeren |
 
 ## Testbestanden
 Deze mag je zo vaak uitvoeren als je wilt. Ze ruimen hun eigen testgegevens op.
@@ -35,6 +36,7 @@ Gebruik ze na een wijziging, om te zien of alles nog werkt.
 | `test_10_stoppen.sql` | Laten stoppen en weer laten meedoen: taken, vinkjes, wie het mag (7 tests). Zet de echte beheerders heel even uit en daarna terug. Getest: alles goed. |
 | `test_11_opmerking.sql` | Wie een opmerking mag zetten, lengte, weghalen en Weer openen (8 tests). Getest: alles goed. |
 | `test_12_backup.sql` | Wie de back-up-regels mag zien en wijzigen (4 tests). Getest: alles goed. |
+| `test_13_herstel.sql` | Dat terugzetten NIET kan als er al gegevens zijn, en niet vanuit de app (5 tests). Verandert niets. |
 
 Let op: na `08_beheer.sql` heeft het project minstens één echte beheerder nodig om de
 tests uit te voeren. Anders houdt de bewaker het opruimen van de testgebruikers tegen.
@@ -46,6 +48,11 @@ Nooit uitvoeren in het echte project. Alleen verzonnen namen.
 |---|---|
 | `voorbeeld_1_testvrijwilliger.sql` | Maakt van een e-mailadres (eerst toevoegen bij Authentication > Users) een "Testvrijwilliger" in Klussen. Het adres vul je alleen in de SQL Editor in, niet in GitHub. |
 | `voorbeeld_2_taken.sql` | Zet elf verzonnen taken in de database, met deadlines vanaf vandaag. Werkt alleen als er nog geen taken zijn. |
+
+## Alleen voor de hersteltest (testproject)
+| Bestand | Wat het doet |
+|---|---|
+| `herstel_leegmaken.sql` | Maakt het TESTPROJECT leeg (taken, meldingen, gebruikers, inlogaccounts), om terugzetten te oefenen. Heeft een veiligheidsslot. Nooit in het echte project. Zie `BEHEER.md`, "Back-up terugzetten". |
 
 ## Controleren of de fotomap afgesloten is
 Voer uit in de SQL Editor:

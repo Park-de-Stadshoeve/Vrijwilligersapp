@@ -156,6 +156,50 @@ Maak de back-up opnieuw met goed internet en gooi de onvolledige weg.
 **Lukt het niet?** Kijk of de nieuwste versie van de Edge Function **beheer** bij
 Supabase staat (zie hieronder) en of `database/12_backup.sql` is uitgevoerd.
 
+## Back-up terugzetten (bij een ramp)
+Alleen nodig als het Supabase-project weg, kapot of leeg is. Je zet de laatste
+back-up dan terug in een **nieuw, leeg project**. Bij een kleine vergissing (één
+verkeerde taak) zet je **geen** back-up terug: dan verlies je alles van na de
+back-up. Herstel zo'n vergissing met de hand.
+
+Terugzetten kan niet ongedaan gemaakt worden. Daarom werkt het alleen als er nog
+geen taken en meldingen zijn, en jij de enige gebruiker bent.
+
+**Stappenplan (op een computer):**
+1. Maak bij Supabase een nieuw project (regio Frankfurt, Free).
+2. Voer in de SQL Editor de bestanden `01` tot en met `13` uit de map `database` uit,
+   in volgorde (zie `database/LEESMIJ.md`). Niet de test- en voorbeeldbestanden.
+3. Zet de Edge Function **beheer** neer (zie "Edge Function beheer").
+4. Stel inloggen in zoals bij "Instellingen in Supabase voor inloggen".
+5. Zet in `instellingen.js` het adres en de publieke sleutel van het nieuwe project en
+   zet die wijziging op `main`.
+6. Zet jezelf met de hand neer (zie "Iemand toevoegen zonder beheerscherm"), met
+   **jouw eigen e-mailadres**, rol `bestuur` en `is_beheerder` op `true`.
+7. Open de app, log in en ga naar **Beheer** > **♻️ Back-up terugzetten**.
+8. Klik op **📁 Kies het back-upbestand**, kies de nieuwste back-up van SharePoint en
+   klik op **Terugzetten**. Je ziet de stappen voorbijkomen: gegevens, foto's,
+   afronden. Laat het scherm open tot er "Klaar!" staat.
+9. Klik op **Uitloggen** en log opnieuw in. Je bent nu weer "jezelf" uit de back-up.
+10. Controleer: taken, meldingen, foto's, de lijst in het beheerscherm.
+11. Laat iedereen weten dat de app weer werkt. Iedereen moet één keer opnieuw
+    inloggen. Alles wat na de back-up is gedaan, is weg.
+
+**Meldingen tijdens het terugzetten:**
+- "Terugzetten kan alleen in een lege database": er staan al taken, meldingen of
+  andere gebruikers in. Er is niets veranderd.
+- "Deze inlogaccounts konden niet terug": laat die personen in het beheerscherm
+  stoppen en daarna weer meedoen.
+- "Deze foto's konden niet terug": klik nog een keer op Terugzetten werkt dan niet
+  meer (de database is niet meer leeg). Zet de foto's met de hand terug via
+  Supabase > Storage > fotos, in het mapje met dezelfde naam als in het zip-bestand.
+
+**Oefenen op het testproject** (doe dit één keer, en daarna eens per jaar):
+1. Maak een verse back-up (en bewaar die goed).
+2. Supabase > **Storage** > **fotos**: alle mapjes selecteren en verwijderen.
+3. Open `database/herstel_leegmaken.sql`, controleer dat je in het **testproject**
+   zit, haal de regel met `VEILIGHEIDSSLOT` weg en voer het uit.
+4. Ga verder bij stap 6 van het stappenplan hierboven.
+
 ## Edge Function "beheer" (bij Supabase)
 Toevoegen, e-mailadressen wijzigen, laten stoppen, weer laten meedoen en de back-up
 gaan via een klein programma dat bij Supabase draait: de Edge Function **beheer**. De code staat in
@@ -179,7 +223,8 @@ Dat is veilig, want de functie controleert zelf of je ingelogd en beheerder bent
 zien wat er mis ging.
 
 ## Iemand toevoegen zonder beheerscherm (noodgeval)
-Alleen nodig als het beheerscherm niet werkt.
+Alleen nodig als het beheerscherm niet werkt, of om jezelf neer te zetten voor het
+terugzetten van een back-up (zet dan `is_beheerder` op `true` in plaats van `false`).
 
 1. Supabase > **Authentication** > **Users** > **Add user** > **Create new user**.
    Vul het e-mailadres in, kies een willekeurig lang wachtwoord (dat wordt nooit

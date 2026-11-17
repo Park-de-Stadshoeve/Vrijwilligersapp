@@ -353,6 +353,23 @@ Klaar (inloggen, taken en meldingen werken met de database):
   losse foto), browser met 30 nepfoto's waarvan 1 kapot: alles goed. Functie
   opnieuw geplakt; getest op een computer met echte foto's (voortgang, mapjes,
   foto's openen, aantal klopt met Storage): alles goed.
+  Stap (c) gebouwd: database/13_herstel.sql: herstel_backup(gegevens, hersteller)
+  (alleen service_role; versie 1/2, eist werkgroepen en actieve beheerder;
+  alleen als geen taken/meldingen en geen andere gebruikers; vervangt
+  werkgroepen/plekken; insert met overriding system value via
+  jsonb_populate_recordset; setval van alle tellers; geeft aantallen) en
+  herstel_tijdelijke_gebruiker_weg. herstel_leegmaken.sql (testproject,
+  VEILIGHEIDSSLOT-regel). Edge Function acties herstel_gegevens (rpc, dan
+  createUser per account met oud id; eigen e-mailadres overgeslagen ->
+  mijnOudeId), foto_upload_links (createSignedUploadUrl, alleen nette paden,
+  "BESTAAT_AL") en herstel_afronden (tijdelijke gebruiker weg, eigen account
+  opnieuw met oud id; daarna uitloggen). beheer.js: knop "Back-up terugzetten"
+  onder Back-up, scherm met bestand kiezen, stappenlijst, foto's via
+  uploadToSignedUrl (4 tegelijk, 2 pogingen). Getest lokaal: volledige
+  rondgang (alles exact gelijk, nieuwe taak krijgt vrij nummer, tweede keer
+  geweigerd), test_13 (5 tests), oude tests goed; functie met nep-Supabase;
+  scherm in de browser met 29 foto's. NOG TE DOEN: 13 uitvoeren, functie
+  opnieuw plakken, hersteltest op het testproject.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
