@@ -140,7 +140,8 @@ Klaar (inloggen, taken en meldingen werken met de database):
   link (emailRedirectTo = de app), nog geen code. Inloggen via de link getest en
   werkt. Het codescherm heeft een TIJDELIJKE zin over de link (inloggen.js,
   "TIJDELIJK"); weghalen zodra Brevo de code stuurt.
-- Domein: DNS bij Digiworks (beheerder nog onbekend), mail via Microsoft 365, SPF
+- Domein: DNS bij Digiworks (vaste contactpersoon bekend, naam staat niet in de
+  repository), mail via Microsoft 365, SPF
   staat alleen Microsoft toe. Brevo heeft DNS-regels nodig. Afzender voor de test:
   jerome@; voor echt gebruik een algemeen adres (bijv. gedeelde mailbox app@).
 - Menu onderaan: Mijn taken, Werkgroep, Melden, Meldingen.
