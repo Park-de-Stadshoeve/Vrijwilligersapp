@@ -189,7 +189,7 @@ geen taken en meldingen zijn, en jij de enige gebruiker bent.
   andere gebruikers in. Er is niets veranderd.
 - "Deze inlogaccounts konden niet terug": laat die personen in het beheerscherm
   stoppen en daarna weer meedoen.
-- "Deze foto's konden niet terug": klik nog een keer op Terugzetten werkt dan niet
+- "Deze foto's konden niet terug": nog een keer op Terugzetten klikken werkt dan niet
   meer (de database is niet meer leeg). Zet de foto's met de hand terug via
   Supabase > Storage > fotos, in het mapje met dezelfde naam als in het zip-bestand.
 
