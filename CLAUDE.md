@@ -375,7 +375,10 @@ Klaar (inloggen, taken en meldingen werken met de database):
   via PostgREST, ook binnen functies; lokaal niet nagebootst). Opgelost met
   "where true" en create or replace in 13_herstel.sql. LET OP voor later:
   delete/update in functies die via rpc lopen altijd met een where.
-  NOG TE DOEN: 13 opnieuw uitvoeren, hersteltest afmaken.
+  13 opnieuw uitgevoerd. Hersteltest op het testproject geslaagd (verse
+  back-up, foto's en database leeggemaakt, jezelf met de hand neergezet,
+  terugzetten, uitloggen en inloggen, aantallen, foto's, Testvrijwilliger
+  inloggen, nieuwe taak): alles goed. Back-up en terugzetten zijn klaar.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
@@ -431,7 +434,8 @@ Volgende stappen:
      maar 2 berichten per uur en alleen naar beheerders);
    - voorkomen dat het gratis Supabase-project na een week stilte op pauze gaat
      (klaar en getest, november 2026);
-   - maandelijkse back-up (de gratis versie maakt er geen).
+   - maandelijkse back-up (de gratis versie maakt er geen); klaar en getest,
+     inclusief terugzetten (november 2026).
 
 ## Later-lijst
 1. Terugkerende taken (wens van het bestuur). Voorrang: veel onderhoud uit de
