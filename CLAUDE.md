@@ -143,7 +143,7 @@ Klaar (inloggen, taken en meldingen werken met de database):
 - Domein: DNS bij Digiworks (vaste contactpersoon bekend, naam staat niet in de
   repository), mail via Microsoft 365, SPF
   staat alleen Microsoft toe. Brevo heeft DNS-regels nodig. Afzender voor de test:
-  jerome@; voor echt gebruik een algemeen adres (bijv. gedeelde mailbox app@).
+  een eigen adres op het domein; voor echt gebruik een algemeen adres (bijv. gedeelde mailbox app@).
 - Menu onderaan: Mijn taken, Werkgroep, Melden, Meldingen.
 - Elke actie heeft "Ongedaan maken" (6 seconden).
 - De status van een melding wordt afgeleid van de gekoppelde taak (taakId), niet
@@ -375,7 +375,22 @@ Klaar (inloggen, taken en meldingen werken met de database):
   via PostgREST, ook binnen functies; lokaal niet nagebootst). Opgelost met
   "where true" en create or replace in 13_herstel.sql. LET OP voor later:
   delete/update in functies die via rpc lopen altijd met een where.
-  NOG TE DOEN: 13 opnieuw uitvoeren, hersteltest afmaken.
+  13 opnieuw uitgevoerd. Hersteltest op het testproject geslaagd (verse
+  back-up, foto's en database leeggemaakt, jezelf met de hand neergezet,
+  terugzetten, uitloggen en inloggen, aantallen, foto's, Testvrijwilliger
+  inloggen, nieuwe taak): alles goed. Back-up en terugzetten zijn klaar.
+- Nieuwe versie automatisch laden: de PWA kwam terug van de achtergrond met de
+  oude versie (alleen handmatig verversen hielp). app.js "NIEUWE VERSIE": bij
+  start en bij elke visibilitychange (hooguit 1x per minuut) HEAD-verzoeken
+  (no-cache) op VERSIE_BESTANDEN, kenmerk = ETag of last-modified/grootte;
+  anders dan bij start -> op een rustig moment (Mijn taken, Werkgroep,
+  Meldingen, Beheer, geen tekstvak open) service worker "haal-nieuwe-versie"
+  (alle APP_BESTANDEN vers in de kopie), dan location.reload(); anders melding
+  en opnieuw proberen in toonScherm. Ook registration.update() bij in beeld
+  komen. Niet op het inlogscherm (ingelogdeGebruiker.id moet gevuld zijn).
+  Getest in de browser met echte service worker (inlogscherm blijft staan,
+  formulier geeft melding, terug op Mijn taken herlaadt met nieuwe bestanden in
+  de kopie): alles goed. NOG TE TESTEN op de telefoon.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
@@ -431,7 +446,8 @@ Volgende stappen:
      maar 2 berichten per uur en alleen naar beheerders);
    - voorkomen dat het gratis Supabase-project na een week stilte op pauze gaat
      (klaar en getest, november 2026);
-   - maandelijkse back-up (de gratis versie maakt er geen).
+   - maandelijkse back-up (de gratis versie maakt er geen); klaar en getest,
+     inclusief terugzetten (november 2026).
 
 ## Later-lijst
 1. Terugkerende taken (wens van het bestuur). Voorrang: veel onderhoud uit de
