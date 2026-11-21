@@ -423,7 +423,9 @@ Klaar (inloggen, taken en meldingen werken met de database):
   Wijzigen met tekstvak voor reden (niet verplicht), Mijn taken zonder vervallen,
   onderaan Werkgroep dichtgeklapt "Vervallen (N)" met Weer openen en
   opmerking. Getest: test_15 lokaal (10 tests), 01-14 nog goed, browser.
-  NOG TE DOEN: 15 uitvoeren, testen op de telefoon.
+  15 uitgevoerd, test_15 goed. Getest op de telefoon (laten vervallen met
+  reden, Ongedaan maken, taak uit melding -> melding Nieuw, Testvrijwilliger
+  opent weer en ziet geen knop Laten vervallen): alles goed.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).

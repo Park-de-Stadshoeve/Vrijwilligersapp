@@ -20,7 +20,7 @@ database opbouwt en bevraagt. Het ontwerp in gewone taal staat in `../DATABASE.m
 | `12_backup.sql` | Tabel back_ups: wanneer en door wie een back-up is gemaakt (alleen beheerders zien hem) | uitgevoerd in testproject |
 | `13_herstel.sql` | Back-up terugzetten in een lege database (alleen voor de Edge Function) | uitgevoerd in testproject |
 | `14_gevaar_mail.sql` | Seintje naar de Edge Function gevaar-mail bij een gevaarlijke melding; tabel app_instellingen (zet eerst pg_net aan, vul daarna het adres in) | nog uitvoeren (na Brevo) |
-| `15_vervallen.sql` | Status "vervallen" voor taken: laten vervallen (bestuur) en weer openen; verwijderen alleen nog bij open taken | nog uitvoeren |
+| `15_vervallen.sql` | Status "vervallen" voor taken: laten vervallen (bestuur) en weer openen; verwijderen alleen nog bij open taken | uitgevoerd in testproject |
 
 ## Testbestanden
 Deze mag je zo vaak uitvoeren als je wilt. Ze ruimen hun eigen testgegevens op.
@@ -40,7 +40,7 @@ Gebruik ze na een wijziging, om te zien of alles nog werkt.
 | `test_12_backup.sql` | Wie de back-up-regels mag zien en wijzigen (4 tests). Getest: alles goed. |
 | `test_13_herstel.sql` | Dat terugzetten NIET kan als er al gegevens zijn, en niet vanuit de app (5 tests). Verandert niets. Getest: alles goed. |
 | `test_14_gevaar_mail.sql` | Adres ingevuld, seintje alleen bij gevaar, app kan de instellingen niet lezen (5 tests). Draait alles terug: er gaat geen echte mail. |
-| `test_15_vervallen.sql` | Laten vervallen en weer openen: wie mag het, melding weer Nieuw, gereed taak blijft, gestopte persoon (10 tests). |
+| `test_15_vervallen.sql` | Laten vervallen en weer openen: wie mag het, melding weer Nieuw, gereed taak blijft, gestopte persoon (10 tests). Getest: alles goed. |
 
 Let op: na `08_beheer.sql` heeft het project minstens één echte beheerder nodig om de
 tests uit te voeren. Anders houdt de bewaker het opruimen van de testgebruikers tegen.
