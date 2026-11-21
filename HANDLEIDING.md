@@ -1,0 +1,129 @@
+# Handleiding vrijwilligersapp – proef Klussen
+
+Voor de vrijwilligers van werkgroep Klussen. Laatst bijgewerkt: november 2026.
+
+<!-- Uitleg voor de beheerder: deze tekst staat ook in een deelbaar document
+     (om te mailen of te printen). Verander je hier iets, verander het daar ook.
+     Zet hier nooit echte namen of e-mailadressen in: de repository is openbaar. -->
+
+## Wat is de app?
+
+Met de app zie je welke klussen er op het park liggen, pak je een klus op en meld
+je hem gereed. Zie je iets kapot? Dan meld je dat met een foto. De proef met
+werkgroep Klussen duurt 8 weken. Wat je vindt van de app, horen we graag.
+
+Onderaan het scherm staan vier knoppen:
+
+| Knop       | Wat zie je                                            |
+| ---------- | ----------------------------------------------------- |
+| Mijn taken | De klussen die jij doet. Dit is het startscherm.      |
+| Werkgroep  | Alle klussen van Klussen, ook die nog niemand doet.   |
+| Melden     | Een gebrek melden met een foto.                       |
+| Meldingen  | Wat jij gemeld hebt, en wat ermee gebeurt.            |
+
+## De app op je telefoon zetten
+
+De app staat niet in de App Store of Play Store. Je zet hem zelf op je
+beginscherm. Dat doe je één keer.
+
+**iPhone** (gebruik Safari):
+
+1. Open Safari en ga naar **app.parkdestadshoeve.nl**.
+2. Tik onderaan op het deel-icoon (vierkantje met pijl omhoog).
+3. Kies **Zet op beginscherm** en tik op **Voeg toe**.
+
+**Android** (gebruik Chrome):
+
+1. Open Chrome en ga naar **app.parkdestadshoeve.nl**.
+2. Tik rechtsboven op de drie puntjes.
+3. Kies **App installeren** of **Toevoegen aan startscherm**.
+
+Open de app daarna altijd via het icoon op je beginscherm.
+
+## Inloggen
+
+Je logt één keer in op je telefoon. Daarna blijf je ingelogd.
+
+1. Vul je e-mailadres in en tik op **Stuur mij een code**.
+2. Je krijgt een mail met een code van 6 cijfers. Zie je niets? Kijk ook bij
+   ongewenste mail.
+3. Vul de code in en tik op **Inloggen**.
+
+Alleen e-mailadressen die het bestuur heeft toegevoegd kunnen inloggen. Lukt het
+niet? Vraag of je adres goed in de app staat.
+
+## Taken
+
+Een taak is altijd van één persoon. Zo is het duidelijk wie wat doet.
+
+**Een klus oppakken**
+
+1. Tik onderaan op **Werkgroep**.
+2. Kies een taak waar nog niemand bij staat.
+3. Tik op **Ik doe dit**. De taak staat nu ook onder **Mijn taken**.
+
+Kun je het toch niet doen? Tik op **Teruggeven**. Dan is de taak weer vrij voor
+een ander. Het bestuur kan een taak ook aan jou toewijzen.
+
+**Een klus gereed melden**
+
+1. Tik onderaan op **Mijn taken**.
+2. Tik bij de taak op **Gereed melden**.
+3. Wil je een foto van het resultaat? Tik op **Foto toevoegen**.
+
+Je kunt ook een korte opmerking zetten met **Opmerking toevoegen**, bijvoorbeeld
+"Nieuwe scharnieren, de oude liggen in de container."
+
+Per ongeluk gereed gemeld, of toch nog niet af? Tik op **Weer openen**. De foto
+kun je vervangen of verwijderen.
+
+## Een gebrek melden
+
+Zie je iets dat kapot is of gerepareerd moet worden? Meld het.
+
+1. Tik onderaan op **Melden**.
+2. Tik op **Foto maken** en fotografeer het gebrek.
+3. Kies bij **Waar is het?** de plek.
+4. Tik op **Melding versturen**.
+
+Wil je meer vertellen? Schrijf het in het tekstvak, bijvoorbeeld "Plank los,
+achter de schuur". Dat is niet verplicht.
+
+Kan iemand zich eraan bezeren? Kies dan bij **Is het gevaarlijk?** voor
+**Ja, gevaarlijk**. De coördinator krijgt dan een e-mail. Is het acuut
+gevaarlijk? Zet het af en stuur meteen een WhatsApp naar het bestuur.
+
+**Wat gebeurt er met je melding?**
+
+Onder **Meldingen** zie je hoe het ervoor staat:
+
+| Status           | Betekenis                                                |
+| ---------------- | -------------------------------------------------------- |
+| Nieuw            | Het bestuur heeft je melding nog niet bekeken.           |
+| Taak gemaakt     | Er is een taak van gemaakt, maar nog niemand doet hem.   |
+| Toegewezen       | Iemand gaat het doen.                                    |
+| Gereed           | Het is opgelost.                                         |
+| Geen actie nodig | Er gebeurt niets mee. Je ziet erbij waarom.              |
+
+Per ongeluk verstuurd? Tik direct op **Ongedaan maken**.
+
+## Handig om te weten
+
+- **Ongedaan maken.** Na elke tik zie je onderaan een melding met
+  **Ongedaan maken**. Die staat er 6 seconden. Zo zet je een vergissing meteen
+  terug.
+- **Slecht bereik.** Zonder bereik zie je de lijst van de laatste keer. Een knop
+  werkt dan niet; de app zegt "Er is niets veranderd". Probeer het opnieuw als je
+  weer bereik hebt. Soms duurt dat een minuut of twee.
+- **Foto's.** Fotografeer alleen het werk, geen mensen. Zeker geen kinderen,
+  bezoekers of cliënten van Frion. Foto's blijven 12 maanden in de app.
+- **Wie ziet wat?** Je ziet de taken van je eigen werkgroep en je eigen
+  meldingen. Het bestuur ziet alles.
+- **Lijst bijwerken.** Tik op **Mijn taken** of **Werkgroep** om de nieuwste
+  lijst te zien. Taken die niet meer nodig zijn, staan onderaan **Werkgroep**
+  onder **Vervallen**.
+- **Uitloggen** hoeft niet. Doe het alleen als je je telefoon aan een ander
+  geeft.
+
+**Vragen of iets werkt niet?** Vraag het aan de beheerder van de app. Vertel wat
+je deed en wat er op het scherm stond. Een schermafbeelding helpt.

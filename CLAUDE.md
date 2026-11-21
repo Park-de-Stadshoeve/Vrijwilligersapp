@@ -452,6 +452,13 @@ Klaar (inloggen, taken en meldingen werken met de database):
   test_17 lokaal (5 tests), 13/16 goed, browser. NOG TE DOEN: 17 uitvoeren,
   testen op de telefoon.
 
+- Gebruikershandleiding voor de proef met Klussen: HANDLEIDING.md (installeren,
+  inloggen met code, taken, melden, handig om te weten). Zelfde tekst staat in
+  een deelbaar Claude-document (om te mailen of te printen); bij wijzigen allebei
+  bijwerken. Gaat uit van het adres app.parkdestadshoeve.nl en de code uit de
+  mail (Brevo) en zegt dat de coördinator een e-mail krijgt bij gevaar: klopt
+  pas als Brevo en de gevaar-mail werken.
+
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
 - Inloggen met een code uit de mail in plaats van een link (iPhone-probleem).
