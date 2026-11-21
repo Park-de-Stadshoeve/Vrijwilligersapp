@@ -197,8 +197,8 @@ Klaar (inloggen, taken en meldingen werken met de database):
   bestuur): nieuwe taak, wijzigen. Getest op telefoon en computer, ook een conflict
   (twee keer gereed melden): alles goed. De telefoon hield na een push de oude
   versie (GitHub Pages laat bestanden 10 minuten bewaren); opgelost in
-  service-worker.js met fetch(..., { cache: "no-cache" }), nog niet getest op
-  de telefoon.
+  service-worker.js met fetch(..., { cache: "no-cache" }); daarna aangevuld met
+  automatisch laden van een nieuwe versie (zie verderop), getest op de telefoon.
 - Toewijzen met de keuzelijst (bestuur) bewaart via nieuwe vaste actie
   taak_toewijzen (database/05_toewijzen.sql: alleen bestuur, taak open, persoon
   actief; omzetten van een opgepakte taak mag). In 05 ook een nieuwe tekst bij
@@ -390,7 +390,9 @@ Klaar (inloggen, taken en meldingen werken met de database):
   komen. Niet op het inlogscherm (ingelogdeGebruiker.id moet gevuld zijn).
   Getest in de browser met echte service worker (inlogscherm blijft staan,
   formulier geeft melding, terug op Mijn taken herlaadt met nieuwe bestanden in
-  de kopie): alles goed. NOG TE TESTEN op de telefoon.
+  de kopie): alles goed. Getest op de telefoon (app op de achtergrond, wijziging
+  in index.html, na ontgrendelen nieuwe versie geladen; met Melden open eerst
+  de melding, herladen pas op Mijn taken): alles goed.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
