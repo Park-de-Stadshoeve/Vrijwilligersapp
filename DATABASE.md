@@ -142,12 +142,14 @@ beheerder ziet de tabel zelf nooit. Dezelfde combinatie kan maar één keer voor
 | werkgroep | nummer uit werkgroepen | ja |
 | toegewezen_aan | nummer uit gebruikers | nee |
 | deadline | datum | nee |
-| status | `open` of `gereed` | ja (standaard open) |
+| status | `open`, `gereed` of `vervallen` | ja (standaard open) |
 | foto_na_afloop | waar de foto bij het gereed melden staat | nee |
 | gereed_gemeld_door | nummer uit gebruikers | alleen als status gereed is |
 | gereed_gemeld_op | datum en tijd | alleen als status gereed is |
-| opmerking | korte opmerking na afloop (hooguit 500 tekens) | nee, en alleen als status gereed is |
+| opmerking | korte opmerking na afloop, of de reden van vervallen (hooguit 500 tekens) | nee, en alleen als status gereed of vervallen is |
 | opmerking_door | nummer uit gebruikers: wie de opmerking schreef | alleen als er een opmerking is |
+| vervallen_door | nummer uit gebruikers: wie de taak liet vervallen | alleen als status vervallen is |
+| vervallen_op | datum en tijd | alleen als status vervallen is |
 | aangemaakt_door | nummer uit gebruikers | ja |
 | aangemaakt_op | datum en tijd (gaat vanzelf) | ja |
 
@@ -155,6 +157,10 @@ beheerder ziet de tabel zelf nooit. Dezelfde combinatie kan maar één keer voor
 - Een taak is aan hooguit één persoon toegewezen.
 - Het onderdeel hoort bij de gekozen plek (dat geldt ook voor meldingen).
 - Alleen een toegewezen taak kan op `gereed`.
+- Een taak wordt niet verwijderd maar `vervallen` (alleen bestuur en coördinator,
+  alleen vanuit `open`). Een vervallen taak blijft bewaard en gaat mee naar het
+  archief. Echt verwijderen kan alleen bij een open taak (gebruikt voor "Ongedaan
+  maken" direct na het aanmaken).
 - Terug naar `open`: de gereed-gegevens worden leeg gemaakt, ook de foto en de
   opmerking.
 - De opmerking is vrije tekst. Er kunnen namen of andere persoonsgegevens in staan.

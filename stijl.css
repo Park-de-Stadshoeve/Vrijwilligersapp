@@ -56,6 +56,8 @@ main { padding: 16px; padding-bottom: 180px; } /* ruimte vrij voor menu én meld
 .status { display: inline-block; margin-top: 8px; padding: 4px 10px; border-radius: 4px; font-size: 16px; font-weight: bold; }
 .status-open { background: #e8eef9; color: #1d3d7a; }
 .status-gereed { background: #e3f1e4; color: #1e4d24; }
+/* Vervallen: grijs (en met een ✕ en het woord "Vervallen", niet alleen kleur) */
+.status-vervallen { background: #ececec; color: #333333; }
 .leeg { color: var(--grijs); }
 /* Korte uitleg boven een lijst, bijv. "Geen verbinding" */
 .uitleg-bovenaan { background: #fff4d6; color: var(--tekst); border-radius: 8px; padding: 8px 12px; margin: 0 0 12px; font-size: 16px; }
@@ -96,6 +98,8 @@ main { padding: 16px; padding-bottom: 180px; } /* ruimte vrij voor menu én meld
 /* Knop "Laten stoppen": rode rand en tekst, met ruimte erboven (de tekst zegt
    zelf wat hij doet, dus niet alleen de kleur) */
 .knop-tweede.knop-stoppen { margin-top: 32px; border-color: var(--rood); color: var(--rood); }
+/* Hoofdknop "Laten vervallen" (na het tekstvak): rood in plaats van groen */
+.knop-gereed.knop-vervallen { background: var(--rood); }
 
 /* Keuzelijst (bijv. "Toegewezen aan") */
 .toewijzen { display: block; margin-top: 12px; font-size: 16px; font-weight: bold; }
