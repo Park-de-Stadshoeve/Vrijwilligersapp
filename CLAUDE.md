@@ -436,8 +436,21 @@ Klaar (inloggen, taken en meldingen werken met de database):
   plekken; alleen beheerder; voor waarschuwing bij uitzetten) en
   plek_verplaatsen (nette nummers 10, 20, …, wissel met de eerstvolgende
   actieve buur). Getest: test_16 lokaal (6 tests), browser (omhoog, dubbel,
-  toevoegen, uitzetten met waarschuwing, Ongedaan maken). NOG TE DOEN: 16
-  uitvoeren, testen op de telefoon. Onderdelen na de proef.
+  toevoegen, uitzetten met waarschuwing, Ongedaan maken). 16 uitgevoerd,
+  test_16 goed; getest op de telefoon (volgorde, plek toevoegen en uitzetten,
+  werkgroep hernoemen, uitzetten met waarschuwing, Testvrijwilliger geen
+  Beheer): alles goed. Onderdelen na de proef. Besluit: in de app blijft het
+  woord "plekken" (niet "locaties").
+  Daarna: volgorde van werkgroepen (database/17_werkgroep_volgorde.sql: kolom
+  volgorde, mag leeg voor oude back-ups, begin = volgorde van het nummer;
+  werkgroep_verplaatsen zoals bij plekken). app.js haalt werkgroepen op
+  volgorde op; scherm Werkgroep zet ook de eigen werkgroepen van een
+  vrijwilliger in die volgorde. beheer-lijsten.js: ▲/▼ bij werkgroepen
+  (maakPijlen gedeeld met plekken), nieuwe werkgroep onderaan. Fout opgelost:
+  plek met uitgezette standaardwerkgroep vulde die in bij "Maak taak" (opslaan
+  mislukte); nu alleen een actieve werkgroep in werkgroepBijPlek. Getest:
+  test_17 lokaal (5 tests), 13/16 goed, browser. NOG TE DOEN: 17 uitvoeren,
+  testen op de telefoon.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
@@ -493,7 +506,7 @@ Volgende stappen:
      stellen en te testen na Brevo);
    - beheerscherm voor gebruikers, werkgroepen, plekken en onderdelen (alleen voor
      beheerders); gebruikers klaar en getest (november 2026), werkgroepen en
-     plekken gebouwd (nog testen), onderdelen na de proef;
+     plekken klaar en getest (november 2026), onderdelen na de proef;
    - eigen e-maildienst voor de inlogcodes (de ingebouwde mail van Supabase stuurt
      maar 2 berichten per uur en alleen naar beheerders);
    - voorkomen dat het gratis Supabase-project na een week stilte op pauze gaat

@@ -358,13 +358,18 @@ Tik op **Beheer** en kies bovenaan **Werkgroepen** of **Plekken**.
   "Overig").
 - **Naam of standaard werkgroep wijzigen:** tik op **Wijzigen**. Een nieuwe naam staat
   ook bij oude taken en meldingen.
-- **Volgorde van de plekken** (zo staan de knoppen bij Melden en bij taken): tik op
-  **▲ Omhoog** of **▼ Omlaag** bij de plek.
+- **Volgorde** van plekken en werkgroepen (zo staan de knoppen bij Melden, bij taken
+  en op het scherm Werkgroep): tik op **▲ Omhoog** of **▼ Omlaag**. Een nieuwe
+  werkgroep komt ook onderaan.
 - **Niet meer gebruiken:** tik op **Wijzigen** en helemaal onderaan op **Uitzetten**.
   De werkgroep of plek verdwijnt uit de keuzes; oude taken en meldingen houden de
   naam. Bij een werkgroep zie je hoeveel mensen er nog in zitten, hoeveel open
   taken er zijn en welke plekken hem als standaard hebben. Zet die mensen en plekken
-  daarna over (beheerscherm > Gebruikers of Plekken > Wijzigen).
+  daarna over (beheerscherm > Gebruikers of Plekken > Wijzigen) en geef de open
+  taken een andere werkgroep (taak > Wijzigen) of laat ze vervallen. Tot die tijd
+  zien de leden de werkgroep nog bij Werkgroep en kunnen ze lopende taken afmaken;
+  nieuwe taken kunnen niet meer in die werkgroep. Een plek met een uitgezette
+  werkgroep als standaard krijgt bij "Maak taak" geen werkgroep ingevuld.
 - **Weer gebruiken:** onder "Uitgezet" > **Wijzigen** > **Weer aanzetten**.
 - **Verwijderen** kan niet, omdat taken, meldingen en mensen eraan vastzitten.
 - Vergist? Tik meteen op **Ongedaan maken**.
