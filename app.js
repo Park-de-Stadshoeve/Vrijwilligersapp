@@ -396,8 +396,9 @@ function maakTaakKaart(taak) {
 
   const status = document.createElement("span");
   status.className = "status status-" + taak.status;
-  status.textContent = taak.status === "gereed"
-    ? "✓ Gereed gemeld door " + taak.gereedGemeldDoor
+  status.textContent = taak.status === "gereed" ? "✓ Gereed gemeld door " + taak.gereedGemeldDoor
+    : taak.status === "vervallen" ? "✕ Vervallen" +
+        (taak.vervallenDoor ? " (" + taak.vervallenDoor + ", " + leesbareDatum(taak.vervallenOp.slice(0, 10)) + ")" : "")
     : "○ Open";
   kaart.append(status);
 
@@ -450,6 +451,20 @@ function maakTaakKaart(taak) {
         kaart.append(maakTweedeKnop("Foto verwijderen", () => zetTaakFoto(taak, "")));
       }
       kaart.append(maakTweedeKnop("↺ Weer openen", () => heropenTaak(taak)));
+    }
+  }
+
+  // Vervallen taak: de reden (als die er is) en "Weer openen"
+  if (taak.status === "vervallen") {
+    if (taak.opmerking) {
+      const reden = document.createElement("p");
+      reden.className = "opmerking";
+      reden.textContent = "💬 " + (taak.opmerkingDoor ? taak.opmerkingDoor + ": " : "") + taak.opmerking;
+      kaart.append(reden);
+    }
+    if (magGereedMelden(taak)) {
+      kaart.append(maakOpmerkingDeel(taak));
+      kaart.append(maakTweedeKnop("↺ Weer openen", () => zetVervallenTaakTerug(taak)));
     }
   }
 
@@ -1186,7 +1201,9 @@ function openTaakWijzigen(taak) {
     werkgroep: taak.werkgroep,
     toegewezenAanId: taak.toegewezenAanId || "",
     toegewezenAan: taak.toegewezenAan,   // naam, voor als iemand niet meer in de lijst staat
-    deadline: taak.deadline
+    deadline: taak.deadline,
+    vervalStap: false,   // true = het tekstvak "waarom vervalt de taak?" staat open
+    vervalReden: ""
   };
   toonTaakFormulier();
 }
@@ -1258,7 +1275,94 @@ function toonTaakFormulier() {
     toonScherm(terug);
   }));
 
+  // Laten vervallen: apart, helemaal onderaan. Alleen bij een open taak.
+  if (formulier.modus === "wijzigen" && formulier.taak.status === "open") {
+    inhoud.append(maakVervalDeel(formulier));
+  }
+
   markeerMenu(formulier.terugScherm);   // in het menu blijft het vorige scherm oplichten
+}
+
+// ===== LATEN VERVALLEN =====
+// Een taak die niet meer nodig is, wordt niet weggegooid maar krijgt de
+// status "vervallen" (database/15_vervallen.sql). Alleen bestuur en
+// coördinator kunnen een taak laten vervallen; iedereen die de taak mag
+// bewerken kan hem weer openen. Vervallen taken staan onderaan "Werkgroep".
+
+let vervallenOpen = false;   // staat het kopje "Vervallen" open?
+
+// Onderaan het taakformulier: knop, en na een tik het tekstvak voor de reden
+function maakVervalDeel(formulier) {
+  const deel = document.createElement("div");
+  if (!formulier.vervalStap) {
+    const knop = maakTweedeKnop("Laten vervallen", () => {
+      formulier.vervalStap = true;
+      toonTaakFormulier();
+    });
+    knop.classList.add("knop-stoppen");   // zelfde rode stijl als "Laten stoppen"
+    deel.append(knop);
+    return deel;
+  }
+  const veld = maakInvoerVeld("Waarom vervalt de taak? (niet verplicht)", "lang", formulier.vervalReden,
+    waarde => { formulier.vervalReden = waarde; });
+  veld.classList.add("opmerking-veld");
+  veld.querySelector("textarea").maxLength = OPMERKING_MAX;
+  veld.querySelector("textarea").placeholder = "Bijv. het hek wordt in het voorjaar vervangen";
+  deel.append(veld);
+  const doe = maakHoofdKnop("Laten vervallen", () => laatTaakVervallen(formulier.taak, formulier.vervalReden.trim()));
+  doe.classList.add("knop-vervallen");
+  deel.append(doe);
+  deel.append(maakTweedeKnop("Toch niet", () => {
+    formulier.vervalStap = false;
+    toonTaakFormulier();
+  }));
+  return deel;
+}
+
+// ✕ Laten vervallen, met "Ongedaan maken"
+async function laatTaakVervallen(taak, reden) {
+  const antwoord = await stuurNaarDatabase(signaal =>
+    database.rpc("taak_laten_vervallen", { taak_id: taak.id, reden: reden || null }).abortSignal(signaal));
+  if (!antwoord.gelukt) return;   // formulier blijft staan; de melding zegt wat er mis is
+  const meldingId = antwoord.data;   // losgekoppelde melding (of niets)
+
+  if (taakFormulier && taakFormulier.taak === taak) {
+    huidigScherm = taakFormulier.terugScherm;
+    taakFormulier = null;
+  }
+  await haalTakenOp();   // alles opnieuw, ook de melding die weer op "Nieuw" staat
+  verversScherm();
+  toonMelding(meldingId ? "Taak vervallen. De melding staat weer op Nieuw." : "Taak vervallen",
+              () => zetVervallenTaakTerug(taak, meldingId));
+}
+
+// ↺ Weer openen (ook "Ongedaan maken" na laten vervallen).
+// meldingId (niet verplicht): die melding weer aan de taak koppelen.
+async function zetVervallenTaakTerug(taak, meldingId = null) {
+  const reden = taak.opmerking;   // onthouden voor "Ongedaan maken"
+  if (!await vraagDatabase("taak_vervallen_terug", { taak_id: taak.id, melding_id: meldingId })) return;
+  await haalTakenOp();
+  verversScherm();
+  // Alleen bestuur en coördinator kunnen hem daarna weer laten vervallen
+  toonMelding("Taak staat weer open",
+    ingelogdeGebruiker.magAllesZien ? () => laatTaakVervallen(taak, reden) : null);
+}
+
+// Onderaan "Werkgroep": de vervallen taken, dichtgeklapt
+function maakVervallenDeel(vervallen) {
+  const deel = document.createElement("section");
+  if (vervallen.length === 0) return deel;
+  const knop = maakTweedeKnop((vervallenOpen ? "▾ " : "▸ ") + "Vervallen (" + vervallen.length + ")", () => {
+    vervallenOpen = !vervallenOpen;
+    verversScherm();
+  });
+  knop.setAttribute("aria-expanded", vervallenOpen);
+  deel.append(knop);
+  if (vervallenOpen) {
+    vervallen.sort((a, b) => (b.vervallenOp || "").localeCompare(a.vervallenOp || ""));   // nieuwste eerst
+    vervallen.forEach(taak => deel.append(maakTaakKaart(taak)));
+  }
+  return deel;
 }
 
 // Controleert het formulier en maakt of wijzigt de taak
@@ -1531,7 +1635,7 @@ async function vraagTakenOpBijDatabase() {
     const takenVraag = database
       .from("taken")
       .select("id, titel, omschrijving, deadline, status, toegewezen_aan, gereed_gemeld_door, foto_na_afloop, " +
-              "opmerking, opmerking_door, " +
+              "opmerking, opmerking_door, vervallen_door, vervallen_op, " +
               "plek_naam:plekken(naam), werkgroep_naam:werkgroepen(naam), " +
               // de melding waar de taak uit komt (als die er is)
               "melding:meldingen(id, foto, toelichting, gemeld_door)")
@@ -1633,6 +1737,8 @@ async function vraagTakenOpBijDatabase() {
         deadline: rij.deadline || "",
         status: rij.status,
         gereedGemeldDoor: naamVan[rij.gereed_gemeld_door] || "",
+        vervallenDoor: naamVan[rij.vervallen_door] || "",          // bij status "vervallen"
+        vervallenOp: rij.vervallen_op || "",
         opmerking: rij.opmerking || "",                          // opmerking na afloop
         opmerkingDoor: naamVan[rij.opmerking_door] || "",
         fotoPad: rij.foto_na_afloop || "",   // waar de foto na afloop in de fotomap staat
@@ -1758,7 +1864,7 @@ function toonMijnTaken() {
   huidigScherm = "mijn";
   document.getElementById("titel").textContent = "Mijn taken";
   document.getElementById("inhoud").replaceChildren(); // scherm leegmaken
-  toonLijst(taken.filter(isMijnTaak));
+  toonLijst(taken.filter(taak => isMijnTaak(taak) && taak.status !== "vervallen"));
   markeerMenu("mijn");
 }
 
@@ -1801,7 +1907,8 @@ function toonWerkgroep() {
   const lijst = gekozenWerkgroep === "Alles"
     ? [...taken]
     : taken.filter(taak => taak.werkgroep === gekozenWerkgroep);
-  toonLijst(lijst);
+  toonLijst(lijst.filter(taak => taak.status !== "vervallen"));
+  inhoud.append(maakVervallenDeel(lijst.filter(taak => taak.status === "vervallen")));
   markeerMenu("werkgroep");
 }
 

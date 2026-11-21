@@ -19,6 +19,7 @@ database opbouwt en bevraagt. Het ontwerp in gewone taal staat in `../DATABASE.m
 | `11_opmerking.sql` | Opmerking bij een gereed gemelde taak: twee kolommen, vaste actie "opmerking zetten", en Weer openen maakt hem leeg | uitgevoerd in testproject |
 | `12_backup.sql` | Tabel back_ups: wanneer en door wie een back-up is gemaakt (alleen beheerders zien hem) | uitgevoerd in testproject |
 | `13_herstel.sql` | Back-up terugzetten in een lege database (alleen voor de Edge Function) | uitgevoerd in testproject |
+| `15_vervallen.sql` | Status "vervallen" voor taken: laten vervallen (bestuur) en weer openen; verwijderen alleen nog bij open taken | nog uitvoeren |
 | `14_gevaar_mail.sql` | Seintje naar de Edge Function gevaar-mail bij een gevaarlijke melding; tabel app_instellingen (zet eerst pg_net aan, vul daarna het adres in) | nog uitvoeren (na Brevo) |
 
 ## Testbestanden
@@ -38,6 +39,7 @@ Gebruik ze na een wijziging, om te zien of alles nog werkt.
 | `test_11_opmerking.sql` | Wie een opmerking mag zetten, lengte, weghalen en Weer openen (8 tests). Getest: alles goed. |
 | `test_12_backup.sql` | Wie de back-up-regels mag zien en wijzigen (4 tests). Getest: alles goed. |
 | `test_13_herstel.sql` | Dat terugzetten NIET kan als er al gegevens zijn, en niet vanuit de app (5 tests). Verandert niets. Getest: alles goed. |
+| `test_15_vervallen.sql` | Laten vervallen en weer openen: wie mag het, melding weer Nieuw, gereed taak blijft, gestopte persoon (10 tests). |
 | `test_14_gevaar_mail.sql` | Adres ingevuld, seintje alleen bij gevaar, app kan de instellingen niet lezen (5 tests). Draait alles terug: er gaat geen echte mail. |
 
 Let op: na `08_beheer.sql` heeft het project minstens één echte beheerder nodig om de

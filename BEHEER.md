@@ -288,6 +288,25 @@ terugzetten van een back-up (zet dan `is_beheerder` op `true` in plaats van `fal
 
 Zet deze SQL met echte namen en adressen **nooit** in GitHub.
 
+## Een taak laten vervallen (in plaats van verwijderen)
+Is een taak niet meer nodig, of per ongeluk aangemaakt? Dan gooi je hem niet weg,
+maar laat je hem **vervallen**. Zo blijft zichtbaar wat er gepland was en waarom het
+niet doorging (ook later in het archief).
+
+- **Wie?** Alleen bestuur en coördinator, en alleen bij een **open** taak. Een gereed
+  gemelde taak zet je eerst weer open.
+- **Hoe?** Tik bij de taak op **✏ Wijzigen**, helemaal onderaan op **Laten
+  vervallen**, vul eventueel in waarom (niet verplicht) en tik nog een keer op
+  **Laten vervallen**. Vergist? Tik meteen op **Ongedaan maken**.
+- **Komt de taak uit een melding?** Dan staat de melding daarna weer op "Nieuw". Je
+  kunt er opnieuw een taak van maken of hem op "Geen actie nodig" zetten.
+- **Waar staan vervallen taken?** Onderaan **Werkgroep**, onder het kopje
+  "Vervallen". Tik erop om ze te zien. Iedereen uit de werkgroep ziet ze, en kan een
+  vervallen taak met **↺ Weer openen** terughalen. Stond de taak op naam van iemand
+  die intussen gestopt is, dan is hij daarna weer vrij.
+- **Echt verwijderen** kan niet meer (alleen vlak na het aanmaken, met Ongedaan
+  maken).
+
 ## Opmerking bij een gereed gemelde taak
 Bij een taak die gereed is gemeld, staat de knop **💬 Opmerking toevoegen**. Daar kan
 de vrijwilliger kort opschrijven wat er gedaan is of nog nodig is (hooguit 500

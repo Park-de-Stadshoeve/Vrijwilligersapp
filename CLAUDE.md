@@ -411,6 +411,19 @@ Klaar (inloggen, taken en meldingen werken met de database):
   telefoon: goed. NOG TE DOEN (na goedkeuring domein bij
   Brevo): pg_net aan, 14 + adres, API-sleutel en Secrets, functie neerzetten,
   echte test.
+- Taken laten vervallen (later-lijst 7, besluit: niet verwijderen maar status
+  "vervallen", knop "Laten vervallen"): database/15_vervallen.sql (status
+  vervallen + vervallen_door/vervallen_op; regels gereed_alleen_als_toegewezen,
+  gereed_gegevens_kloppen en opmerking-regel aangepast; taak_laten_vervallen
+  alleen bestuur en alleen open, koppelt melding los -> Nieuw, geeft melding-id;
+  taak_vervallen_terug voor wie de taak mag bewerken (ook vrijwilligers uit de
+  werkgroep, besluit), maakt opmerking leeg, gestopte toegewezen persoon ->
+  vrij, koppelt melding weer bij Ongedaan maken; taak_opmerking_zetten ook bij
+  vervallen; verwijderen alleen nog bij open taken). app.js: rode knop onderaan
+  Wijzigen met tekstvak voor reden (niet verplicht), Mijn taken zonder vervallen,
+  onderaan Werkgroep dichtgeklapt "Vervallen (N)" met Weer openen en
+  opmerking. Getest: test_15 lokaal (10 tests), 01-14 nog goed, browser.
+  NOG TE DOEN: 15 uitvoeren, testen op de telefoon.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
@@ -479,13 +492,14 @@ Volgende stappen:
 4. Bericht aan de werkgroep als een taak is teruggegeven.
 5. WhatsApp-bericht bij een gevaarlijke melding (afgeraden: kosten, onderhoud, AVG).
 6. Filters op de schermen. Pas bepalen na een paar weken gebruik.
-7. Taken verwijderen (bijvoorbeeld een taak die per ongeluk is aangemaakt).
+7. GEBOUWD als "Laten vervallen" (zie stand van zaken). Taken verwijderen
+   (bijvoorbeeld een taak die per ongeluk is aangemaakt).
 8. Pushbericht op de telefoon bij een gevaarlijke melding, als extra naast de e-mail
    (niet in plaats van: op de iPhone alleen als de app op het beginscherm staat,
    en minder betrouwbaar dan e-mail).
 9. Exporteren en archiveren van taken en meldingen die meer dan 12 maanden geleden
    zijn afgesloten, met foto's en voornamen, naar SharePoint van de stichting (ter
-   naslag), inclusief de opmerking na afloop. Daarna uit de app verwijderen. Nodig vóór de eerste foto's 12 maanden
+   naslag), inclusief de opmerking na afloop en de vervallen taken. Daarna uit de app verwijderen. Nodig vóór de eerste foto's 12 maanden
    oud zijn: foto's worden pas verwijderd nadat ze zijn geëxporteerd.
 10. Frion toevoegen: rol Frion-begeleider (ziet Dieren, Klussen en Tuinen) en taken
     toewijzen aan "Frion" als groep.
