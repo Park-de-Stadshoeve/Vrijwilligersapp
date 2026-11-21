@@ -95,6 +95,11 @@ main { padding: 16px; padding-bottom: 180px; } /* ruimte vrij voor menu én meld
   background: #ffffff; color: var(--tekst);
 }
 
+/* Knoppen ▲ Omhoog en ▼ Omlaag naast elkaar (bij plekken in het beheerscherm) */
+.pijlen { display: flex; gap: 12px; }
+.pijlen .knop-tweede { flex: 1; }
+.knop-tweede:disabled { opacity: 0.4; }
+
 /* Knop "Laten stoppen": rode rand en tekst, met ruimte erboven (de tekst zegt
    zelf wat hij doet, dus niet alleen de kleur) */
 .knop-tweede.knop-stoppen { margin-top: 32px; border-color: var(--rood); color: var(--rood); }

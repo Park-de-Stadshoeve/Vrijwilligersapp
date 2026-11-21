@@ -28,6 +28,9 @@ async function toonBeheer() {
   document.getElementById("titel").textContent = "Beheer";
   markeerMenu("beheer");   // geen knop in het menu onderaan is dan gekleurd
 
+  // Werkgroepen en Plekken staan in beheer-lijsten.js
+  if (beheerTab !== "gebruikers") { await toonLijstenBeheer(); return; }
+
   const inhoud = document.getElementById("inhoud");
   const laden = document.createElement("p");
   laden.className = "leeg";
@@ -107,7 +110,7 @@ async function haalGebruikersOp() {
 // Zet de lijst op het scherm: eerst wie meedoet, onderaan wie gestopt is
 function toonGebruikersLijst(gebruikers, laatsteBackup) {
   const inhoud = document.getElementById("inhoud");
-  inhoud.replaceChildren();
+  inhoud.replaceChildren(maakBeheerTabs());   // Gebruikers | Werkgroepen | Plekken
 
   // Te lang geen back-up? Dan bovenaan een waarschuwing.
   const waarschuwing = maakBackupWaarschuwing(laatsteBackup);
