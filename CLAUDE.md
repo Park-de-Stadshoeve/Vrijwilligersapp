@@ -449,8 +449,9 @@ Klaar (inloggen, taken en meldingen werken met de database):
   (maakPijlen gedeeld met plekken), nieuwe werkgroep onderaan. Fout opgelost:
   plek met uitgezette standaardwerkgroep vulde die in bij "Maak taak" (opslaan
   mislukte); nu alleen een actieve werkgroep in werkgroepBijPlek. Getest:
-  test_17 lokaal (5 tests), 13/16 goed, browser. NOG TE DOEN: 17 uitvoeren,
-  testen op de telefoon.
+  test_17 lokaal (5 tests), 13/16 goed, browser. 17 uitgevoerd, test_17
+  goed; getest op de telefoon (volgorde overal, Maak taak met uitgezette
+  standaardwerkgroep): alles goed.
 
 - Gebruikershandleiding voor de proef met Klussen: HANDLEIDING.md (installeren,
   inloggen met code, taken, melden, handig om te weten). Zelfde tekst staat in
@@ -555,3 +556,12 @@ Volgende stappen:
     taak_gereed_melden. Mag geen verplichte extra tik worden (max 3 tikken plus
     foto). Let op: vrije tekst kan namen of andere persoonsgegevens bevatten; valt
     onder dezelfde bewaartermijn als de taak. Kan vóór de proef als er tijd is.
+15. Onderdelen van plekken in de app (bijv. Hummelhoeve > Nestschommel): kiezen bij
+    melden en bij taken, tonen op kaartjes, beheren per plek in het beheerscherm.
+    De database is er al op voorbereid (tabel onderdelen, kolommen bij taken en
+    meldingen), dus later toevoegen kost geen ombouw. Bewust uitgesteld (november
+    2026): voor de proef met Klussen weinig nut (vooral handig bij speeltoestellen,
+    dus Avontuurlijk spelen), het maakt melden langer, en het bestuur moet de lijst
+    met onderdelen bedenken en bijhouden. In de proef letten op meldingen waarbij
+    navragen nodig was ("welke schommel?"). Eerder doen als meldingen vaak
+    onduidelijk blijken, of als Avontuurlijk spelen direct na Klussen meedoet.

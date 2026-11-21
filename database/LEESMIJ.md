@@ -22,7 +22,7 @@ database opbouwt en bevraagt. Het ontwerp in gewone taal staat in `../DATABASE.m
 | `14_gevaar_mail.sql` | Seintje naar de Edge Function gevaar-mail bij een gevaarlijke melding; tabel app_instellingen (zet eerst pg_net aan, vul daarna het adres in) | nog uitvoeren (na Brevo) |
 | `15_vervallen.sql` | Status "vervallen" voor taken: laten vervallen (bestuur) en weer openen; verwijderen alleen nog bij open taken | uitgevoerd in testproject |
 | `16_lijsten_beheer.sql` | Voor het beheerscherm: tellen wat er aan een werkgroep hangt, en de volgorde van plekken veranderen | uitgevoerd in testproject |
-| `17_werkgroep_volgorde.sql` | Volgorde van de werkgroepen (kolom volgorde en vaste actie werkgroep_verplaatsen) | nog uitvoeren |
+| `17_werkgroep_volgorde.sql` | Volgorde van de werkgroepen (kolom volgorde en vaste actie werkgroep_verplaatsen) | uitgevoerd in testproject |
 
 ## Testbestanden
 Deze mag je zo vaak uitvoeren als je wilt. Ze ruimen hun eigen testgegevens op.
@@ -44,7 +44,7 @@ Gebruik ze na een wijziging, om te zien of alles nog werkt.
 | `test_14_gevaar_mail.sql` | Adres ingevuld, seintje alleen bij gevaar, app kan de instellingen niet lezen (5 tests). Draait alles terug: er gaat geen echte mail. |
 | `test_15_vervallen.sql` | Laten vervallen en weer openen: wie mag het, melding weer Nieuw, gereed taak blijft, gestopte persoon (10 tests). Getest: alles goed. |
 | `test_16_lijsten_beheer.sql` | Tellen en verplaatsen, en wie het mag (6 tests). Draait alles terug. Getest: alles goed. |
-| `test_17_werkgroep_volgorde.sql` | Werkgroepen verplaatsen, uitgezette overslaan, wie het mag (5 tests). Draait alles terug. |
+| `test_17_werkgroep_volgorde.sql` | Werkgroepen verplaatsen, uitgezette overslaan, wie het mag (5 tests). Draait alles terug. Getest: alles goed. |
 
 Let op: na `08_beheer.sql` heeft het project minstens één echte beheerder nodig om de
 tests uit te voeren. Anders houdt de bewaker het opruimen van de testgebruikers tegen.
