@@ -407,7 +407,8 @@ Klaar (inloggen, taken en meldingen werken met de database):
   Stuur een WhatsApp naar het bestuur."); na versturen "De coördinator krijgt
   een e-mail." alleen als er iemand met het vinkje is. Getest: test_14 lokaal
   met nagebootste pg_net (5 tests), oude tests goed, functie met nep-Supabase
-  (6 gevallen), formulier in de browser. NOG TE DOEN (na goedkeuring domein bij
+  (6 gevallen), formulier in de browser. Samengevoegd; gele tip getest op de
+  telefoon: goed. NOG TE DOEN (na goedkeuring domein bij
   Brevo): pg_net aan, 14 + adres, API-sleutel en Secrets, functie neerzetten,
   echte test.
 
