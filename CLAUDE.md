@@ -449,6 +449,10 @@ Besluiten (november 2026):
   Na het omzetten: eigen domein instellen in GitHub (repo) en domein verifiëren
   (organisatie), Site URL en Redirect URLs in Supabase aanpassen, BEHEER.md bijwerken.
 
+- Taken worden niet verwijderd maar "vervallen". Laten vervallen alleen door
+  bestuur en coördinator. Vrijwilligers kunnen niet laten vervallen: is een taak
+  al gedaan of niet meer nodig, dan melden ze hem gereed met een opmerking.
+  Weer openen van een vervallen taak mag wel door de werkgroep.
 - Back-up: maandelijks door een beheerder via het beheerscherm, op een computer,
   naar een afgeschermde map op de SharePoint van de stichting (alleen bestuur en
   beheerders; toegang is geregeld). Laatste 3 bewaren. Foto's gaan mee (hele
