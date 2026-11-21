@@ -449,8 +449,9 @@ Klaar (inloggen, taken en meldingen werken met de database):
   (maakPijlen gedeeld met plekken), nieuwe werkgroep onderaan. Fout opgelost:
   plek met uitgezette standaardwerkgroep vulde die in bij "Maak taak" (opslaan
   mislukte); nu alleen een actieve werkgroep in werkgroepBijPlek. Getest:
-  test_17 lokaal (5 tests), 13/16 goed, browser. NOG TE DOEN: 17 uitvoeren,
-  testen op de telefoon.
+  test_17 lokaal (5 tests), 13/16 goed, browser. 17 uitgevoerd, test_17
+  goed; getest op de telefoon (volgorde overal, Maak taak met uitgezette
+  standaardwerkgroep): alles goed.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
