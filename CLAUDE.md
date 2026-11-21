@@ -393,6 +393,23 @@ Klaar (inloggen, taken en meldingen werken met de database):
   de kopie): alles goed. Getest op de telefoon (app op de achtergrond, wijziging
   in index.html, na ontgrendelen nieuwe versie geladen; met Melden open eerst
   de melding, herladen pas op Mijn taken): alles goed.
+- E-mail bij een gevaarlijke melding (gebouwd, wacht op Brevo): database/
+  14_gevaar_mail.sql (tabel app_instellingen met gevaar_mail_adres, geen
+  toegang via de app; kolom meldingen.gevaar_mail_verstuurd_op; trigger
+  gevaarlijke_melding_mail na insert bij gevaarlijk -> net.http_post (pg_net)
+  met alleen melding_id, fouten nooit naar de melding; functie
+  er_is_iemand_voor_gevaar_mail). Edge Function gevaar-mail (Verify JWT uit):
+  wacht 10 s (Ongedaan maken), leest de melding zelf, alleen gevaarlijk, < 60
+  min oud en nog niet gemaild; legt verstuurd_op vast (update ... is null),
+  mailt iedereen met krijgt_gevaar_mail via Brevo API (BREVO_API_KEY en
+  AFZENDER_EMAIL als Secrets), tekst + HTML met veilig(), geen foto. app.js:
+  GEVAAR_TIP in het formulier bij "Ja, gevaarlijk" ("Is het acuut gevaarlijk?
+  Stuur een WhatsApp naar het bestuur."); na versturen "De coördinator krijgt
+  een e-mail." alleen als er iemand met het vinkje is. Getest: test_14 lokaal
+  met nagebootste pg_net (5 tests), oude tests goed, functie met nep-Supabase
+  (6 gevallen), formulier in de browser. NOG TE DOEN (na goedkeuring domein bij
+  Brevo): pg_net aan, 14 + adres, API-sleutel en Secrets, functie neerzetten,
+  echte test.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
@@ -440,7 +457,8 @@ Volgende stappen:
    - één tabel gebruikers met per persoon een rol en werkgroepen;
    - rechten afdwingen in de database;
    - rechten en bewaartermijnen volgens DATABASE.md;
-   - e-mail aan de coördinator bij een gevaarlijke melding;
+   - e-mail aan de coördinator bij een gevaarlijke melding (gebouwd, nog in te
+     stellen en te testen na Brevo);
    - beheerscherm voor gebruikers, werkgroepen, plekken en onderdelen (alleen voor
      beheerders); gebruikers klaar en getest (november 2026), werkgroepen en
      plekken voorlopig via de Table Editor, onderdelen na de proef;
