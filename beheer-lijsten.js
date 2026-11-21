@@ -5,7 +5,8 @@
 // Werkgroepen | Plekken. Gebruikers staat in beheer.js, de andere twee hier.
 //
 // Wat kan er?
-//   - Werkgroepen: toevoegen, naam wijzigen, uitzetten en weer aanzetten.
+//   - Werkgroepen: toevoegen, naam wijzigen, volgorde (▲ Omhoog / ▼ Omlaag),
+//     uitzetten en weer aanzetten.
 //   - Plekken: toevoegen, naam en standaardwerkgroep wijzigen, volgorde van
 //     de knoppen (▲ Omhoog / ▼ Omlaag), uitzetten en weer aanzetten.
 //   Verwijderen kan niet: er hangen taken, meldingen en mensen aan. Een
@@ -13,7 +14,7 @@
 //   meldingen houden de naam.
 //
 // Veilig? De database bepaalt wie dit mag (alleen beheerders, regels in
-// database/03_rechten.sql en 16_lijsten_beheer.sql).
+// database/03_rechten.sql, 16_lijsten_beheer.sql en 17_werkgroep_volgorde.sql).
 
 // Welk deel van het beheerscherm open staat
 let beheerTab = "gebruikers";
@@ -72,7 +73,8 @@ async function haalBeheerLijstenOp() {
   const wekker = setTimeout(() => stopper.abort(), WACHTTIJD_DATABASE);
   try {
     const [werkgroepen, plekken] = await Promise.all([
-      database.from("werkgroepen").select("id, naam, actief").order("naam").abortSignal(stopper.signal),
+      database.from("werkgroepen").select("id, naam, actief, volgorde")
+        .order("volgorde", { nullsFirst: false }).order("id").abortSignal(stopper.signal),
       database.from("plekken").select("id, naam, standaard_werkgroep, volgorde, actief")
         .order("volgorde").order("id").abortSignal(stopper.signal)
     ]);
@@ -108,23 +110,49 @@ function toonWerkgroepenLijst() {
 
   const aan = beheerLijsten.werkgroepen.filter(w => w.actief);
   const uit = beheerLijsten.werkgroepen.filter(w => !w.actief);
-  inhoud.append(maakBeheerKop("Werkgroepen (" + aan.length + ")"));
-  aan.forEach(w => inhoud.append(maakWerkgroepKaart(w)));
+  inhoud.append(maakBeheerKop("Werkgroepen (" + aan.length + "), in de volgorde van de knoppen"));
+  aan.forEach((w, i) => inhoud.append(maakWerkgroepKaart(w, i === 0, i === aan.length - 1)));
   if (uit.length > 0) {
     inhoud.append(maakBeheerKop("Uitgezet (" + uit.length + ")"));
-    uit.forEach(w => inhoud.append(maakWerkgroepKaart(w)));
+    uit.forEach(w => inhoud.append(maakWerkgroepKaart(w, true, true)));
   }
 }
 
-function maakWerkgroepKaart(werkgroep) {
+function maakWerkgroepKaart(werkgroep, eerste, laatste) {
   const kaart = document.createElement("article");
   kaart.className = "taak";
   const naam = document.createElement("h2");
   naam.textContent = werkgroep.naam;
   kaart.append(naam);
   if (!werkgroep.actief) kaart.append(maakLabel("Uitgezet"));
+  if (werkgroep.actief) {
+    const pijlen = maakPijlen(eerste, laatste, omhoog => verplaatsWerkgroep(werkgroep, omhoog));
+    if (pijlen) kaart.append(pijlen);
+  }
   kaart.append(maakTweedeKnop("Wijzigen", () => openLijstFormulier("werkgroep", werkgroep)));
   return kaart;
+}
+
+// ▲▼ Een werkgroep één plaats verschuiven (vaste actie werkgroep_verplaatsen), met Ongedaan maken
+async function verplaatsWerkgroep(werkgroep, omhoog) {
+  if (!await vraagDatabase("werkgroep_verplaatsen", { werkgroep_id: werkgroep.id, omhoog })) return;
+  await naLijstWijziging();
+  toonMelding(werkgroep.naam + (omhoog ? " staat een plaats hoger" : " staat een plaats lager"),
+              () => verplaatsWerkgroep(werkgroep, !omhoog));
+}
+
+// De knoppen ▲ Omhoog en ▼ Omlaag naast elkaar. "bijTik(omhoog)" doet het werk.
+// Geeft niets als er niets te verplaatsen valt (maar één in de lijst).
+function maakPijlen(eerste, laatste, bijTik) {
+  if (eerste && laatste) return null;
+  const pijlen = document.createElement("div");
+  pijlen.className = "pijlen";
+  const omhoog = maakTweedeKnop("▲ Omhoog", () => bijTik(true));
+  const omlaag = maakTweedeKnop("▼ Omlaag", () => bijTik(false));
+  omhoog.disabled = eerste;    // bovenaan: niet hoger
+  omlaag.disabled = laatste;   // onderaan: niet lager
+  pijlen.append(omhoog, omlaag);
+  return pijlen;
 }
 
 
@@ -161,15 +189,9 @@ function maakPlekKaart(plek, eerste, laatste) {
   if (!plek.actief) kaart.append(maakLabel("Uitgezet"));
 
   // Volgorde: alleen voor plekken die aan staan
-  if (plek.actief && !(eerste && laatste)) {
-    const pijlen = document.createElement("div");
-    pijlen.className = "pijlen";
-    const omhoog = maakTweedeKnop("▲ Omhoog", () => verplaatsPlek(plek, true));
-    const omlaag = maakTweedeKnop("▼ Omlaag", () => verplaatsPlek(plek, false));
-    omhoog.disabled = eerste;
-    omlaag.disabled = laatste;
-    pijlen.append(omhoog, omlaag);
-    kaart.append(pijlen);
+  if (plek.actief) {
+    const pijlen = maakPijlen(eerste, laatste, omhoog => verplaatsPlek(plek, omhoog));
+    if (pijlen) kaart.append(pijlen);
   }
   kaart.append(maakTweedeKnop("Wijzigen", () => openLijstFormulier("plek", plek)));
   return kaart;
@@ -276,8 +298,8 @@ async function slaLijstItemOp() {
   if (isPlek) rij.standaard_werkgroep = formulier.standaardWerkgroep;
 
   if (!formulier.item) {
-    // Nieuw. Een nieuwe plek komt onderaan de volgorde.
-    if (isPlek) rij.volgorde = Math.max(0, ...lijst.map(p => p.volgorde)) + 10;
+    // Nieuw. Een nieuwe plek of werkgroep komt onderaan de volgorde.
+    rij.volgorde = Math.max(0, ...lijst.map(x => x.volgorde || 0)) + 10;
     const antwoord = await stuurNaarDatabase(signaal =>
       database.from(tabel).insert(rij).select("id").single().abortSignal(signaal));
     if (!antwoord.gelukt) { if (knop) knop.disabled = false; return; }

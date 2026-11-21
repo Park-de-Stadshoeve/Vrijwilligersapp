@@ -1615,7 +1615,8 @@ function zetLijsten(lijsten) {
   lijsten.plekken.forEach(p => { plekNaamVan[p.id] = p.naam; });
   actievePlekken.forEach(p => {
     plekNummer[p.naam] = p.id;
-    if (p.werkgroep) werkgroepBijPlek[p.naam] = p.werkgroep;
+    // Alleen een werkgroep die meedoet alvast invullen (een uitgezette kun je niet kiezen)
+    if (p.werkgroep && werkgroepNummer[p.werkgroep]) werkgroepBijPlek[p.naam] = p.werkgroep;
   });
 }
 
@@ -1654,11 +1655,13 @@ async function vraagTakenOpBijDatabase() {
       ? database.from("lidmaatschappen").select("gebruiker, werkgroepen(naam)").abortSignal(stopper.signal)
       : Promise.resolve({ data: [], error: null });
 
-    // 4. De werkgroepen die meedoen (actief), in de volgorde waarin ze zijn toegevoegd
+    // 4. De werkgroepen die meedoen (actief), in de volgorde uit het beheerscherm
+    //    (zonder volgorde: achteraan, op nummer)
     const werkgroepenVraag = database
       .from("werkgroepen")
       .select("id, naam")
       .eq("actief", true)
+      .order("volgorde", { nullsFirst: false })
       .order("id")
       .abortSignal(stopper.signal);
 
@@ -1878,9 +1881,14 @@ function toonWerkgroep() {
   inhoud.replaceChildren();
 
   // Welke keuzes krijgt deze persoon?
+  // Je eigen werkgroepen in dezelfde volgorde als overal (uitgezette achteraan)
+  const mijnWerkgroepen = [
+    ...alleWerkgroepen.filter(naam => ingelogdeGebruiker.werkgroepen.includes(naam)),
+    ...ingelogdeGebruiker.werkgroepen.filter(naam => !alleWerkgroepen.includes(naam))
+  ];
   const keuzes = ingelogdeGebruiker.magAllesZien
     ? ["Alles", ...alleWerkgroepen]
-    : ingelogdeGebruiker.werkgroepen;
+    : mijnWerkgroepen;
   if (!keuzes.includes(gekozenWerkgroep)) gekozenWerkgroep = keuzes[0];
 
   // Keuzeknoppen alleen tonen als er iets te kiezen valt
