@@ -35,6 +35,7 @@ app de nieuwste taken op.
 | `stijl.css` | Het uiterlijk: kleuren, groottes, knoppen | Kleur of tekstgrootte veranderen |
 | `app.js` | De logica, taken ophalen uit de database, de voorbeeldmeldingen | Plekken, werkgroepen, termijnen |
 | `instellingen.js` | Adres en publieke sleutel van de database | Bij een andere database (bijv. van test naar echt) |
+| `beheer-lijsten.js` | Het beheerscherm, deel werkgroepen en plekken | Zelden |
 | `beheer.js` | Het beheerscherm (knop "Beheer", alleen voor beheerders) | Zelden |
 | `inloggen.js` | Inlogscherm met code uit de mail, uitloggen, "wie ben ik" | Zelden |
 | `CLAUDE.md` | Instructies voor Claude en de stand van zaken | Als er afspraken veranderen |
@@ -348,17 +349,28 @@ Uitleg staat bovenin elk bestand.
   internet. Die staat in `index.html` én in `service-worker.js`. Bij een nieuwe
   versie op beide plekken aanpassen.
 
-## Plekken en werkgroepen (in Supabase, niet in de code)
-Tot het beheerscherm er is, doe je dit in Supabase > **Table Editor**:
-- **Plek toevoegen:** tabel `plekken` > **Insert row**. Vul `naam` in, bij
-  `standaard_werkgroep` het nummer van de werkgroep die er meestal bij hoort (zie
-  tabel `werkgroepen`, kolom `id`), en bij `volgorde` een getal: de knoppen staan op
-  volgorde van klein naar groot ("Overig" heeft 999, dus blijft achteraan).
-- **Plek of werkgroep niet meer gebruiken:** zet `actief` op false. Niet
-  verwijderen: oude taken en meldingen verwijzen er nog naar (en laten de naam
-  nog zien).
-- **Werkgroep toevoegen:** tabel `werkgroepen` > **Insert row**, alleen `naam`.
-De app haalt de nieuwe lijst op bij de volgende keer openen.
+## Plekken en werkgroepen (in het beheerscherm)
+Tik op **Beheer** en kies bovenaan **Werkgroepen** of **Plekken**.
+
+- **Toevoegen:** tik op **+ Werkgroep toevoegen** of **+ Plek toevoegen**, vul de naam
+  in (bij een plek ook de standaard werkgroep) en tik op **Toevoegen**. Een nieuwe
+  plek komt onderaan; zet hem met **▲ Omhoog** op de goede plek (bijvoorbeeld boven
+  "Overig").
+- **Naam of standaard werkgroep wijzigen:** tik op **Wijzigen**. Een nieuwe naam staat
+  ook bij oude taken en meldingen.
+- **Volgorde van de plekken** (zo staan de knoppen bij Melden en bij taken): tik op
+  **▲ Omhoog** of **▼ Omlaag** bij de plek.
+- **Niet meer gebruiken:** tik op **Wijzigen** en helemaal onderaan op **Uitzetten**.
+  De werkgroep of plek verdwijnt uit de keuzes; oude taken en meldingen houden de
+  naam. Bij een werkgroep zie je hoeveel mensen er nog in zitten, hoeveel open
+  taken er zijn en welke plekken hem als standaard hebben. Zet die mensen en plekken
+  daarna over (beheerscherm > Gebruikers of Plekken > Wijzigen).
+- **Weer gebruiken:** onder "Uitgezet" > **Wijzigen** > **Weer aanzetten**.
+- **Verwijderen** kan niet, omdat taken, meldingen en mensen eraan vastzitten.
+- Vergist? Tik meteen op **Ongedaan maken**.
+- Vrijwilligers zien een nieuwe plek of werkgroep de volgende keer dat hun lijst
+  wordt ververst (bij een tik op Mijn taken of Werkgroep).
+- **Onderdelen** (bijv. Hummelhoeve > Nestschommel) zitten nog niet in de app.
 
 ## Veelvoorkomende aanpassingen (in `app.js`)
 - **Standaard deadline bij een melding:** `DAGEN_GEVAARLIJK` en `DAGEN_NORMAAL`.

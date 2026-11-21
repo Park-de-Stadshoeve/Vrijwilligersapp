@@ -1819,6 +1819,7 @@ function toonScherm(scherm) {
   else if (scherm === "beheer") toonBeheer();                  // staat in beheer.js
   else if (scherm === "gebruiker-formulier") toonGebruikerFormulier();   // ook in beheer.js
   else if (scherm === "herstel") toonHerstelScherm();                     // ook in beheer.js
+  else if (scherm === "lijst-formulier") toonLijstFormulier();            // in beheer-lijsten.js
   // Staat er een nieuwe versie klaar? Dan nu laden, als het een rustig moment is.
   if (nieuweVersieKlaar) laadNieuweVersieAlsHetKan();
 }
@@ -1970,7 +1971,7 @@ if ("serviceWorker" in navigator) {
 // verandert zodra het bestand verandert (ETag, of anders datum en grootte).
 
 const VERSIE_BESTANDEN = ["index.html", "stijl.css", "instellingen.js", "inloggen.js",
-                          "beheer.js", "app.js", "service-worker.js"];
+                          "beheer.js", "beheer-lijsten.js", "app.js", "service-worker.js"];
 const VERSIE_CONTROLE_ELKE = 60 * 1000;   // hooguit één keer per minuut kijken
 
 let geladenVersie = "";          // kenmerk van de versie die nu draait

@@ -267,8 +267,8 @@ Klaar (inloggen, taken en meldingen werken met de database):
 - Beheerscherm, in 4 stappen: (1) bekijken, (2) rol, werkgroepen en vinkjes
   wijzigen, (3) toevoegen via een Edge Function (geheime sleutel alleen bij
   Supabase, functie controleert is_beheerder), (4) laten stoppen (account en
-  e-mailadres weg, voornaam blijft). Werkgroepen en plekken voorlopig via de
-  Table Editor; onderdelen na de proef. Knop "Beheer" rechtsboven, alleen voor
+  e-mailadres weg, voornaam blijft). Werkgroepen en plekken: zie verderop;
+  onderdelen na de proef. Knop "Beheer" rechtsboven, alleen voor
   beheerders (geen vijfde menuknop).
   Stap 1 gebouwd: beheer.js (toonBeheer, haalGebruikersOp, toonGebruikersLijst),
   knop knop-beheer in index.html, zichtbaar via startApp. Lijst niet op het
@@ -426,6 +426,18 @@ Klaar (inloggen, taken en meldingen werken met de database):
   15 uitgevoerd, test_15 goed. Getest op de telefoon (laten vervallen met
   reden, Ongedaan maken, taak uit melding -> melding Nieuw, Testvrijwilliger
   opent weer en ziet geen knop Laten vervallen): alles goed.
+- Werkgroepen en plekken in het beheerscherm: keuzeknoppen Gebruikers |
+  Werkgroepen | Plekken bovenaan (beheerTab). Nieuw bestand beheer-lijsten.js
+  (ook in index.html, APP_BESTANDEN en VERSIE_BESTANDEN): lijsten met
+  Wijzigen, + Toevoegen, Uitzetten/Weer aanzetten (niet verwijderen), plekken
+  met standaardwerkgroep en ▲/▼; dubbele naam geweigerd (ook hoofdletters);
+  Ongedaan maken overal; na elke wijziging haalTakenOp op de achtergrond.
+  database/16_lijsten_beheer.sql: werkgroep_gebruik (mensen, open taken,
+  plekken; alleen beheerder; voor waarschuwing bij uitzetten) en
+  plek_verplaatsen (nette nummers 10, 20, …, wissel met de eerstvolgende
+  actieve buur). Getest: test_16 lokaal (6 tests), browser (omhoog, dubbel,
+  toevoegen, uitzetten met waarschuwing, Ongedaan maken). NOG TE DOEN: 16
+  uitvoeren, testen op de telefoon. Onderdelen na de proef.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
@@ -481,7 +493,7 @@ Volgende stappen:
      stellen en te testen na Brevo);
    - beheerscherm voor gebruikers, werkgroepen, plekken en onderdelen (alleen voor
      beheerders); gebruikers klaar en getest (november 2026), werkgroepen en
-     plekken voorlopig via de Table Editor, onderdelen na de proef;
+     plekken gebouwd (nog testen), onderdelen na de proef;
    - eigen e-maildienst voor de inlogcodes (de ingebouwde mail van Supabase stuurt
      maar 2 berichten per uur en alleen naar beheerders);
    - voorkomen dat het gratis Supabase-project na een week stilte op pauze gaat
