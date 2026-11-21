@@ -171,6 +171,7 @@ beheerder ziet de tabel zelf nooit. Dezelfde combinatie kan maar één keer voor
 | foto | waar de foto van het gebrek staat | ja |
 | toelichting | tekst van de melder | nee |
 | gevaarlijk | ja/nee | ja (standaard nee) |
+| gevaar_mail_verstuurd_op | wanneer de gevaar-mail is verstuurd (zodat hij maar één keer gaat) | nee |
 | gemeld_door | nummer uit gebruikers | ja |
 | gemeld_op | datum en tijd (gaat vanzelf) | ja |
 | taak | nummer uit taken, als er een taak van gemaakt is | nee |

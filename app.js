@@ -801,6 +801,13 @@ function toonMelden() {
     nieuweMelding.gevaarlijk = keuze === "Ja, gevaarlijk";
     verversScherm();
   }));
+  // Bij gevaar: een tip voor als het niet kan wachten (de mail is niet voor acute nood)
+  if (nieuweMelding.gevaarlijk) {
+    const tip = document.createElement("p");
+    tip.className = "uitleg-bovenaan";
+    tip.textContent = GEVAAR_TIP;
+    inhoud.append(tip);
+  }
 
   // Foutmelding (leeg tot er iets mis is)
   const fout = document.createElement("p");
@@ -814,6 +821,9 @@ function toonMelden() {
   inhoud.append(versturen);
   markeerMenu("melden");
 }
+
+// Tip bij een gevaarlijke melding (in het formulier, als "Ja, gevaarlijk" gekozen is)
+const GEVAAR_TIP = "⚠️ Is het acuut gevaarlijk? Stuur een WhatsApp naar het bestuur.";
 
 // Wat er staat als een melding niet verstuurd kon worden
 const MELDING_NIET_VERSTUURD = "De melding is niet verstuurd. Je hoeft niets opnieuw in te vullen.";
@@ -875,7 +885,26 @@ async function verstuurMelding() {
   nieuweMelding = leegFormulier();   // formulier leegmaken voor de volgende keer
   bewaarTakenOpToestel();
   toonMeldingen();
-  toonMelding("Melding verstuurd", () => trekMeldingIn(melding));
+  // Bij gevaar: zeggen dat er een mail gaat, maar alleen als dat echt zo is
+  // (er moet iemand het vinkje "krijgt mail bij gevaar" hebben)
+  const krijgtMail = melding.gevaarlijk && await gaatErEenGevaarMail();
+  toonMelding(krijgtMail ? "Melding verstuurd. De coördinator krijgt een e-mail." : "Melding verstuurd",
+              () => trekMeldingIn(melding));
+}
+
+// Heeft iemand het vinkje "krijgt mail bij gevaar"? (database/14_gevaar_mail.sql)
+// De mail zelf verstuurt de database; dit is alleen voor de zin op het scherm.
+// Lukt het vragen niet binnen 3 seconden, dan zeggen we niets over de mail.
+async function gaatErEenGevaarMail() {
+  try {
+    const stopper = new AbortController();
+    const wekker = setTimeout(() => stopper.abort(), 3000);
+    const { data, error } = await database.rpc("er_is_iemand_voor_gevaar_mail").abortSignal(stopper.signal);
+    clearTimeout(wekker);
+    return !error && data === true;
+  } catch (fout) {
+    return false;
+  }
 }
 
 // Trekt een melding in (alleen voor "Ongedaan maken"). Mag zolang de

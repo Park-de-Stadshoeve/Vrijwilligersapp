@@ -43,6 +43,7 @@ app de nieuwste taken op.
 | `manifest.json` | Naam, icoon en kleur van de app op het beginscherm | Andere naam of kleur |
 | `service-worker.js` | Bewaart de app op de telefoon voor slecht bereik | Als je een bestand toevoegt |
 | `iconen/` | Het logo in drie maten (180, 192 en 512 pixels) | Nieuw logo |
+| `supabase/functions/gevaar-mail/` | Edge Function: e-mail bij een gevaarlijke melding (draait bij Supabase) | Zelden; daarna opnieuw plakken bij Supabase |
 | `supabase/functions/beheer/` | Edge Function: iemand toevoegen en e-mailadres wijzigen (draait bij Supabase) | Zelden; daarna opnieuw plakken bij Supabase |
 | `.github/workflows/` | Automatische taak die de database wakker houdt | Zelden |
 
@@ -123,6 +124,45 @@ de knop **Beheer**. Daar staan alle gebruikers: naam, rol, werkgroepen en de vin
   wel bereik hebt?** Kijk dan of de Edge Function "beheer" bij Supabase staat (zie
   hieronder).
 
+## E-mail bij een gevaarlijke melding
+Meldt iemand iets als "gevaarlijk", dan krijgt iedereen met het vinkje **Krijgt mail
+bij gevaar** (beheerscherm > Wijzigen) binnen een halve minuut een e-mail. Daarin
+staan de plek, de toelichting, wie het meldde en wanneer, met een knop naar de app.
+De foto staat er niet in (die zie je in de app, onder Meldingen). In het
+meldformulier staat bij "Ja, gevaarlijk": "Is het acuut gevaarlijk? Stuur een
+WhatsApp naar het bestuur." De mail is dus niet voor acute nood.
+
+- **Wie krijgt de mail?** Iedereen die meedoet en het vinkje heeft. Zet het vinkje
+  bij minstens één persoon aan (de coördinator), liefst bij twee.
+- **Geen mail gekregen?** Kijk in Supabase > **Edge Functions** > **gevaar-mail** >
+  **Logs**. Daar staat per melding hoeveel mails er verstuurd zijn, of wat er mis
+  ging. De melding zelf staat altijd in de app.
+- **Per melding gaat er hooguit één mail.** Wie binnen 6 seconden op Ongedaan maken
+  tikt, veroorzaakt geen mail.
+
+**Eén keer instellen** (pas als het domein bij Brevo is goedgekeurd):
+1. Supabase > **Database** > **Extensions**: zoek `pg_net` en zet hem aan.
+2. Voer `database/14_gevaar_mail.sql` uit.
+3. Voer daarna dit uit, met het eerste stuk van je Supabase-adres (zie
+   `instellingen.js`) in plaats van `<project>`:
+   ```sql
+   insert into app_instellingen (naam, waarde)
+   values ('gevaar_mail_adres', 'https://<project>.supabase.co/functions/v1/gevaar-mail');
+   ```
+4. Voer `database/test_14_gevaar_mail.sql` uit: overal "goed".
+5. Brevo > je naam rechtsboven > **SMTP & API** > tabblad **API Keys** > **Generate
+   a new API key**, naam "gevaar-mail". Kopieer de sleutel. Hij is **geheim**: plak
+   hem alleen in stap 6, nergens anders.
+6. Supabase > **Edge Functions** > **Secrets** (of Settings): voeg toe:
+   - `BREVO_API_KEY` = de sleutel uit stap 5
+   - `AFZENDER_EMAIL` = het afzenderadres op het domein (later app@parkdestadshoeve.nl)
+7. Zet de Edge Function neer, net als bij "beheer", maar met de naam `gevaar-mail`
+   en de code uit `supabase/functions/gevaar-mail/index.ts`.
+8. Zet bij **gevaar-mail** > **Details** het vinkje **Verify JWT** **uit**. De
+   database roept deze functie aan zonder inlog. Dat is veilig: de functie leest
+   alles zelf uit de database en mailt alleen over echte, nieuwe gevaarlijke
+   meldingen, hooguit één keer.
+
 ## Back-up (één keer per maand)
 De gratis versie van Supabase maakt zelf geen back-ups. Daarom maakt een beheerder
 elke maand een back-up en zet die op de SharePoint van de stichting.
@@ -167,9 +207,12 @@ geen taken en meldingen zijn, en jij de enige gebruiker bent.
 
 **Stappenplan (op een computer):**
 1. Maak bij Supabase een nieuw project (regio Frankfurt, Free).
-2. Voer in de SQL Editor de bestanden `01` tot en met `13` uit de map `database` uit,
+2. Voer in de SQL Editor de bestanden `01` tot en met `14` uit de map `database` uit,
    in volgorde (zie `database/LEESMIJ.md`). Niet de test- en voorbeeldbestanden.
-3. Zet de Edge Function **beheer** neer (zie "Edge Function beheer").
+   Zet vóór `14` eerst `pg_net` aan (zie "E-mail bij een gevaarlijke melding").
+3. Zet de Edge Functions **beheer** en **gevaar-mail** neer, met het adres in
+   `app_instellingen` en de Secrets (zie "Edge Function beheer" en "E-mail bij een
+   gevaarlijke melding"). Die staan niet in de back-up.
 4. Stel inloggen in zoals bij "Instellingen in Supabase voor inloggen".
 5. Zet in `instellingen.js` het adres en de publieke sleutel van het nieuwe project en
    zet die wijziging op `main`.
