@@ -565,3 +565,11 @@ Volgende stappen:
     met onderdelen bedenken en bijhouden. In de proef letten op meldingen waarbij
     navragen nodig was ("welke schommel?"). Eerder doen als meldingen vaak
     onduidelijk blijken, of als Avontuurlijk spelen direct na Klussen meedoet.
+16. Gebruikershandleiding toegankelijk maken via de app (eigen wens, november 2026),
+    zodat vrijwilligers hem altijd bij de hand hebben. Nu staat hij in
+    HANDLEIDING.md en in een deelbaar Claude-document.
+17. Vrijwilligerslijst (eigen wens, november 2026): nieuwe functie waarin
+    vrijwilligers elkaars naam, contactgegevens enz. kunnen vinden. Let op: botst
+    met "voornaam is genoeg" (AVG). Alleen met toestemming: ieder kiest zelf wat
+    zichtbaar is (bijv. telefoonnummer ja/nee). Vooraf privacyafweging en besluit
+    van het bestuur.
