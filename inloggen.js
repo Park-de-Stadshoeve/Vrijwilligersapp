@@ -87,9 +87,9 @@ function toonEmailScherm(fouttekst) {
     fout.textContent = "";
 
     // shouldCreateUser: false = alleen bestaande gebruikers, nooit een nieuw account.
-    // emailRedirectTo: staat er (ook) een link in de mail, dan komt die terug op
-    // deze app. (Nu nog nodig: zolang Supabase de standaardmail gebruikt, staat
-    // er een link in plaats van een code.)
+    // emailRedirectTo: vangnet. De mail bevat alleen een code (mailtekst "Magic
+    // Link" in Supabase, zie BEHEER.md). Staat er toch ooit een link in, dan komt
+    // die terug op deze app.
     const { error } = await database.auth.signInWithOtp({
       email,
       options: {
@@ -120,13 +120,6 @@ function toonCodeScherm(email) {
   uitleg.textContent = "We hebben een mail gestuurd naar " + email +
     ". Vul de code van 6 cijfers uit die mail in. Geen mail? Kijk ook in je map met ongewenste mail.";
 
-  // TIJDELIJK: zolang er nog geen eigen e-maildienst (Brevo) is, stuurt Supabase
-  // een link in plaats van een code. Weghalen zodra de mail een code bevat.
-  const tijdelijk = document.createElement("p");
-  tijdelijk.className = "details";
-  tijdelijk.textContent = "Staat er een link in de mail in plaats van een code? " +
-    "Tik dan op de link, op dit toestel.";
-
   const label = document.createElement("label");
   label.className = "veld-titel";
   label.textContent = "Code uit de mail";
@@ -145,7 +138,7 @@ function toonCodeScherm(email) {
 
   const formulier = document.createElement("form");
   formulier.className = "veld";
-  formulier.append(uitleg, tijdelijk, label, fout, knop);
+  formulier.append(uitleg, label, fout, knop);
   formulier.addEventListener("submit", async gebeurtenis => {
     gebeurtenis.preventDefault();
     const code = invoer.value.replace(/\D/g, "");   // alleen de cijfers

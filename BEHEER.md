@@ -72,13 +72,40 @@ Alleen e-mailadressen die de beheerder heeft toegevoegd kunnen inloggen.
 ## Instellingen in Supabase voor inloggen
 Eenmalig, bij een nieuw project:
 - **Authentication** > **Sign In / Providers**: **Allow new users to sign up** uit.
-  Bij **Email**: **Email OTP Length** = 6.
+  Bij **Email**: **Email OTP Length** = 6 en **Email OTP Expiration** = `3600` (één
+  uur; zo staat het in de mail).
 - **Authentication** > **URL Configuration**: **Site URL** en bij **Redirect URLs**:
   `https://park-de-stadshoeve.github.io/Vrijwilligersapp/`
-- **Mail met code:** de tekst van de mail (template "Magic Link") kan pas worden
-  aangepast met een eigen e-maildienst (Brevo, nog te regelen). Tot die tijd bevat de
-  mail een link in plaats van een code. Die link werkt op een computer en in Chrome op
-  Android, maar niet in de app op het beginscherm van een iPhone.
+- **Mail via Brevo** (de ingebouwde mail van Supabase stuurt maar 2 mails per uur):
+  1. Brevo > je naam rechtsboven > **Senders, Domains & Dedicated IPs**: bij
+     **Domains** staat parkdestadshoeve.nl met groene vinkjes; bij **Senders** staat
+     het afzenderadres als "Verified".
+  2. Brevo > je naam rechtsboven > **SMTP & API** > tabblad **SMTP**: noteer de
+     **Login** (eindigt op `@smtp-brevo.com`) en klik op **Generate a new SMTP key**
+     (naam `supabase-inlog`). De sleutel begint met `xsmtpsib-` en is **geheim**:
+     plak hem alleen in stap 3. Een sleutel die met `xkeysib-` begint is de verkeerde
+     soort.
+  3. Supabase > **Authentication** > **Emails** > **SMTP Settings**: **Enable Custom
+     SMTP** aan. Sender email = het afzenderadres uit stap 1, Sender name =
+     `Park de Stadshoeve`, Host = `smtp-relay.brevo.com`, Port = `587`, Username = de
+     Login uit stap 2, Password = de sleutel. **Save**.
+  4. Melding "Error sending magic link email"? Kijk in Supabase > **Logs** > **Auth**.
+     `535 Authentication failed` = Username of sleutel klopt niet: maak een nieuwe
+     sleutel, plak opnieuw zonder spaties, en verwijder de oude in Brevo.
+- **Mail met code:** Supabase > **Authentication** > **Emails** > **Templates** >
+  **Magic Link**. Onderwerp: `Je inlogcode voor de app van Park de Stadshoeve`.
+  Tekst (vervang alles):
+  ```html
+  <h2>Je inlogcode</h2>
+  <p>Hallo,</p>
+  <p>Vul deze code in de app in:</p>
+  <p style="font-size:32px; font-weight:bold; letter-spacing:6px;">{{ .Token }}</p>
+  <p>De code werkt één uur en maar één keer.</p>
+  <p>Heb je niet geprobeerd in te loggen? Dan kun je deze mail negeren.</p>
+  <p>Groet,<br>Park de Stadshoeve</p>
+  ```
+  `{{ .Token }}` wordt de code van 6 cijfers. Zet er geen link in: op de iPhone opent
+  die in Safari en niet in de app.
 
 ## Het beheerscherm
 Wie het vinkje beheerder heeft (`is_beheerder` in de tabel gebruikers), ziet rechtsboven
@@ -96,7 +123,7 @@ de knop **Beheer**. Daar staan alle gebruikers: naam, rol, werkgroepen en de vin
   De persoon krijgt **geen** mail. Laat het zelf weten, bijvoorbeeld zo:
   > Hoi Kees, je kunt nu de app van Park de Stadshoeve gebruiken. Open
   > https://park-de-stadshoeve.github.io/Vrijwilligersapp/ op je telefoon, vul je
-  > e-mailadres in en je krijgt een mail om in te loggen. Zet de app daarna op je
+  > e-mailadres in en je krijgt een mail met een code om in te loggen. Zet de app daarna op je
   > beginscherm (uitleg in de app). Vragen? Bel of app mij.
 - **Iemand wijzigen:** tik op **Wijzigen** bij de persoon. Je kunt het e-mailadres,
   de voornaam, de letter van de achternaam, de rol, de werkgroepen en de twee

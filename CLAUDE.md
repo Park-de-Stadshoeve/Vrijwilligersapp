@@ -136,13 +136,19 @@ Klaar (inloggen, taken en meldingen werken met de database):
   supabase-js 2.45.4 via jsdelivr, ook bewaard door de service worker.
   instellingen.js gekoppeld aan het testproject. Getest: niet-ingelogd wordt overal
   geweigerd (tabellen, acties, foto's); onbekend e-mailadres geeft de juiste melding.
-  Supabase laat de mailtekst niet aanpassen zonder eigen SMTP: de mail bevat nu een
-  link (emailRedirectTo = de app), nog geen code. Inloggen via de link getest en
-  werkt. Het codescherm heeft een TIJDELIJKE zin over de link (inloggen.js,
-  "TIJDELIJK"); weghalen zodra Brevo de code stuurt.
+  Mail via Brevo (eigen SMTP in het testproject, smtp-relay.brevo.com:587, SMTP-
+  sleutel alleen in Supabase; instellingen in BEHEER.md). Mailtekst "Magic Link"
+  aangepast: alleen de code ({{ .Token }}), geen link. Getest: inloggen met de
+  code werkt (november 2026). Tijdelijke zin over de link uit inloggen.js weg;
+  emailRedirectTo blijft als vangnet.
 - Domein: DNS bij Digiworks (vaste contactpersoon bekend, naam staat niet in de
   repository), mail via Microsoft 365, SPF
-  staat alleen Microsoft toe. Brevo heeft DNS-regels nodig. Afzender voor de test:
+  staat alleen Microsoft toe (Brevo heeft daar niets nodig). Stand 23 november
+  2026: CNAME app -> park-de-stadshoeve.github.io staat; Brevo-code en DKIM
+  (brevo1/brevo2._domainkey) staan en zijn groen in Brevo. Nog bij Digiworks:
+  GitHub-verificatie-TXT stond onder ...app.parkdestadshoeve.nl (moet zonder app)
+  en _dmarc ontbrak (gevraagd: p=none, rapporten naar info@). Daarna: Verify in
+  GitHub, dan eigen adres instellen. Afzender voor de test:
   een eigen adres op het domein; voor echt gebruik een algemeen adres (bijv. gedeelde mailbox app@).
 - Menu onderaan: Mijn taken, Werkgroep, Melden, Meldingen.
 - Elke actie heeft "Ongedaan maken" (6 seconden).
@@ -516,7 +522,9 @@ Volgende stappen:
      beheerders); gebruikers klaar en getest (november 2026), werkgroepen en
      plekken klaar en getest (november 2026), onderdelen na de proef;
    - eigen e-maildienst voor de inlogcodes (de ingebouwde mail van Supabase stuurt
-     maar 2 berichten per uur en alleen naar beheerders);
+     maar 2 berichten per uur en alleen naar beheerders); Brevo klaar en getest
+     in het testproject (november 2026); nog: DMARC, en voor de proef een
+     algemeen afzenderadres (app@) in plaats van een eigen adres;
    - voorkomen dat het gratis Supabase-project na een week stilte op pauze gaat
      (klaar en getest, november 2026);
    - maandelijkse back-up (de gratis versie maakt er geen); klaar en getest,
