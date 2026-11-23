@@ -179,13 +179,20 @@ WhatsApp naar het bestuur." De mail is dus niet voor acute nood.
    ```
 4. Voer `database/test_14_gevaar_mail.sql` uit: overal "goed".
 5. Brevo > je naam rechtsboven > **SMTP & API** > tabblad **API Keys** > **Generate
-   a new API key**, naam "gevaar-mail". Kopieer de sleutel. Hij is **geheim**: plak
+   a new API key**, naam "gevaar-mail". Zet alleen de permissie voor
+   transactionele mails (versturen) aan, de rest uit. De sleutel begint met
+   `xkeysib-` (een andere soort dan voor de inlogmail). Kopieer de sleutel. Hij is **geheim**: plak
    hem alleen in stap 6, nergens anders.
 6. Supabase > **Edge Functions** > **Secrets** (of Settings): voeg toe:
    - `BREVO_API_KEY` = de sleutel uit stap 5
    - `AFZENDER_EMAIL` = het afzenderadres op het domein (later app@parkdestadshoeve.nl)
 7. Zet de Edge Function neer, net als bij "beheer", maar met de naam `gevaar-mail`
-   en de code uit `supabase/functions/gevaar-mail/index.ts`.
+   en de code uit `supabase/functions/gevaar-mail/index.ts`. Vul de naam in **vóór**
+   je op **Deploy** tikt: Supabase verzint anders zelf een adres (bijv.
+   `smooth-endpoint`) en dat verandert niet meer als je de naam later aanpast.
+   Controleer bij **Details**: de **Endpoint URL** eindigt op
+   `/functions/v1/gevaar-mail`. Klopt dat niet, zet de functie dan opnieuw neer en
+   verwijder de verkeerde.
 8. Zet bij **gevaar-mail** > **Details** het vinkje **Verify JWT** **uit**. De
    database roept deze functie aan zonder inlog. Dat is veilig: de functie leest
    alles zelf uit de database en mailt alleen over echte, nieuwe gevaarlijke

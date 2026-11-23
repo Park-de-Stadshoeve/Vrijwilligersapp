@@ -399,7 +399,7 @@ Klaar (inloggen, taken en meldingen werken met de database):
   de kopie): alles goed. Getest op de telefoon (app op de achtergrond, wijziging
   in index.html, na ontgrendelen nieuwe versie geladen; met Melden open eerst
   de melding, herladen pas op Mijn taken): alles goed.
-- E-mail bij een gevaarlijke melding (gebouwd, wacht op Brevo): database/
+- E-mail bij een gevaarlijke melding (klaar en getest in het testproject): database/
   14_gevaar_mail.sql (tabel app_instellingen met gevaar_mail_adres, geen
   toegang via de app; kolom meldingen.gevaar_mail_verstuurd_op; trigger
   gevaarlijke_melding_mail na insert bij gevaarlijk -> net.http_post (pg_net)
@@ -414,9 +414,14 @@ Klaar (inloggen, taken en meldingen werken met de database):
   een e-mail." alleen als er iemand met het vinkje is. Getest: test_14 lokaal
   met nagebootste pg_net (5 tests), oude tests goed, functie met nep-Supabase
   (6 gevallen), formulier in de browser. Samengevoegd; gele tip getest op de
-  telefoon: goed. NOG TE DOEN (na goedkeuring domein bij
-  Brevo): pg_net aan, 14 + adres, API-sleutel en Secrets, functie neerzetten,
-  echte test.
+  telefoon: goed. Ingesteld in het testproject (23 november 2026): pg_net aan,
+  14 + adres, API-sleutel van Brevo (alleen permissie transactionele mail) en
+  Secrets, functie neergezet. Valkuil: Supabase gaf de functie eerst het adres
+  "smooth-endpoint" (naam pas na aanmaken aangepast) -> 404; opnieuw neergezet
+  met de naam vooraf (staat nu in BEHEER.md). Lege test (200, "geen
+  meldingnummer") en echte test met gevaarlijke melding: mail binnen. De
+  pg_net-wachttijd van 5 s tegenover de 10 s wachten in de functie gaf geen
+  probleem.
 - Taken laten vervallen (later-lijst 7, besluit: niet verwijderen maar status
   "vervallen", knop "Laten vervallen"): database/15_vervallen.sql (status
   vervallen + vervallen_door/vervallen_op; regels gereed_alleen_als_toegewezen,
@@ -516,8 +521,8 @@ Volgende stappen:
    - één tabel gebruikers met per persoon een rol en werkgroepen;
    - rechten afdwingen in de database;
    - rechten en bewaartermijnen volgens DATABASE.md;
-   - e-mail aan de coördinator bij een gevaarlijke melding (gebouwd, nog in te
-     stellen en te testen na Brevo);
+   - e-mail aan de coördinator bij een gevaarlijke melding (klaar en getest in
+     het testproject, november 2026; voor de proef AFZENDER_EMAIL naar app@);
    - beheerscherm voor gebruikers, werkgroepen, plekken en onderdelen (alleen voor
      beheerders); gebruikers klaar en getest (november 2026), werkgroepen en
      plekken klaar en getest (november 2026), onderdelen na de proef;

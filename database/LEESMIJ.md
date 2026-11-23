@@ -19,7 +19,7 @@ database opbouwt en bevraagt. Het ontwerp in gewone taal staat in `../DATABASE.m
 | `11_opmerking.sql` | Opmerking bij een gereed gemelde taak: twee kolommen, vaste actie "opmerking zetten", en Weer openen maakt hem leeg | uitgevoerd in testproject |
 | `12_backup.sql` | Tabel back_ups: wanneer en door wie een back-up is gemaakt (alleen beheerders zien hem) | uitgevoerd in testproject |
 | `13_herstel.sql` | Back-up terugzetten in een lege database (alleen voor de Edge Function) | uitgevoerd in testproject |
-| `14_gevaar_mail.sql` | Seintje naar de Edge Function gevaar-mail bij een gevaarlijke melding; tabel app_instellingen (zet eerst pg_net aan, vul daarna het adres in) | nog uitvoeren (na Brevo) |
+| `14_gevaar_mail.sql` | Seintje naar de Edge Function gevaar-mail bij een gevaarlijke melding; tabel app_instellingen (zet eerst pg_net aan, vul daarna het adres in) | uitgevoerd in testproject |
 | `15_vervallen.sql` | Status "vervallen" voor taken: laten vervallen (bestuur) en weer openen; verwijderen alleen nog bij open taken | uitgevoerd in testproject |
 | `16_lijsten_beheer.sql` | Voor het beheerscherm: tellen wat er aan een werkgroep hangt, en de volgorde van plekken veranderen | uitgevoerd in testproject |
 | `17_werkgroep_volgorde.sql` | Volgorde van de werkgroepen (kolom volgorde en vaste actie werkgroep_verplaatsen) | uitgevoerd in testproject |
