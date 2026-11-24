@@ -143,12 +143,14 @@ Klaar (inloggen, taken en meldingen werken met de database):
   emailRedirectTo blijft als vangnet.
 - Domein: DNS bij Digiworks (vaste contactpersoon bekend, naam staat niet in de
   repository), mail via Microsoft 365, SPF
-  staat alleen Microsoft toe (Brevo heeft daar niets nodig). Stand 23 november
-  2026: CNAME app -> park-de-stadshoeve.github.io staat; Brevo-code en DKIM
-  (brevo1/brevo2._domainkey) staan en zijn groen in Brevo. Nog bij Digiworks:
-  GitHub-verificatie-TXT stond onder ...app.parkdestadshoeve.nl (moet zonder app)
-  en _dmarc ontbrak (gevraagd: p=none, rapporten naar info@). Daarna: Verify in
-  GitHub, dan eigen adres instellen. Afzender voor de test:
+  staat alleen Microsoft toe (Brevo heeft daar niets nodig). Stand 24 november
+  2026, alles klaar bij Digiworks: CNAME app -> park-de-stadshoeve.github.io;
+  Brevo-code, DKIM (brevo1/brevo2._domainkey) en _dmarc (p=none, rapporten naar
+  info@): alles groen in Brevo. GitHub: parkdestadshoeve.nl geverifieerd in de
+  organisatie (TXT _github-pages-challenge-park-de-stadshoeve; beschermt ook
+  app.). Een tweede ingang app.parkdestadshoeve.nl is verwijderd (elk domein in
+  GitHub heeft een eigen code; dat gaf verwarring). Volgende stap: eigen adres
+  instellen in de repository en in Supabase. Afzender voor de test:
   een eigen adres op het domein; voor echt gebruik een algemeen adres (bijv. gedeelde mailbox app@).
 - Menu onderaan: Mijn taken, Werkgroep, Melden, Meldingen.
 - Elke actie heeft "Ongedaan maken" (6 seconden).
