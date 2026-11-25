@@ -80,9 +80,9 @@ Ik bouw deze app zelf om te leren hoe je een app maakt. Claude schrijft code, ma
 - Inloggen met een code van 6 cijfers uit de mail, zonder wachtwoord. (Geen link:
   op de iPhone opent een link in Safari en niet in de app op het beginscherm.)
 - Code staat in GitHub: organisatie park-de-stadshoeve, repository Vrijwilligersapp.
-  Hosting via GitHub Pages: https://park-de-stadshoeve.github.io/Vrijwilligersapp/
-  Wordt (besluit november 2026): https://app.parkdestadshoeve.nl via een CNAME bij
-  Digiworks. Nog niet actief.
+  Hosting via GitHub Pages op https://app.parkdestadshoeve.nl (CNAME bij Digiworks,
+  bestand CNAME in de repository, actief sinds november 2026). Het oude adres
+  https://park-de-stadshoeve.github.io/Vrijwilligersapp/ stuurt door.
   Budget: hooguit een paar euro per maand.
 - De repository is openbaar. Zet er nooit echte namen, persoonsgegevens, wachtwoorden,
   geheime sleutels of interne stukken van de stichting in. Een publieke sleutel die
@@ -149,8 +149,14 @@ Klaar (inloggen, taken en meldingen werken met de database):
   info@): alles groen in Brevo. GitHub: parkdestadshoeve.nl geverifieerd in de
   organisatie (TXT _github-pages-challenge-park-de-stadshoeve; beschermt ook
   app.). Een tweede ingang app.parkdestadshoeve.nl is verwijderd (elk domein in
-  GitHub heeft een eigen code; dat gaf verwarring). Volgende stap: eigen adres
-  instellen in de repository en in Supabase. Afzender voor de test:
+  GitHub heeft een eigen code; dat gaf verwarring). Eigen adres ingesteld (25
+  november 2026): Custom domain in de repository (GitHub maakte bestand CNAME),
+  Enforce HTTPS aan; oud adres en http sturen door (301). De app gebruikt
+  relatieve paden, dus geen codewijziging nodig. gevaar-mail: standaard
+  APP_ADRES nu het nieuwe adres (en Secret APP_ADRES). Supabase: Site URL en
+  Redirect URLs naar het nieuwe adres. Getest op de telefoon (oude app weg,
+  installeren, inloggen met code, taken, foto, melden): alles goed. Wie de app
+  al had: eerst uitloggen, oude app verwijderen, opnieuw installeren. Afzender voor de test:
   een eigen adres op het domein; voor echt gebruik een algemeen adres (bijv. gedeelde mailbox app@).
 - Menu onderaan: Mijn taken, Werkgroep, Melden, Meldingen.
 - Elke actie heeft "Ongedaan maken" (6 seconden).
@@ -470,8 +476,8 @@ Klaar (inloggen, taken en meldingen werken met de database):
   inloggen met code, taken, melden, handig om te weten). Zelfde tekst staat in
   een deelbaar Claude-document (om te mailen of te printen); bij wijzigen allebei
   bijwerken. Gaat uit van het adres app.parkdestadshoeve.nl en de code uit de
-  mail (Brevo) en zegt dat de coördinator een e-mail krijgt bij gevaar: klopt
-  pas als Brevo en de gevaar-mail werken.
+  mail (Brevo) en zegt dat de coördinator een e-mail krijgt bij gevaar: dat
+  klopt nu allemaal (november 2026).
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).

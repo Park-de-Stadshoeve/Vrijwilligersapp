@@ -25,7 +25,20 @@ app de nieuwste taken op.
 
 ## Waar staat de app?
 - **Code:** GitHub, organisatie `park-de-stadshoeve`, repository `Vrijwilligersapp`.
-- **Online:** https://park-de-stadshoeve.github.io/Vrijwilligersapp/
+- **Online:** https://app.parkdestadshoeve.nl (het oude adres
+  park-de-stadshoeve.github.io/Vrijwilligersapp stuurt hier vanzelf naartoe).
+- **Wat is nodig voor dit adres?**
+  - Het domein parkdestadshoeve.nl blijft betaald bij Digiworks.
+  - Bij Digiworks staat de DNS-regel `app` CNAME `park-de-stadshoeve.github.io`
+    en de TXT-regel `_github-pages-challenge-park-de-stadshoeve` (bewijs voor
+    GitHub dat het domein van ons is). Haal die nooit weg.
+  - In de repository staat het bestand `CNAME` met `app.parkdestadshoeve.nl`.
+    Niet verwijderen of wijzigen.
+  - GitHub > repository > **Settings** > **Pages**: **Custom domain** =
+    `app.parkdestadshoeve.nl`, **Enforce HTTPS** aan.
+- **Werkt de app niet meer op dit adres?** Kijk eerst bij GitHub > repository >
+  **Settings** > **Pages** of daar een fout staat. Daarna bij Digiworks of de
+  regels er nog staan.
 - **Database:** Supabase, project `vrijwilligersapp-test` (alleen testgegevens).
 
 ## Welk bestand doet wat?
@@ -75,7 +88,7 @@ Eenmalig, bij een nieuw project:
   Bij **Email**: **Email OTP Length** = 6 en **Email OTP Expiration** = `3600` (één
   uur; zo staat het in de mail).
 - **Authentication** > **URL Configuration**: **Site URL** en bij **Redirect URLs**:
-  `https://park-de-stadshoeve.github.io/Vrijwilligersapp/`
+  `https://app.parkdestadshoeve.nl/`
 - **Mail via Brevo** (de ingebouwde mail van Supabase stuurt maar 2 mails per uur):
   1. Brevo > je naam rechtsboven > **Senders, Domains & Dedicated IPs**: bij
      **Domains** staat parkdestadshoeve.nl met groene vinkjes; bij **Senders** staat
@@ -122,7 +135,7 @@ de knop **Beheer**. Daar staan alle gebruikers: naam, rol, werkgroepen en de vin
   na het toevoegen, zolang de persoon nog niets heeft gedaan).
   De persoon krijgt **geen** mail. Laat het zelf weten, bijvoorbeeld zo:
   > Hoi Kees, je kunt nu de app van Park de Stadshoeve gebruiken. Open
-  > https://park-de-stadshoeve.github.io/Vrijwilligersapp/ op je telefoon, vul je
+  > https://app.parkdestadshoeve.nl op je telefoon, vul je
   > e-mailadres in en je krijgt een mail met een code om in te loggen. Zet de app daarna op je
   > beginscherm (uitleg in de app). Vragen? Bel of app mij.
 - **Iemand wijzigen:** tik op **Wijzigen** bij de persoon. Je kunt het e-mailadres,
@@ -186,6 +199,7 @@ WhatsApp naar het bestuur." De mail is dus niet voor acute nood.
 6. Supabase > **Edge Functions** > **Secrets** (of Settings): voeg toe:
    - `BREVO_API_KEY` = de sleutel uit stap 5
    - `AFZENDER_EMAIL` = het afzenderadres op het domein (later app@parkdestadshoeve.nl)
+   - `APP_ADRES` = `https://app.parkdestadshoeve.nl/` (de knop "Open de app" in de mail)
 7. Zet de Edge Function neer, net als bij "beheer", maar met de naam `gevaar-mail`
    en de code uit `supabase/functions/gevaar-mail/index.ts`. Vul de naam in **vóór**
    je op **Deploy** tikt: Supabase verzint anders zelf een adres (bijv.

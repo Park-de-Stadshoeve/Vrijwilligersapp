@@ -37,7 +37,7 @@ const SUPABASE_ADRES = Deno.env.get("SUPABASE_URL");
 const GEHEIME_SLEUTEL = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 const BREVO_SLEUTEL = Deno.env.get("BREVO_API_KEY");
 const AFZENDER = Deno.env.get("AFZENDER_EMAIL");
-const APP_ADRES = Deno.env.get("APP_ADRES") || "https://park-de-stadshoeve.github.io/Vrijwilligersapp/";
+const APP_ADRES = Deno.env.get("APP_ADRES") || "https://app.parkdestadshoeve.nl/";
 
 const WACHT_SECONDEN = 10;          // langer dan "Ongedaan maken" (6 seconden)
 const HOOGUIT_MINUTEN_OUD = 60;     // oudere meldingen: geen mail (bijv. na terugzetten back-up)
