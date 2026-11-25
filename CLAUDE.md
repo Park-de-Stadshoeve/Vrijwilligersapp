@@ -525,16 +525,25 @@ Besluit DEV en PROD (november 2026): er komt een nieuw, schoon Supabase-project
 voor echt gebruik (PROD). Het testproject "vrijwilligersapp-test" blijft bestaan
 als DEV: nieuwe functies en nieuwe SQL eerst daar uitproberen, daarna pas in PROD.
 In PROD alleen de SQL-bestanden 01 t/m 17, nooit test_-, voorbeeld_- of
-herstel_leegmaken-bestanden. Nog uitwerken: waar de DEV-versie van de app draait
-(apart adres, zodat de proefgebruikers geen ongeteste code krijgen).
+herstel_leegmaken-bestanden. De DEV-versie van de app draait op
+https://park-de-stadshoeve.github.io/Vrijwilligersapp-test/ (aparte openbare
+repository Vrijwilligersapp-test met alleen een workflow die een branch naar keuze
+uit Vrijwilligersapp ophaalt en via GitHub Actions op Pages zet; kopie in
+testversie/testversie-neerzetten.yml; geen geheime sleutels). instellingen.js
+kiest per adres: app.parkdestadshoeve.nl = PROD, elk ander adres = DEV
+(IS_TESTVERSIE). Testversie: paarse balk, gele strook "TESTVERSIE", naam "TEST
+Stadshoeve". Wakker houden pingt PROD en DEV (matrix). Werkwijze: branch ->
+testversie -> main. Zolang PROD nog niet bestaat, staan bij PROD_ de waarden van
+het testproject (TIJDELIJK).
 
 Volgende stappen (vóór 13 december):
 1. PROD-project aanmaken in Supabase (organisatie Park de Stadshoeve, Frankfurt,
    Free) en inrichten: SQL 01 t/m 17, pg_net, Edge Functions beheer en
    gevaar-mail met Secrets, Brevo SMTP en mailtekst met code, Site URL en
    Redirect URLs, app_instellingen.
-2. DEV-versie van de app op een eigen adres, gekoppeld aan het testproject;
-   app.parkdestadshoeve.nl koppelen aan PROD. Wakker houden voor beide projecten.
+2. DEV-versie: code klaar (instellingen.js, stijl.css, wakker houden,
+   testversie/). Nog: repository Vrijwilligersapp-test aanmaken en instellen
+   (BEHEER.md, "Testversie (DEV)"), testen; na stap 1 PROD_ invullen.
 3. Afzenderadres app@ (gedeelde mailbox) voor inlogcodes en gevaar-mail.
 4. Verwerkersovereenkomsten Supabase en Brevo (eigenaar regelt dit).
 5. In PROD: twee beheerders, plekken nalopen, korte privacytekst bij de

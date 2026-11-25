@@ -22,6 +22,14 @@ header {
   background: var(--groen); color: #ffffff; padding: 16px; position: sticky; top: 0; z-index: 1;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
 }
+/* Testversie (zie instellingen.js): paarse balk en een gele strook met tekst,
+   zodat je altijd ziet dat je NIET in de echte app zit. */
+body.testversie header { background: #5b2a86; }
+body.testversie::before {
+  content: "TESTVERSIE – alleen testgegevens";
+  display: block; padding: 4px 16px; text-align: center;
+  font-size: 16px; font-weight: bold; background: #ffd84d; color: #1a1a1a;
+}
 /* Knop "Uitloggen" rechtsboven: klein, want je hebt hem zelden nodig */
 .knop-uitloggen {
   min-height: 44px; padding: 0 12px; font-size: 16px;

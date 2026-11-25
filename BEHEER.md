@@ -39,7 +39,51 @@ app de nieuwste taken op.
 - **Werkt de app niet meer op dit adres?** Kijk eerst bij GitHub > repository >
   **Settings** > **Pages** of daar een fout staat. Daarna bij Digiworks of de
   regels er nog staan.
-- **Database:** Supabase, project `vrijwilligersapp-test` (alleen testgegevens).
+- **Database:** Supabase. Er zijn twee projecten:
+  - **PROD** (de echte app, echte gegevens). TIJDELIJK: nog niet aangemaakt; tot die
+    tijd gebruikt ook de echte app het testproject.
+  - **DEV** = `vrijwilligersapp-test` (alleen verzonnen gegevens, om uit te proberen).
+  Welke de app gebruikt, hangt af van het adres (zie `instellingen.js`):
+  app.parkdestadshoeve.nl = PROD, elk ander adres = DEV.
+
+## Testversie (DEV)
+Nieuwe dingen probeer je eerst uit in de testversie, zodat de vrijwilligers er geen
+last van hebben.
+
+- **Adres:** https://park-de-stadshoeve.github.io/Vrijwilligersapp-test/
+- **Herken je hem?** Paarse balk bovenaan en een gele strook "TESTVERSIE – alleen
+  testgegevens". Op het beginscherm heet hij "TEST Stadshoeve".
+- **Database:** altijd het testproject `vrijwilligersapp-test`. Inloggen doe je met
+  een account dat in het testproject staat.
+- **Waar komt hij vandaan?** Uit de repository `Vrijwilligersapp-test` (organisatie
+  `park-de-stadshoeve`). Daarin staat alleen een automatische taak die de code uit
+  `Vrijwilligersapp` ophaalt. Een kopie van die taak staat hier in
+  `testversie/testversie-neerzetten.yml`.
+
+**Een nieuwe versie testen:**
+1. Maak de wijziging op een branch (zijspoor) in `Vrijwilligersapp`, niet op `main`.
+2. Nieuwe SQL? Voer die eerst uit in het testproject.
+3. Ga naar GitHub > `Vrijwilligersapp-test` > tabblad **Actions** > **Testversie
+   neerzetten** > **Run workflow**, vul de naam van de branch in en klik op de groene
+   knop. Na een minuut of twee staat hij online.
+4. Test op de telefoon (op het testadres).
+5. Goed? Voeg de branch samen met `main` (dan staat hij in de echte app) en voer
+   nieuwe SQL ook uit in het PROD-project. Daarna mag je de testversie weer op
+   `main` zetten (stap 3 met `main`).
+
+**Eenmalig opzetten** (al gedaan als de testversie werkt):
+1. Maak in de organisatie een nieuwe repository `Vrijwilligersapp-test`, **Public**
+   (GitHub Pages is alleen gratis bij openbare repositories; er staat niets geheims in).
+2. Maak daarin het bestand `.github/workflows/testversie-neerzetten.yml` met de inhoud
+   van `testversie/testversie-neerzetten.yml` uit deze repository.
+3. `Vrijwilligersapp-test` > **Settings** > **Pages** > bij **Source** kies
+   **GitHub Actions**. Geen Custom domain invullen.
+4. Start de taak (zie hierboven, met `main`).
+5. Supabase > testproject > **Authentication** > **URL Configuration**: zet de
+   **Site URL** op het testadres en voeg het testadres toe bij **Redirect URLs**.
+6. Supabase > testproject > **Edge Functions** > **Secrets**: zet `APP_ADRES` op het
+   testadres (dan wijst de knop in de gevaar-mail uit het testproject naar de
+   testversie).
 
 ## Welk bestand doet wat?
 | Bestand | Wat staat erin | Wanneer pas je het aan? |
@@ -47,7 +91,8 @@ app de nieuwste taken op.
 | `index.html` | Het geraamte: kopbalk, middenruimte, menu onderaan | Zelden |
 | `stijl.css` | Het uiterlijk: kleuren, groottes, knoppen | Kleur of tekstgrootte veranderen |
 | `app.js` | De logica, taken ophalen uit de database, de voorbeeldmeldingen | Plekken, werkgroepen, termijnen |
-| `instellingen.js` | Adres en publieke sleutel van de database | Bij een andere database (bijv. van test naar echt) |
+| `instellingen.js` | Adres en publieke sleutel van beide databases (PROD en DEV) | Bij een ander Supabase-project |
+| `testversie/` | Kopie van de automatische taak voor de repository `Vrijwilligersapp-test` | Zelden; daarna ook daar aanpassen |
 | `beheer-lijsten.js` | Het beheerscherm, deel werkgroepen en plekken | Zelden |
 | `beheer.js` | Het beheerscherm (knop "Beheer", alleen voor beheerders) | Zelden |
 | `inloggen.js` | Inlogscherm met code uit de mail, uitloggen, "wie ben ik" | Zelden |
@@ -59,7 +104,7 @@ app de nieuwste taken op.
 | `iconen/` | Het logo in drie maten (180, 192 en 512 pixels) | Nieuw logo |
 | `supabase/functions/gevaar-mail/` | Edge Function: e-mail bij een gevaarlijke melding (draait bij Supabase) | Zelden; daarna opnieuw plakken bij Supabase |
 | `supabase/functions/beheer/` | Edge Function: iemand toevoegen en e-mailadres wijzigen (draait bij Supabase) | Zelden; daarna opnieuw plakken bij Supabase |
-| `.github/workflows/` | Automatische taak die de database wakker houdt | Zelden |
+| `.github/workflows/` | Automatische taak die beide databases wakker houdt | Zelden |
 
 ## De app op het beginscherm zetten
 Vertel vrijwilligers dit bij de start. Het hoeft maar één keer per telefoon.
@@ -256,15 +301,15 @@ geen taken en meldingen zijn, en jij de enige gebruiker bent.
 
 **Stappenplan (op een computer):**
 1. Maak bij Supabase een nieuw project (regio Frankfurt, Free).
-2. Voer in de SQL Editor de bestanden `01` tot en met `14` uit de map `database` uit,
+2. Voer in de SQL Editor de bestanden `01` tot en met `17` uit de map `database` uit,
    in volgorde (zie `database/LEESMIJ.md`). Niet de test- en voorbeeldbestanden.
    Zet vóór `14` eerst `pg_net` aan (zie "E-mail bij een gevaarlijke melding").
 3. Zet de Edge Functions **beheer** en **gevaar-mail** neer, met het adres in
    `app_instellingen` en de Secrets (zie "Edge Function beheer" en "E-mail bij een
    gevaarlijke melding"). Die staan niet in de back-up.
 4. Stel inloggen in zoals bij "Instellingen in Supabase voor inloggen".
-5. Zet in `instellingen.js` het adres en de publieke sleutel van het nieuwe project en
-   zet die wijziging op `main`.
+5. Zet in `instellingen.js` bij `PROD_ADRES` en `PROD_SLEUTEL` het adres en de
+   publieke sleutel van het nieuwe project en zet die wijziging op `main`.
 6. Zet jezelf met de hand neer (zie "Iemand toevoegen zonder beheerscherm"), met
    **jouw eigen e-mailadres**, rol `bestuur` en `is_beheerder` op `true`.
 7. Open de app, log in en ga naar **Beheer** > **♻️ Back-up terugzetten**.
@@ -456,10 +501,11 @@ de zon leesbaar blijft.
 
 ## Supabase wakker houden
 Een gratis Supabase-project gaat op pauze na een week zonder activiteit. Daarom roept
-GitHub elke 3 dagen de database aan (de taak "Supabase wakker houden").
+GitHub elke 3 dagen beide databases aan, PROD en DEV (de taak "Supabase wakker
+houden").
 
 - **Werkt het?** GitHub > tabblad **Actions** > **Supabase wakker houden**. Groen
-  vinkje = gelukt.
+  vinkje = gelukt. Klik erop: je ziet "ping PROD" en "ping DEV" apart.
 - **Zelf starten:** op dezelfde plek op **Run workflow** klikken.
 - **Mail "Run failed"?** Kijk in Supabase of het project op pauze staat ("Paused").
   Zo ja: klik op **Restore project** en wacht een paar minuten. Start daarna de
@@ -470,8 +516,8 @@ GitHub elke 3 dagen de database aan (de taak "Supabase wakker houden").
 - **Wie krijgt de mails?** Degene die de taak het laatst heeft aangezet of aangepast.
   Nieuwe beheerder? Laat die de taak één keer uitzetten (**...** > **Disable
   workflow**) en weer aanzetten. Dan gaan de mails naar hem of haar.
-- **Ander Supabase-project** (bijv. van test naar echt)? De taak leest het adres uit
-  `instellingen.js`, dus die gaat vanzelf mee. Voer wel `database/07_ping.sql` uit in
+- **Ander Supabase-project**? De taak leest de adressen uit `instellingen.js`
+  (`PROD_...` en `DEV_...`), dus die gaat vanzelf mee. Voer wel `database/07_ping.sql` uit in
   het nieuwe project.
 
 ## Iets ging mis?

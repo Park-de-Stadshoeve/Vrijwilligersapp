@@ -7,14 +7,18 @@
 #   "ping" in de database aan (zie database/07_ping.sql). Daarmee
 #   blijft het project wakker.
 #
-# Welke database?
-#   Het adres en de publieke sleutel worden uit instellingen.js gelezen.
-#   Zet je daar een ander project in, dan gaat deze taak vanzelf mee.
+# Welke databases?
+#   Allebei: PROD (de echte app) en DEV (het testproject). Adres en
+#   publieke sleutel worden uit instellingen.js gelezen (de regels
+#   "const PROD_..." en "const DEV_..."). Zet je daar een ander project
+#   in, dan gaat deze taak vanzelf mee.
 #   (Let op: voer dan ook 07_ping.sql uit in dat project.)
 #
 # Mislukt het?
 #   Dan stuurt GitHub een mail aan degene die deze taak het laatst
-#   heeft aangezet of aangepast. Zie BEHEER.md, "Supabase wakker houden".
+#   heeft aangezet of aangepast. In de mail en bij Actions zie je bij
+#   welke database (PROD of DEV) het misging. Zie BEHEER.md,
+#   "Supabase wakker houden".
 #
 # Met de hand starten:
 #   GitHub > tabblad Actions > "Supabase wakker houden" > Run workflow.
@@ -34,23 +38,31 @@ permissions:
 
 jobs:
   ping:
+    # Twee keer dezelfde stappen: één keer voor PROD, één keer voor DEV.
+    strategy:
+      fail-fast: false # mislukt er één, dan gaat de ander toch door
+      matrix:
+        omgeving: [PROD, DEV]
+    name: ping ${{ matrix.omgeving }}
     runs-on: ubuntu-latest
     steps:
       - name: Code ophalen (voor instellingen.js)
         uses: actions/checkout@v4
 
       - name: Database aanroepen
+        env:
+          OMGEVING: ${{ matrix.omgeving }}
         run: |
           # Adres en sleutel uit instellingen.js halen (de tekst tussen de aanhalingstekens).
-          ADRES=$(grep 'const SUPABASE_ADRES' instellingen.js | cut -d '"' -f 2)
-          SLEUTEL=$(grep 'const SUPABASE_SLEUTEL' instellingen.js | cut -d '"' -f 2)
+          ADRES=$(grep "const ${OMGEVING}_ADRES" instellingen.js | cut -d '"' -f 2)
+          SLEUTEL=$(grep "const ${OMGEVING}_SLEUTEL" instellingen.js | cut -d '"' -f 2)
 
           if [ -z "$ADRES" ] || [ -z "$SLEUTEL" ]; then
-            echo "Adres of sleutel niet gevonden in instellingen.js."
+            echo "Adres of sleutel voor $OMGEVING niet gevonden in instellingen.js."
             exit 1
           fi
 
-          echo "Database: $ADRES"
+          echo "Database ($OMGEVING): $ADRES"
 
           # De functie ping aanroepen. Bij een tijdelijke storing 3 keer opnieuw proberen.
           ANTWOORD=$(curl --silent --show-error --fail --retry 3 --retry-delay 20 \
@@ -58,15 +70,15 @@ jobs:
             --header "apikey: $SLEUTEL" \
             --header "Content-Type: application/json" \
             --data '{}') || {
-              echo "De database antwoordt niet. Staat het project op pauze? Zie BEHEER.md."
+              echo "De database ($OMGEVING) antwoordt niet. Staat het project op pauze? Zie BEHEER.md."
               exit 1
             }
 
           echo "Antwoord: $ANTWOORD"
 
           if [ "$ANTWOORD" != '"ok"' ]; then
-            echo "Onverwacht antwoord. Is database/07_ping.sql uitgevoerd?"
+            echo "Onverwacht antwoord. Is database/07_ping.sql uitgevoerd in $OMGEVING?"
             exit 1
           fi
 
-          echo "Gelukt: de database is wakker."
+          echo "Gelukt: de database ($OMGEVING) is wakker."
