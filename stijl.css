@@ -88,7 +88,14 @@ main { padding: 16px; padding-bottom: 180px; } /* ruimte vrij voor menu én meld
 .foto-tip { font-size: 16px; color: var(--grijs); }
 /* Foutmelding bij een foto: rood én vetgedrukt (niet alleen kleur) */
 .foto-tip.fout { color: var(--rood); font-weight: bold; }
-.foto { display: block; width: 100%; margin-top: 4px; border-radius: 8px; }
+/* Foto bij een taak of melding. Nooit breder dan het kaartje (max-width) en
+   nooit hoger dan 60% van het scherm (max-height; vh = procent van de
+   schermhoogte). Zo past hij op de telefoon én op een laptop ruim in beeld.
+   width/height auto: de foto houdt zijn eigen verhouding, niets wordt uitgerekt. */
+.foto {
+  display: block; max-width: 100%; max-height: 60vh; width: auto; height: auto;
+  margin-top: 4px; border-radius: 8px;
+}
 .foto-label { margin-top: 12px; }
 
 /* Opmerking na afloop: met een streep links, zodat hij opvalt als aparte tekst */
