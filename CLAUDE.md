@@ -516,16 +516,36 @@ Besluiten (november 2026):
 Gebruikstest: geen aparte test vooraf (de test met het bestuur is voor nu genoeg).
 In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
-Volgende stappen:
-0. Alle vijf de functies werken met de database (november 2026). Verder met de
-   punten onder 2 (voor de proef met Klussen).
-1. Besluit van het bestuur afwachten. Feedback (vergadering 22 oktober 2026): eerst
-   autorisaties en hosting onderzoeken, invoering stap voor stap. Daarvoor is een
-   notitie gemaakt (staat buiten de repository, want het is een intern stuk) met
-   besluitpunten: Supabase gratis in de EU, rechtenoverzicht, foto's (wie ziet ze,
-   12 maanden bewaren), proef van 8 weken met werkgroep Klussen, wie beheerder
-   wordt en wie de verwerkersovereenkomsten afsluit.
-2. Database en inloggen koppelen, eerst voor de proef met Klussen. Daarbij:
+Besluit van het bestuur (november 2026): de proef is goedgekeurd. Proef van 8
+weken met werkgroep Klussen en het bestuur (samen ongeveer 8 mensen). Start op
+zaterdag 13 december 2026, de eerstvolgende klusochtend. De verwerkersovereenkomsten
+(Supabase, Brevo) regelt de eigenaar van dit project zelf.
+
+Besluit DEV en PROD (november 2026): er komt een nieuw, schoon Supabase-project
+voor echt gebruik (PROD). Het testproject "vrijwilligersapp-test" blijft bestaan
+als DEV: nieuwe functies en nieuwe SQL eerst daar uitproberen, daarna pas in PROD.
+In PROD alleen de SQL-bestanden 01 t/m 17, nooit test_-, voorbeeld_- of
+herstel_leegmaken-bestanden. Nog uitwerken: waar de DEV-versie van de app draait
+(apart adres, zodat de proefgebruikers geen ongeteste code krijgen).
+
+Volgende stappen (vóór 13 december):
+1. PROD-project aanmaken in Supabase (organisatie Park de Stadshoeve, Frankfurt,
+   Free) en inrichten: SQL 01 t/m 17, pg_net, Edge Functions beheer en
+   gevaar-mail met Secrets, Brevo SMTP en mailtekst met code, Site URL en
+   Redirect URLs, app_instellingen.
+2. DEV-versie van de app op een eigen adres, gekoppeld aan het testproject;
+   app.parkdestadshoeve.nl koppelen aan PROD. Wakker houden voor beide projecten.
+3. Afzenderadres app@ (gedeelde mailbox) voor inlogcodes en gevaar-mail.
+4. Verwerkersovereenkomsten Supabase en Brevo (eigenaar regelt dit).
+5. In PROD: twee beheerders, plekken nalopen, korte privacytekst bij de
+   handleiding, Klussen en bestuur toevoegen, eindtest op de telefoon, eerste
+   back-up.
+6. Uitnodiging met handleiding een paar dagen vóór 13 december; op de
+   klusochtend helpen met installeren. Eerste week meekijken bij 2–3 mensen.
+
+Eerder gedaan (voor de proef met Klussen):
+0. Alle vijf de functies werken met de database (november 2026).
+2. Database en inloggen koppelen. Daarbij:
    - één tabel gebruikers met per persoon een rol en werkgroepen;
    - rechten afdwingen in de database;
    - rechten en bewaartermijnen volgens DATABASE.md;
@@ -536,8 +556,8 @@ Volgende stappen:
      plekken klaar en getest (november 2026), onderdelen na de proef;
    - eigen e-maildienst voor de inlogcodes (de ingebouwde mail van Supabase stuurt
      maar 2 berichten per uur en alleen naar beheerders); Brevo klaar en getest
-     in het testproject (november 2026); nog: DMARC, en voor de proef een
-     algemeen afzenderadres (app@) in plaats van een eigen adres;
+     in het testproject (november 2026); DMARC staat (p=none); voor de proef
+     nog een algemeen afzenderadres (app@) in plaats van een eigen adres;
    - voorkomen dat het gratis Supabase-project na een week stilte op pauze gaat
      (klaar en getest, november 2026);
    - maandelijkse back-up (de gratis versie maakt er geen); klaar en getest,
