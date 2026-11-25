@@ -478,6 +478,10 @@ Klaar (inloggen, taken en meldingen werken met de database):
   bijwerken. Gaat uit van het adres app.parkdestadshoeve.nl en de code uit de
   mail (Brevo) en zegt dat de coördinator een e-mail krijgt bij gevaar: dat
   klopt nu allemaal (november 2026).
+- Laptopscherm (feedback bestuur, november 2026): foto's hooguit 60% van de
+  schermhoogte (.foto in stijl.css); app hooguit 720 px breed in het midden
+  (--app-breedte). Kopbalk en menu in kleur over de hele breedte (bewust),
+  inhoud in lijn met de kolom. Telefoon ongewijzigd. Getest op de laptop: goed.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
