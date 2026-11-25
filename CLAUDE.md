@@ -545,9 +545,12 @@ Volgende stappen (vóór 13 december):
    Free) en inrichten: SQL 01 t/m 17, pg_net, Edge Functions beheer en
    gevaar-mail met Secrets, Brevo SMTP en mailtekst met code, Site URL en
    Redirect URLs, app_instellingen.
-2. DEV-versie: code klaar (instellingen.js, stijl.css, wakker houden,
-   testversie/). Nog: repository Vrijwilligersapp-test aanmaken en instellen
-   (BEHEER.md, "Testversie (DEV)"), testen; na stap 1 PROD_ invullen.
+2. DEV-versie: klaar (25 november 2026). Repository Vrijwilligersapp-test
+   aangemaakt, Pages via GitHub Actions, workflow gedraaid met main. Gecontroleerd:
+   testadres toont paarse balk en strook, naam TEST Stadshoeve, geen CNAME;
+   app.parkdestadshoeve.nl zonder strook. Nog: na stap 1 PROD_ invullen en dan
+   in het testproject Site URL, Redirect URLs en Secret APP_ADRES naar het
+   testadres (BEHEER.md, "Eenmalig opzetten" stap 5 en 6).
 3. Afzenderadres app@ (gedeelde mailbox) voor inlogcodes en gevaar-mail.
 4. Verwerkersovereenkomsten Supabase en Brevo (eigenaar regelt dit).
 5. In PROD: twee beheerders, plekken nalopen, korte privacytekst bij de
