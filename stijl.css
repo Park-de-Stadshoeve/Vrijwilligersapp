@@ -9,6 +9,10 @@
   --rand: #cccccc;
   --achtergrond: #f4f4f2;
   --rood: #a4161a;
+  /* Hoe breed de app hooguit wordt. Op een telefoon merk je hier niets van;
+     op een laptop staat de app daardoor als een smalle kolom in het midden,
+     in plaats van uitgerekt over het hele scherm. */
+  --app-breedte: 720px;
 }
 * { box-sizing: border-box; }
 body {
@@ -21,6 +25,11 @@ body {
 header {
   background: var(--groen); color: #ffffff; padding: 16px; position: sticky; top: 0; z-index: 1;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  /* Op een breed scherm: groene balk over de hele breedte, maar titel en
+     knoppen in lijn met de smalle kolom eronder. max() kiest het grootste van
+     de twee: op een telefoon gewoon 16px, op een laptop de lege ruimte opzij. */
+  padding-left: max(16px, calc((100% - var(--app-breedte)) / 2 + 16px));
+  padding-right: max(16px, calc((100% - var(--app-breedte)) / 2 + 16px));
 }
 /* Testversie (zie instellingen.js): paarse balk en een gele strook met tekst,
    zodat je altijd ziet dat je NIET in de echte app zit. */
@@ -44,7 +53,10 @@ body.testversie::before {
 /* Code uit de mail: grote, uit elkaar staande cijfers */
 .invoer-code { font-size: 28px !important; letter-spacing: 8px; text-align: center; }
 h1 { margin: 0; font-size: 22px; }
-main { padding: 16px; padding-bottom: 180px; } /* ruimte vrij voor menu én melding onderaan */
+main {
+  padding: 16px; padding-bottom: 180px; /* ruimte vrij voor menu én melding onderaan */
+  max-width: var(--app-breedte); margin: 0 auto; /* hooguit zo breed, in het midden */
+}
 
 /* Keuzeknoppen (werkgroepen, plekken, gevaarlijk ja/nee) */
 .kiezer { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
@@ -151,6 +163,8 @@ textarea { min-height: 96px; }
   bottom: calc(76px + env(safe-area-inset-bottom));
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   background: #1a1a1a; color: #ffffff; border-radius: 8px; padding: 12px 16px;
+  /* Op een laptop niet breder dan de app, en in het midden */
+  max-width: calc(var(--app-breedte) - 32px); margin: 0 auto;
 }
 .melding[hidden] { display: none; }
 .melding button {
@@ -163,6 +177,9 @@ nav {
   position: fixed; bottom: 0; left: 0; right: 0;
   display: flex; background: #ffffff; border-top: 1px solid var(--rand);
   padding-bottom: env(safe-area-inset-bottom); /* ruimte voor de streep onderaan op iPhones */
+  /* Op een laptop staan de menuknoppen in het midden, onder de app */
+  padding-left: max(0px, calc((100% - var(--app-breedte)) / 2));
+  padding-right: max(0px, calc((100% - var(--app-breedte)) / 2));
 }
 nav button { flex: 1; min-height: 64px; padding: 0 4px; font-size: 16px; border: none; background: none; color: var(--grijs); }
 nav button[aria-current="page"] { color: var(--groen); font-weight: bold; border-top: 4px solid var(--groen); }
