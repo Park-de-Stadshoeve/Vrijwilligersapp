@@ -13,6 +13,7 @@
 // Waar vind je adres en sleutel?
 //   Supabase > het project > knop "Connect" bovenaan (of Project Settings > API).
 //   - ADRES:   de "Project URL", bijv. https://abcdefgh.supabase.co
+//              (zonder /rest/v1/ erachter: dat plakt de app er zelf achter)
 //   - SLEUTEL: de "publishable" sleutel (begint met sb_publishable_)
 //              of, bij oudere projecten, de "anon public" sleutel.
 //
@@ -27,7 +28,7 @@
 // taak "Supabase wakker houden" leest ze op die manier uit.
 
 // PROD: de echte app.
-const PROD_ADRES = "https://vgmlllmceamhopucxbot.supabase.co/rest/v1/";
+const PROD_ADRES = "https://vgmlllmceamhopucxbot.supabase.co";
 const PROD_SLEUTEL = "sb_publishable_DBYuDGaqi-kQ7SR6OD1gvg_oPXi89V0";
 
 // DEV: het testproject "vrijwilligersapp-test".
