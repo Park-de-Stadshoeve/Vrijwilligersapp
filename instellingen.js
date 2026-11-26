@@ -27,9 +27,8 @@
 // taak "Supabase wakker houden" leest ze op die manier uit.
 
 // PROD: de echte app.
-// TIJDELIJK nog hetzelfde als DEV, tot het echte project is aangemaakt.
-const PROD_ADRES = "https://easnkzwkclwqxakrwlbj.supabase.co";
-const PROD_SLEUTEL = "sb_publishable_1N4--jn_whFQGFXwrUyqAw_h69B2TV9";
+const PROD_ADRES = "https://vgmlllmceamhopucxbot.supabase.co/rest/v1/";
+const PROD_SLEUTEL = "sb_publishable_DBYuDGaqi-kQ7SR6OD1gvg_oPXi89V0";
 
 // DEV: het testproject "vrijwilligersapp-test".
 const DEV_ADRES = "https://easnkzwkclwqxakrwlbj.supabase.co";
