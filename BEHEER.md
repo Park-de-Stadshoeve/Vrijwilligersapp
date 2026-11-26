@@ -301,7 +301,7 @@ geen taken en meldingen zijn, en jij de enige gebruiker bent.
 
 **Stappenplan (op een computer):**
 1. Maak bij Supabase een nieuw project (regio Frankfurt, Free).
-2. Voer in de SQL Editor de bestanden `01` tot en met `17` uit de map `database` uit,
+2. Voer in de SQL Editor de bestanden `01` tot en met `18` uit de map `database` uit,
    in volgorde (zie `database/LEESMIJ.md`). Niet de test- en voorbeeldbestanden.
    Zet vóór `14` eerst `pg_net` aan (zie "E-mail bij een gevaarlijke melding").
 3. Zet de Edge Functions **beheer** en **gevaar-mail** neer, met het adres in

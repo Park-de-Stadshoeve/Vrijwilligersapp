@@ -528,7 +528,7 @@ zaterdag 13 december 2026, de eerstvolgende klusochtend. De verwerkersovereenkom
 Besluit DEV en PROD (november 2026): er komt een nieuw, schoon Supabase-project
 voor echt gebruik (PROD). Het testproject "vrijwilligersapp-test" blijft bestaan
 als DEV: nieuwe functies en nieuwe SQL eerst daar uitproberen, daarna pas in PROD.
-In PROD alleen de SQL-bestanden 01 t/m 17, nooit test_-, voorbeeld_- of
+In PROD alleen de SQL-bestanden 01 t/m 18, nooit test_-, voorbeeld_- of
 herstel_leegmaken-bestanden. De DEV-versie van de app draait op
 https://park-de-stadshoeve.github.io/Vrijwilligersapp-test/ (aparte openbare
 repository Vrijwilligersapp-test met alleen een workflow die een branch naar keuze
@@ -537,14 +537,22 @@ testversie/testversie-neerzetten.yml; geen geheime sleutels). instellingen.js
 kiest per adres: app.parkdestadshoeve.nl = PROD, elk ander adres = DEV
 (IS_TESTVERSIE). Testversie: paarse balk, gele strook "TESTVERSIE", naam "TEST
 Stadshoeve". Wakker houden pingt PROD en DEV (matrix). Werkwijze: branch ->
-testversie -> main. Zolang PROD nog niet bestaat, staan bij PROD_ de waarden van
-het testproject (TIJDELIJK).
+testversie -> main.
 
 Volgende stappen (vóór 13 december):
-1. PROD-project aanmaken in Supabase (organisatie Park de Stadshoeve, Frankfurt,
-   Free) en inrichten: SQL 01 t/m 17, pg_net, Edge Functions beheer en
-   gevaar-mail met Secrets, Brevo SMTP en mailtekst met code, Site URL en
-   Redirect URLs, app_instellingen.
+1. PROD-project "vrijwilligersapp" (november 2026, organisatie Park de
+   Stadshoeve, Frankfurt, Free): pg_net, SQL 01 t/m 17 en gevaar_mail_adres
+   gedaan, controle gelijk aan testproject; Edge Functions beheer en
+   gevaar-mail met Secrets (eigen Brevo-sleutels voor PROD), inloginstellingen,
+   Brevo SMTP en mailtekst gedaan; eigenaar als beheerder (bestuur, Klussen en
+   Tuinen) met de hand toegevoegd; instellingen.js PROD_ ingevuld (valkuil:
+   adres uit "Data API" heeft /rest/v1/ erachter, dat mag niet). Testproject:
+   Site URL en Redirect URLs alleen nog het testadres. Eerste inlog in PROD gaf
+   "De app kan niet bij de database": nieuwe Supabase-projecten geven geen
+   tabelrechten (GRANT) meer aan authenticated; opgelost met
+   database/18_tabelrechten.sql (ook TRUNCATE weg voor authenticated). Nog: 18
+   uitvoeren (eerst test, dan PROD; controle ingelogd 37, service_role 84),
+   daarna testen (inloggen, beheer, gevaar-mail, wakker houden).
 2. DEV-versie: klaar (25 november 2026). Repository Vrijwilligersapp-test
    aangemaakt, Pages via GitHub Actions, workflow gedraaid met main. Gecontroleerd:
    testadres toont paarse balk en strook, naam TEST Stadshoeve, geen CNAME;
