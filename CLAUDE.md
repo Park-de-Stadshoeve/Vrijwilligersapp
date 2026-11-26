@@ -662,3 +662,4 @@ Eerder gedaan (voor de proef met Klussen):
     niet voor de proef; beslissen na de proef samen met punt 1 (terugkerende
     taken), want dan is een grote import misschien niet meer nodig. Eerder
     nodig: optie (a). De takenlijst zelf niet in GitHub (intern stuk).
+    VOORKEUR (eigenaar, november 2026): optie (a), SQL in de SQL Editor.
