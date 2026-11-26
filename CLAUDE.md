@@ -637,7 +637,11 @@ Eerder gedaan (voor de proef met Klussen):
     onduidelijk blijken, of als Avontuurlijk spelen direct na Klussen meedoet.
 16. Gebruikershandleiding toegankelijk maken via de app (eigen wens, november 2026),
     zodat vrijwilligers hem altijd bij de hand hebben. Nu staat hij in
-    HANDLEIDING.md en in een deelbaar Claude-document.
+    HANDLEIDING.md en in een deelbaar Claude-document. Aangevuld (eigen wens,
+    november 2026): help-functie en/of korte tutorial. Advies: een knop "Hulp"
+    met de tekst uit HANDLEIDING.md (één tekst om bij te houden); geen
+    rondleiding door de schermen (moet bij elke schermwijziging mee, veel
+    onderhoud). In de proef letten op waar vrijwilligers vastlopen.
 17. Vrijwilligerslijst (eigen wens, november 2026): nieuwe functie waarin
     vrijwilligers elkaars naam, contactgegevens enz. kunnen vinden. Let op: botst
     met "voornaam is genoeg" (AVG). Alleen met toestemming: ieder kiest zelf wat
