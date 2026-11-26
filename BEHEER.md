@@ -40,8 +40,7 @@ app de nieuwste taken op.
   **Settings** > **Pages** of daar een fout staat. Daarna bij Digiworks of de
   regels er nog staan.
 - **Database:** Supabase. Er zijn twee projecten:
-  - **PROD** (de echte app, echte gegevens). TIJDELIJK: nog niet aangemaakt; tot die
-    tijd gebruikt ook de echte app het testproject.
+  - **PROD** = `vrijwilligersapp` (de echte app, echte gegevens).
   - **DEV** = `vrijwilligersapp-test` (alleen verzonnen gegevens, om uit te proberen).
   Welke de app gebruikt, hangt af van het adres (zie `instellingen.js`):
   app.parkdestadshoeve.nl = PROD, elk ander adres = DEV.
@@ -304,12 +303,17 @@ geen taken en meldingen zijn, en jij de enige gebruiker bent.
 2. Voer in de SQL Editor de bestanden `01` tot en met `18` uit de map `database` uit,
    in volgorde (zie `database/LEESMIJ.md`). Niet de test- en voorbeeldbestanden.
    Zet vóór `14` eerst `pg_net` aan (zie "E-mail bij een gevaarlijke melding").
+   Vergeet `18` niet: zonder dat bestand kan na het inloggen niemand bij de
+   tabellen ("De app kan niet bij de database"). Onderaan moet 37 en 84 staan.
 3. Zet de Edge Functions **beheer** en **gevaar-mail** neer, met het adres in
    `app_instellingen` en de Secrets (zie "Edge Function beheer" en "E-mail bij een
    gevaarlijke melding"). Die staan niet in de back-up.
 4. Stel inloggen in zoals bij "Instellingen in Supabase voor inloggen".
 5. Zet in `instellingen.js` bij `PROD_ADRES` en `PROD_SLEUTEL` het adres en de
    publieke sleutel van het nieuwe project en zet die wijziging op `main`.
+   Het adres is de **Project URL** (`https://<Project ID>.supabase.co`), **zonder**
+   `/rest/v1/` erachter. (Het scherm Data API toont het met `/rest/v1/`; dat geeft
+   een app die niet bij de database kan.)
 6. Zet jezelf met de hand neer (zie "Iemand toevoegen zonder beheerscherm"), met
    **jouw eigen e-mailadres**, rol `bestuur` en `is_beheerder` op `true`.
 7. Open de app, log in en ga naar **Beheer** > **♻️ Back-up terugzetten**.

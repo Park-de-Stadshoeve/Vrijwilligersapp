@@ -23,7 +23,7 @@ database opbouwt en bevraagt. Het ontwerp in gewone taal staat in `../DATABASE.m
 | `15_vervallen.sql` | Status "vervallen" voor taken: laten vervallen (bestuur) en weer openen; verwijderen alleen nog bij open taken | uitgevoerd in testproject |
 | `16_lijsten_beheer.sql` | Voor het beheerscherm: tellen wat er aan een werkgroep hangt, en de volgorde van plekken veranderen | uitgevoerd in testproject |
 | `17_werkgroep_volgorde.sql` | Volgorde van de werkgroepen (kolom volgorde en vaste actie werkgroep_verplaatsen) | uitgevoerd in testproject |
-| `18_tabelrechten.sql` | Wie überhaupt bij de tabellen mag (ingelogd, Edge Functions). Nieuwe Supabase-projecten geven dat niet meer vanzelf. Mag vaker uitgevoerd worden | nog uitvoeren |
+| `18_tabelrechten.sql` | Wie überhaupt bij de tabellen mag (ingelogd, Edge Functions). Nieuwe Supabase-projecten geven dat niet meer vanzelf. Mag vaker uitgevoerd worden | uitgevoerd in testproject en PROD |
 
 ## Testbestanden
 Deze mag je zo vaak uitvoeren als je wilt. Ze ruimen hun eigen testgegevens op.

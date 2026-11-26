@@ -541,7 +541,7 @@ testversie -> main.
 
 Volgende stappen (vóór 13 december):
 1. PROD-project "vrijwilligersapp" (november 2026, organisatie Park de
-   Stadshoeve, Frankfurt, Free): pg_net, SQL 01 t/m 17 en gevaar_mail_adres
+   Stadshoeve, Frankfurt, Free): KLAAR. pg_net, SQL 01 t/m 17 en gevaar_mail_adres
    gedaan, controle gelijk aan testproject; Edge Functions beheer en
    gevaar-mail met Secrets (eigen Brevo-sleutels voor PROD), inloginstellingen,
    Brevo SMTP en mailtekst gedaan; eigenaar als beheerder (bestuur, Klussen en
@@ -550,15 +550,20 @@ Volgende stappen (vóór 13 december):
    Site URL en Redirect URLs alleen nog het testadres. Eerste inlog in PROD gaf
    "De app kan niet bij de database": nieuwe Supabase-projecten geven geen
    tabelrechten (GRANT) meer aan authenticated; opgelost met
-   database/18_tabelrechten.sql (ook TRUNCATE weg voor authenticated). Nog: 18
-   uitvoeren (eerst test, dan PROD; controle ingelogd 37, service_role 84),
-   daarna testen (inloggen, beheer, gevaar-mail, wakker houden).
+   database/18_tabelrechten.sql (ook TRUNCATE weg voor authenticated),
+   uitgevoerd in test en PROD (37/84), testversie werkt nog. Getest in PROD
+   (26 november 2026): inloggen met code, Beheer (gebruikers, werkgroepen,
+   plekken nagelopen), gevaarlijke melding met mail en knop naar de app, wakker
+   houden (ping PROD en ping DEV groen). Testmelding, foto en
+   .emptyFolderPlaceholder (maakt Supabase bij verwijderen in Storage) weg;
+   eerste back-up van PROD gemaakt. PROD is klaar.
 2. DEV-versie: klaar (25 november 2026). Repository Vrijwilligersapp-test
    aangemaakt, Pages via GitHub Actions, workflow gedraaid met main. Gecontroleerd:
    testadres toont paarse balk en strook, naam TEST Stadshoeve, geen CNAME;
-   app.parkdestadshoeve.nl zonder strook. Nog: na stap 1 PROD_ invullen en dan
-   in het testproject Site URL, Redirect URLs en Secret APP_ADRES naar het
-   testadres (BEHEER.md, "Eenmalig opzetten" stap 5 en 6).
+   app.parkdestadshoeve.nl zonder strook; na het omzetten praat de echte app
+   met PROD en de testversie met DEV (gecontroleerd in de browser). Testproject:
+   Site URL en Redirect URLs alleen het testadres; Secret APP_ADRES naar het
+   testadres (controleren).
 3. Afzenderadres app@ (gedeelde mailbox) voor inlogcodes en gevaar-mail.
 4. Verwerkersovereenkomsten Supabase en Brevo (eigenaar regelt dit).
 5. In PROD: twee beheerders, plekken nalopen, korte privacytekst bij de
