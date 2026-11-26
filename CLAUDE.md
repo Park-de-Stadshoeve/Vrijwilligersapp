@@ -652,3 +652,13 @@ Eerder gedaan (voor de proef met Klussen):
     over het hoofd gezien: het leek alsof taken alleen uit een melding konden.
     In de proef navragen bij het bestuur of ze hem vinden. Mogelijke oplossing:
     knop ook onder Mijn taken, of duidelijker tekst. Geen apart scherm nodig.
+19. Veel taken tegelijk invoeren (eigen wens, november 2026), bijv. de
+    jaarplanning. Opties: (a) SQL-sjabloon voor de SQL Editor met namen van plek
+    en werkgroep in plaats van nummers, dat eerst controleert en bij één fout
+    niets invoert (weinig bouwwerk, voor een beheerder die durft te plakken);
+    (b) CSV-import van Supabase zelf (niets bouwen, maar nummers en uuid's
+    invullen: foutgevoelig); (c) CSV uploaden in het beheerscherm met controle,
+    voorbeeld en Ongedaan maken (gebruiksvriendelijkst, flinke stap). Advies:
+    niet voor de proef; beslissen na de proef samen met punt 1 (terugkerende
+    taken), want dan is een grote import misschien niet meer nodig. Eerder
+    nodig: optie (a). De takenlijst zelf niet in GitHub (intern stuk).
