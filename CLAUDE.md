@@ -647,3 +647,8 @@ Eerder gedaan (voor de proef met Klussen):
     met "voornaam is genoeg" (AVG). Alleen met toestemming: ieder kiest zelf wat
     zichtbaar is (bijv. telefoonnummer ja/nee). Vooraf privacyafweging en besluit
     van het bestuur.
+18. Knop "+ Nieuwe taak" beter vindbaar maken (eigen ervaring, november 2026). De
+    knop bestaat al (bovenaan Werkgroep, alleen bestuur en coördinator), maar werd
+    over het hoofd gezien: het leek alsof taken alleen uit een melding konden.
+    In de proef navragen bij het bestuur of ze hem vinden. Mogelijke oplossing:
+    knop ook onder Mijn taken, of duidelijker tekst. Geen apart scherm nodig.
