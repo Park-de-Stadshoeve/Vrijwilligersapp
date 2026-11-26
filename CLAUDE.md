@@ -563,7 +563,7 @@ Volgende stappen (vóór 13 december):
    app.parkdestadshoeve.nl zonder strook; na het omzetten praat de echte app
    met PROD en de testversie met DEV (gecontroleerd in de browser). Testproject:
    Site URL en Redirect URLs alleen het testadres; Secret APP_ADRES naar het
-   testadres (controleren).
+   testadres (gecontroleerd via de Digest, SHA-256 van de waarde).
 3. Afzenderadres app@ (gedeelde mailbox) voor inlogcodes en gevaar-mail.
 4. Verwerkersovereenkomsten Supabase en Brevo (eigenaar regelt dit).
 5. In PROD: twee beheerders, plekken nalopen, korte privacytekst bij de
