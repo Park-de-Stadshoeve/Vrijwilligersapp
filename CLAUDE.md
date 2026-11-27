@@ -482,6 +482,20 @@ Klaar (inloggen, taken en meldingen werken met de database):
   schermhoogte (.foto in stijl.css); app hooguit 720 px breed in het midden
   (--app-breedte). Kopbalk en menu in kleur over de hele breedte (bewust),
   inhoud in lijn met de kolom. Telefoon ongewijzigd. Getest op de laptop: goed.
+- Knop "Hulp" (later-lijst 16, branch hulp-knop): rechtsboven op elk scherm,
+  ook bij het inloggen. hulp.js opent een dialog (venster bovenop, formulier
+  blijft staan) met het stuk uit HANDLEIDING.md bij het scherm
+  (HULP_PER_SCHERM, HULP_VOOR_BESTUUR alleen voor magAllesZien, altijd
+  "Handig om te weten"); knoppen Hele handleiding en Sluiten. Eigen kleine
+  omzetting van Markdown (kopjes, vet, lijsten, tabellen; alles via
+  textContent). Handleiding: kopjes ### bij Taken en meldingen, nieuw deel
+  "Voor het bestuur" (Taken maken en wijzigen, Meldingen afhandelen; ook de
+  knop + Nieuwe taak, zie punt 18), alleen in de app, niet in het deelbare
+  document. hulp.js en HANDLEIDING.md in APP_BESTANDEN en VERSIE_BESTANDEN;
+  geen nieuwe versie laden terwijl de hulp open is. Knoppen bovenin smaller
+  (padding 8px) zodat Hulp/Beheer/Uitloggen op 375 px passen. Getest in de
+  browser (alle schermen, vrijwilliger ziet geen bestuursdeel, kopie in de
+  service worker). Nog testen op de telefoon via de testversie.
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
@@ -650,7 +664,7 @@ Eerder gedaan (voor de proef met Klussen):
     met onderdelen bedenken en bijhouden. In de proef letten op meldingen waarbij
     navragen nodig was ("welke schommel?"). Eerder doen als meldingen vaak
     onduidelijk blijken, of als Avontuurlijk spelen direct na Klussen meedoet.
-16. Gebruikershandleiding toegankelijk maken via de app (eigen wens, november 2026),
+16. GEBOUWD als knop "Hulp" (zie stand van zaken). Gebruikershandleiding toegankelijk maken via de app (eigen wens, november 2026),
     zodat vrijwilligers hem altijd bij de hand hebben. Nu staat hij in
     HANDLEIDING.md en in een deelbaar Claude-document. Aangevuld (eigen wens,
     november 2026): help-functie en/of korte tutorial. Advies: een knop "Hulp"

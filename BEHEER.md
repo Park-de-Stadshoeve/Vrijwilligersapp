@@ -95,6 +95,8 @@ last van hebben.
 | `beheer-lijsten.js` | Het beheerscherm, deel werkgroepen en plekken | Zelden |
 | `beheer.js` | Het beheerscherm (knop "Beheer", alleen voor beheerders) | Zelden |
 | `inloggen.js` | Inlogscherm met code uit de mail, uitloggen, "wie ben ik" | Zelden |
+| `hulp.js` | Knop "Hulp": welk stuk uit `HANDLEIDING.md` bij welk scherm hoort | Als je een kopje in de handleiding hernoemt |
+| `HANDLEIDING.md` | Handleiding voor vrijwilligers; de app toont hem ook bij "Hulp" | Als er iets in de app verandert |
 | `CLAUDE.md` | Instructies voor Claude en de stand van zaken | Als er afspraken veranderen |
 | `DATABASE.md` | Ontwerp van de database: welke gegevens, wie mag wat | Als de opbouw of de rechten veranderen |
 | `database/` | De SQL-bestanden die de database opbouwen (uitleg in `database/LEESMIJ.md`) | Alleen bij het opzetten van een nieuwe database |
@@ -475,6 +477,26 @@ Tik op **Beheer** en kies bovenaan **Werkgroepen** of **Plekken**.
 - Vrijwilligers zien een nieuwe plek of werkgroep de volgende keer dat hun lijst
   wordt ververst (bij een tik op Mijn taken of Werkgroep).
 - **Onderdelen** (bijv. Hummelhoeve > Nestschommel) zitten nog niet in de app.
+
+## Knop "Hulp" en de handleiding
+Rechtsboven staat op elk scherm de knop **Hulp**, ook bij het inloggen. Die
+opent een venster met het stuk uit `HANDLEIDING.md` dat bij dat scherm hoort.
+Onderaan staan **Hele handleiding** en **Sluiten**. Een half ingevuld formulier
+blijft gewoon staan.
+
+- **Tekst aanpassen:** verander `HANDLEIDING.md` (op github.com: potlood-icoon).
+  De app laat de nieuwe tekst vanzelf zien. Pas ook het deelbare document aan
+  (behalve het deel "Voor het bestuur", dat is alleen voor de app).
+- **Kopjes niet zomaar veranderen.** De app zoekt per scherm een kopje op
+  (regels die beginnen met `##` of `###`). Hernoem je een kopje, verander het
+  dan ook in `HULP_PER_SCHERM` of `HULP_VOOR_BESTUUR` bovenaan `hulp.js`.
+  Vergeet je dat, dan ontbreekt dat stuk in de hulp (de rest werkt wel).
+- **Wie ziet wat?** Het deel **Voor het bestuur** zien alleen bestuur en
+  coördinator, ook niet bij "Hele handleiding" voor vrijwilligers.
+- **Opmaak:** de app kent alleen kopjes (`##`, `###`), **vet** (`**tekst**`),
+  lijstjes (`1.` of `-`), tabellen (`| a | b |`) en lege regels tussen
+  alinea's. Links en plaatjes werken niet.
+- **Beheerscherm:** daar zegt de hulp alleen dat de uitleg in BEHEER.md staat.
 
 ## Veelvoorkomende aanpassingen (in `app.js`)
 - **Standaard deadline bij een melding:** `DAGEN_GEVAARLIJK` en `DAGEN_NORMAAL`.

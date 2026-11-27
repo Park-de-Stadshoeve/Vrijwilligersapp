@@ -1979,7 +1979,8 @@ if ("serviceWorker" in navigator) {
 // verandert zodra het bestand verandert (ETag, of anders datum en grootte).
 
 const VERSIE_BESTANDEN = ["index.html", "stijl.css", "instellingen.js", "inloggen.js",
-                          "beheer.js", "beheer-lijsten.js", "app.js", "service-worker.js"];
+                          "beheer.js", "beheer-lijsten.js", "hulp.js", "HANDLEIDING.md",
+                          "app.js", "service-worker.js"];
 const VERSIE_CONTROLE_ELKE = 60 * 1000;   // hooguit één keer per minuut kijken
 
 let geladenVersie = "";          // kenmerk van de versie die nu draait
@@ -2021,7 +2022,8 @@ function isRustigMoment() {
   const rustigeSchermen = ["mijn", "werkgroep", "meldingen", "beheer"];
   return ingelogdeGebruiker.id !== null          // niet op het inlogscherm
       && rustigeSchermen.includes(huidigScherm)
-      && opmerkingOpenBij === null && meldingMetRedenOpen === null;
+      && opmerkingOpenBij === null && meldingMetRedenOpen === null
+      && !document.getElementById("hulp-venster").open;   // niet terwijl de hulp open is
 }
 
 let versieMeldingGetoond = false;
