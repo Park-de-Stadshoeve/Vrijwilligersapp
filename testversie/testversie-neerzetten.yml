@@ -75,10 +75,12 @@ jobs:
           echo "Klaar om te publiceren."
 
       - name: Website-bestanden inpakken
-        uses: actions/upload-pages-artifact@v3
+        # Versie 5 (november 2026): met de oude versies (v3/v4) vond de
+        # publiceerstap het pakket niet meer ("No artifacts named github-pages").
+        uses: actions/upload-pages-artifact@v5
         with:
           path: site
 
       - name: Publiceren op GitHub Pages
         id: publiceren
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
