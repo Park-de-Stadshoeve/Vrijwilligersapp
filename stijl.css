@@ -41,11 +41,12 @@ body.testversie::before {
 }
 /* Knop "Uitloggen" rechtsboven: klein, want je hebt hem zelden nodig */
 .knop-uitloggen {
-  min-height: 44px; padding: 0 12px; font-size: 16px;
+  min-height: 44px; padding: 0 8px; font-size: 16px;
   background: none; color: #ffffff; border: 2px solid #ffffff; border-radius: 8px;
 }
-/* Knoppen rechtsboven (Beheer, Uitloggen) naast elkaar */
-.knoppen-boven { display: flex; gap: 8px; flex-shrink: 0; }
+/* Knoppen rechtsboven (Hulp, Beheer, Uitloggen) naast elkaar. Smal gehouden,
+   zodat ze bij beheerders (drie knoppen) ook op een kleine telefoon passen. */
+.knoppen-boven { display: flex; gap: 6px; flex-shrink: 0; }
 /* Kopjes in het beheerscherm ("Gebruikers (12)") */
 .beheer-kop { margin: 8px 0 12px; font-size: 20px; }
 /* Iets met "hidden" moet echt verdwijnen, ook als er een "display" op staat */
@@ -183,3 +184,26 @@ nav {
 }
 nav button { flex: 1; min-height: 64px; padding: 0 4px; font-size: 16px; border: none; background: none; color: var(--grijs); }
 nav button[aria-current="page"] { color: var(--groen); font-weight: bold; border-top: 4px solid var(--groen); }
+
+/* ===== HULP (zie hulp.js) ===== */
+/* Het venster vult het hele scherm (op een laptop: de smalle kolom). Bovenin
+   de tekst, die kan scrollen; onderin de knoppen, binnen bereik van je duim. */
+.hulp-venster {
+  width: 100%; max-width: var(--app-breedte); height: 100%; max-height: 100%;
+  margin: 0 auto; padding: 0; border: none;
+  background: var(--achtergrond); color: var(--tekst); font-size: 18px;
+}
+.hulp-venster[open] { display: flex; flex-direction: column; }
+.hulp-venster::backdrop { background: rgba(0, 0, 0, 0.5); }
+.hulp-tekst { flex: 1; overflow-y: auto; padding: 16px; line-height: 1.5; }
+.hulp-tekst h2 { font-size: 22px; margin: 16px 0 8px; }
+.hulp-tekst h3 { font-size: 19px; margin: 16px 0 4px; }
+.hulp-tekst h2:first-child, .hulp-tekst h3:first-child { margin-top: 0; }
+.hulp-tekst li { margin-bottom: 6px; }
+.hulp-tabel { border-collapse: collapse; width: 100%; font-size: 16px; margin: 8px 0; }
+.hulp-tabel th, .hulp-tabel td { border: 1px solid var(--rand); padding: 6px 8px; text-align: left; vertical-align: top; }
+.hulp-tabel th { background: #e4e8e4; }
+.hulp-knoppen {
+  padding: 4px 16px 16px; border-top: 1px solid var(--rand); background: #ffffff;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));   /* iPhone: boven de streep onderaan */
+}

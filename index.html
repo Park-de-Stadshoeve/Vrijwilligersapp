@@ -22,6 +22,8 @@
   <header>
     <h1 id="titel">Even geduld…</h1>
     <div class="knoppen-boven">
+      <!-- Altijd zichtbaar, ook bij het inloggen (zie hulp.js) -->
+      <button id="knop-hulp" class="knop-uitloggen">Hulp</button>
       <!-- Alleen voor beheerders (zie beheer.js en startApp in app.js) -->
       <button id="knop-beheer" class="knop-uitloggen" hidden>Beheer</button>
       <!-- Verschijnt pas als je bent ingelogd (zie inloggen.js) -->
@@ -46,6 +48,16 @@
     <button data-scherm="meldingen">Meldingen</button>
   </nav>
 
+  <!-- Venster met hulp bij het scherm (zie hulp.js). "dialog" is een venster
+       dat bovenop het scherm komt; wat eronder staat blijft bewaard. -->
+  <dialog id="hulp-venster" class="hulp-venster" aria-label="Hulp">
+    <div id="hulp-tekst" class="hulp-tekst"></div>
+    <div class="hulp-knoppen">
+      <button id="knop-hele-handleiding" class="knop-tweede">Hele handleiding</button>
+      <button id="knop-hulp-sluiten" class="knop-gereed">Sluiten</button>
+    </div>
+  </dialog>
+
   <!-- Scripts staan onderaan, zodat de pagina eerst geladen is. Volgorde is belangrijk. -->
   <!-- 1. Hulpbestand van Supabase (vaste versie, zodat het niet onverwacht verandert) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
@@ -56,6 +68,8 @@
   <!-- 4. Beheerscherm (alleen voor beheerders) -->
   <script src="beheer.js"></script>
   <script src="beheer-lijsten.js"></script>
+  <!-- Knop "Hulp": uitleg bij elk scherm, uit HANDLEIDING.md -->
+  <script src="hulp.js"></script>
   <!-- 5. De app zelf: schermen en voorbeeldgegevens -->
   <script src="app.js"></script>
 </body>

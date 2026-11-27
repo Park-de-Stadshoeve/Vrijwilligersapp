@@ -4,7 +4,13 @@ Voor de vrijwilligers van werkgroep Klussen. Laatst bijgewerkt: november 2026.
 
 <!-- Uitleg voor de beheerder: deze tekst staat ook in een deelbaar document
      (om te mailen of te printen). Verander je hier iets, verander het daar ook.
-     Zet hier nooit echte namen of e-mailadressen in: de repository is openbaar. -->
+     Zet hier nooit echte namen of e-mailadressen in: de repository is openbaar.
+
+     De app laat deze tekst ook zien bij de knop Hulp (zie hulp.js). Per scherm
+     zoekt de app een kopje op (## of ###). Verander je de tekst van een kopje,
+     verander het dan ook in HULP_PER_SCHERM in hulp.js. De rest van de tekst
+     mag je vrij aanpassen. Het deel "Voor het bestuur" ziet alleen het bestuur
+     en de coördinator; dat hoeft niet in het deelbare document. -->
 
 ## Wat is de app?
 
@@ -56,7 +62,7 @@ niet? Vraag of je adres goed in de app staat.
 
 Een taak is altijd van één persoon. Zo is het duidelijk wie wat doet.
 
-**Een klus oppakken**
+### Een klus oppakken
 
 1. Tik onderaan op **Werkgroep**.
 2. Kies een taak waar nog niemand bij staat.
@@ -65,7 +71,7 @@ Een taak is altijd van één persoon. Zo is het duidelijk wie wat doet.
 Kun je het toch niet doen? Tik op **Teruggeven**. Dan is de taak weer vrij voor
 een ander. Het bestuur kan een taak ook aan jou toewijzen.
 
-**Een klus gereed melden**
+### Een klus gereed melden
 
 1. Tik onderaan op **Mijn taken**.
 2. Tik bij de taak op **Gereed melden**.
@@ -93,7 +99,7 @@ Kan iemand zich eraan bezeren? Kies dan bij **Is het gevaarlijk?** voor
 **Ja, gevaarlijk**. De coördinator krijgt dan een e-mail. Is het acuut
 gevaarlijk? Zet het af en stuur meteen een WhatsApp naar het bestuur.
 
-**Wat gebeurt er met je melding?**
+### Wat gebeurt er met je melding?
 
 Onder **Meldingen** zie je hoe het ervoor staat:
 
@@ -124,6 +130,33 @@ Per ongeluk verstuurd? Tik direct op **Ongedaan maken**.
   onder **Vervallen**.
 - **Uitloggen** hoeft niet. Doe het alleen als je je telefoon aan een ander
   geeft.
+
+## Voor het bestuur
+
+Dit deel zie je alleen als je in het bestuur zit of coördinator bent.
+
+### Taken maken en wijzigen
+
+- **Nieuwe taak.** Tik onderaan op **Werkgroep** en dan bovenaan op
+  **+ Nieuwe taak**. Vul de titel in, kies de plek en de werkgroep, en tik op
+  **Taak aanmaken**.
+- **Wie doet het?** Kies bij een taak bij **Toegewezen aan** een persoon. De
+  taak staat dan bij die persoon onder **Mijn taken**.
+- **Wijzigen.** Tik bij een open taak op **Wijzigen**. Pas aan wat nodig is en
+  tik op **Wijzigingen opslaan**.
+- **Niet meer nodig?** Tik op **Wijzigen** en helemaal onderaan op
+  **Laten vervallen**. Schrijf er kort bij waarom. De taak staat dan onderaan
+  **Werkgroep** onder **Vervallen**.
+
+### Meldingen afhandelen
+
+Onder **Meldingen** zie je alle meldingen. Bij een nieuwe melding kies je:
+
+- **Maak taak.** De taak is alvast ingevuld met de foto, de plek, de werkgroep
+  en een datum: morgen bij gevaar, anders over twee weken. Controleer alles en
+  tik op **Taak aanmaken**.
+- **Geen actie nodig.** Schrijf kort op waarom. De melder ziet die tekst.
+  Toch nodig? Tik op **Weer openen**.
 
 ## Privacy
 

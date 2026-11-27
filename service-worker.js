@@ -33,6 +33,8 @@ const APP_BESTANDEN = [
   "inloggen.js",
   "beheer.js",
   "beheer-lijsten.js",
+  "hulp.js",
+  "HANDLEIDING.md",
   "app.js",
   SUPABASE_HULPBESTAND,
   "manifest.json",
