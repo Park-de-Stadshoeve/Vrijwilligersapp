@@ -575,9 +575,11 @@ Volgende stappen (vóór 13 december):
    en jsDelivr zien alleen IP-adressen (noemen in de privacytekst). Nog
    aanbevolen, niet nodig voor de start: verwerkingsregister van één pagina en
    een zin in de bestuursnotulen.
-5. In PROD: twee beheerders, plekken nalopen, korte privacytekst bij de
-   handleiding, Klussen en bestuur toevoegen, eindtest op de telefoon, eerste
-   back-up.
+5. In PROD: twee beheerders (eigenaar en secretaris), plekken nagelopen,
+   bestuur en werkgroep Klussen toegevoegd via het beheerscherm (27 november
+   2026); eerste back-up gemaakt (vóór het toevoegen). Nog: korte privacytekst
+   bij de handleiding, vinkje "Mail bij gevaar" controleren (coördinator, liefst
+   twee mensen), verse back-up nu er echte accounts in staan.
 6. Uitnodiging met handleiding een paar dagen vóór 13 december; op de
    klusochtend helpen met installeren. Eerste week meekijken bij 2–3 mensen.
 
