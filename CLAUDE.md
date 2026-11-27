@@ -498,6 +498,9 @@ Besluiten (november 2026):
 - Beheerder is geen rol maar een vinkje (is_beheerder); alleen beheerders gebruiken
   het beheerscherm. Advies: twee beheerders.
 - Bij een dubbele voornaam toont de app "Piet P." (kolom achternaam_letter).
+  Bij een tussenvoegsel 1 tot 3 tekens, bijv. "Piet vdP." (punt blijft; besluit
+  november 2026). Veld in het beheerscherm: "Letter(s) van de achternaam", met
+  voorbeeld eronder.
 - Hosting: de app-bestanden blijven op GitHub Pages (gratis, automatisch publiceren,
   makkelijk terugdraaien), met het eigen adres app.parkdestadshoeve.nl. Digiworks
   zet alleen de DNS-regels; het hostingpakket daar wordt niet voor de app gebruikt.

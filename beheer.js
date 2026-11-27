@@ -270,8 +270,16 @@ function toonGebruikerFormulier() {
 
   inhoud.append(maakInvoerVeld("Voornaam", "tekst", formulier.voornaam,
     waarde => { formulier.voornaam = waarde; }));
-  inhoud.append(maakInvoerVeld("Eerste letter van de achternaam", "tekst", formulier.letter,
-    waarde => { formulier.letter = waarde; }));
+  // Letter(s) van de achternaam: alleen te zien als twee mensen dezelfde
+  // voornaam hebben ("Piet P."). Bij een achternaam met tussenvoegsel mag
+  // het ook "vdP" zijn (van der Pol). De database staat 1 tot 3 tekens toe.
+  const letterVeld = maakInvoerVeld("Letter(s) van de achternaam", "tekst", formulier.letter,
+    waarde => { formulier.letter = waarde; });
+  const letterVoorbeeld = document.createElement("p");
+  letterVoorbeeld.className = "foto-tip";   // zelfde grijze uitlegtekst als bij de foto
+  letterVoorbeeld.textContent = "Bijvoorbeeld P, of vdP bij van der Pol.";
+  letterVeld.append(letterVoorbeeld);
+  inhoud.append(letterVeld);
 
   // Rol: één keuze. Op het scherm "Coördinator", in de database "coordinator".
   const rollen = Object.keys(ROL_TEKST);   // ["vrijwilliger", "bestuur", "coordinator"]
@@ -379,7 +387,8 @@ function controleerFormulier(formulier) {
     return "Vul een geldig e-mailadres in, bijvoorbeeld naam@voorbeeld.nl.";
   }
   if (!formulier.voornaam.trim()) return "Vul een voornaam in.";
-  if (!formulier.letter.trim())   return "Vul de eerste letter van de achternaam in.";
+  if (!formulier.letter.trim())   return "Vul de letter(s) van de achternaam in, bijvoorbeeld P of vdP.";
+  if (formulier.letter.trim().length > 3) return "Vul hooguit 3 letters in, bijvoorbeeld vdP.";
   return "";
 }
 

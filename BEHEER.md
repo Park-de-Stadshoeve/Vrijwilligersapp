@@ -174,8 +174,10 @@ de knop **Beheer**. Daar staan alle gebruikers: naam, rol, werkgroepen en de vin
   telefoon bewaard.
 - Zie je de knop niet, terwijl je wel beheerder bent? Log uit en weer in.
 - **Iemand toevoegen:** tik op **+ Iemand toevoegen**. Vul het e-mailadres, de
-  voornaam en de eerste letter van de achternaam in, kies rol en werkgroepen en tik
-  op **Toevoegen**. Vergist? Tik meteen op **Ongedaan maken** (kan tot 10 minuten
+  voornaam en de letter(s) van de achternaam in, kies rol en werkgroepen en tik
+  op **Toevoegen**. Bij een achternaam met tussenvoegsel mag je tot 3 letters
+  invullen, bijvoorbeeld **vdP** voor van der Pol. De letters zie je alleen als
+  twee mensen dezelfde voornaam hebben ("Piet vdP."). Vergist? Tik meteen op **Ongedaan maken** (kan tot 10 minuten
   na het toevoegen, zolang de persoon nog niets heeft gedaan).
   De persoon krijgt **geen** mail. Laat het zelf weten, bijvoorbeeld zo:
   > Hoi Kees, je kunt nu de app van Park de Stadshoeve gebruiken. Open
