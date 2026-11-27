@@ -565,7 +565,16 @@ Volgende stappen (vóór 13 december):
    Site URL en Redirect URLs alleen het testadres; Secret APP_ADRES naar het
    testadres (gecontroleerd via de Digest, SHA-256 van de waarde).
 3. Afzenderadres app@ (gedeelde mailbox) voor inlogcodes en gevaar-mail.
-4. Verwerkersovereenkomsten Supabase en Brevo (eigenaar regelt dit).
+4. Verwerkersovereenkomsten Supabase en Brevo: KLAAR (27 november 2026). Bij
+   beide is de DPA onderdeel van de gebruiksvoorwaarden (Supabase: DPA "forms
+   part of" de Terms, acceptatie = ondertekening SCC's; Brevo: Appendix 3 van
+   de Terms of Use). Beide accounts staan op naam van de stichting. Opgeslagen
+   als PDF op SharePoint (afgeschermde map): Supabase DPA (versie 1 augustus
+   2026), subprocessorlijst en Terms; Brevo Terms of Use met DPA (versie 1
+   oktober 2025). Microsoft 365 valt onder het bestaande contract; GitHub Pages
+   en jsDelivr zien alleen IP-adressen (noemen in de privacytekst). Nog
+   aanbevolen, niet nodig voor de start: verwerkingsregister van één pagina en
+   een zin in de bestuursnotulen.
 5. In PROD: twee beheerders, plekken nalopen, korte privacytekst bij de
    handleiding, Klussen en bestuur toevoegen, eindtest op de telefoon, eerste
    back-up.
