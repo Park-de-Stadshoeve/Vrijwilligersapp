@@ -125,5 +125,50 @@ Per ongeluk verstuurd? Tik direct op **Ongedaan maken**.
 - **Uitloggen** hoeft niet. Doe het alleen als je je telefoon aan een ander
   geeft.
 
+## Privacy
+
+De app is van Stichting de Stadshoeve. We bewaren zo weinig mogelijk over jou.
+
+**Wat bewaren we?**
+
+- Je **voornaam** en de eerste letter van je achternaam.
+- Je **e-mailadres**, alleen om in te loggen. Alleen de beheerders van de app
+  zien het.
+- Je **rol** en je **werkgroepen**.
+- Wat je **doet in de app**: welke taken je oppakt en gereed meldt, je
+  opmerkingen, je meldingen en je foto's.
+
+**Wie ziet wat?**
+
+- Je werkgroep ziet je voornaam bij de taken die je doet, en bij een melding
+  waar een taak van is gemaakt.
+- Het bestuur en de coördinator zien alles.
+- Een foto zie je alleen als je de taak of melding mag zien waar hij bij hoort.
+- Bij een gevaarlijke melding krijgt de coördinator een e-mail met de plek, de
+  toelichting en je voornaam.
+
+**Hoe lang?**
+
+- Foto's, taken en meldingen blijven 12 maanden na afloop in de app. Daarna
+  gaan ze naar het archief van de stichting en uit de app.
+- Stop je als vrijwilliger? Dan halen we je inlog en je e-mailadres meteen weg.
+  Je voornaam blijft staan bij de klussen die je deed.
+- Eén keer per maand maken we een reservekopie. Die staat in een afgeschermde
+  map van de stichting. We bewaren de laatste drie.
+
+**Waar staan de gegevens?**
+
+Bij Supabase, in een datacentrum in Frankfurt (Duitsland). De inlogcode en de
+e-mail bij gevaar gaan via Brevo (Frankrijk). Met beide hebben we afspraken
+over het beschermen van je gegevens. Zoals bij elke website ziet de dienst waar
+de app op staat je IP-adres.
+
+**Je rechten**
+
+Je mag altijd vragen welke gegevens we van je hebben. Je mag ze laten verbeteren
+of laten verwijderen. Mail daarvoor naar **info@parkdestadshoeve.nl**. Ben je het
+niet eens met hoe we met je gegevens omgaan? Dan kun je een klacht indienen bij
+de Autoriteit Persoonsgegevens.
+
 **Vragen of iets werkt niet?** Vraag het aan de beheerder van de app. Vertel wat
 je deed en wat er op het scherm stond. Een schermafbeelding helpt.
