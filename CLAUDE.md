@@ -482,7 +482,7 @@ Klaar (inloggen, taken en meldingen werken met de database):
   schermhoogte (.foto in stijl.css); app hooguit 720 px breed in het midden
   (--app-breedte). Kopbalk en menu in kleur over de hele breedte (bewust),
   inhoud in lijn met de kolom. Telefoon ongewijzigd. Getest op de laptop: goed.
-- Knop "Hulp" (later-lijst 16, branch hulp-knop): rechtsboven op elk scherm,
+- Knop "Hulp" (later-lijst 16): rechtsboven op elk scherm,
   ook bij het inloggen. hulp.js opent een dialog (venster bovenop, formulier
   blijft staan) met het stuk uit HANDLEIDING.md bij het scherm
   (HULP_PER_SCHERM, HULP_VOOR_BESTUUR alleen voor magAllesZien, altijd
@@ -495,7 +495,15 @@ Klaar (inloggen, taken en meldingen werken met de database):
   geen nieuwe versie laden terwijl de hulp open is. Knoppen bovenin smaller
   (padding 8px) zodat Hulp/Beheer/Uitloggen op 375 px passen. Getest in de
   browser (alle schermen, vrijwilliger ziet geen bestuursdeel, kopie in de
-  service worker). Nog testen op de telefoon via de testversie.
+  service worker). Getest op de telefoon via de testversie (alle schermen,
+  bestuur en vrijwilliger, formulier blijft staan, vliegtuigstand,
+  kopbalk): alles goed. Samengevoegd.
+- Testversie-workflow (november 2026): faalde met "No artifacts named
+  github-pages" (timingprobleem bij GitHub, ook met v5). Opgelost met twee
+  jobs (inpakken, dan publiceren met needs), upload-pages-artifact@v5 en
+  deploy-pages@v5. Kopie in testversie/ en in Vrijwilligersapp-test gelijk.
+  Let op: de branch typ je in het tekstvak; de keuzelijst "Use workflow
+  from" blijft main (die toont alleen branches van Vrijwilligersapp-test).
 
 Besluiten (november 2026):
 - Frion valt voorlopig buiten de app (zie later-lijst).
