@@ -578,8 +578,9 @@ Volgende stappen (vóór 13 december):
 5. In PROD: twee beheerders (eigenaar en secretaris), plekken nagelopen,
    bestuur en werkgroep Klussen toegevoegd via het beheerscherm (27 november
    2026); coördinator onderhoud toegewezen en vinkje "Mail bij gevaar" gezet bij
-   de ontvangers; verse back-up gemaakt met de echte accounts. Nog: korte
-   privacytekst bij de handleiding.
+   de ontvangers; verse back-up gemaakt met de echte accounts. Privacytekst
+   in HANDLEIDING.md (kopje Privacy; contact info@, dat wordt gelezen), door
+   eigenaar goedgekeurd. Nog: dezelfde tekst in het deelbare Claude-document.
 6. Uitnodiging met handleiding een paar dagen vóór 13 december; op de
    klusochtend helpen met installeren. Eerste week meekijken bij 2–3 mensen.
 
