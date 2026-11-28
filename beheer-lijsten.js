@@ -1,14 +1,16 @@
 // Beheerscherm, deel 2: werkgroepen en plekken (alleen voor beheerders).
 // Dit bestand wordt geladen door index.html, na beheer.js en vóór app.js.
 //
-// Bovenaan het beheerscherm staan drie keuzeknoppen: Gebruikers |
-// Werkgroepen | Plekken. Gebruikers staat in beheer.js, de andere twee hier.
+// Bovenaan het beheerscherm staan vier keuzeknoppen: Gebruikers |
+// Werkgroepen | Plekken | Back-up. Ze blijven staan als je naar beneden
+// scrollt (stijl.css, .beheer-tabs). Gebruikers en Back-up staan in beheer.js,
+// Werkgroepen en Plekken hier.
 //
 // Wat kan er?
-//   - Werkgroepen: toevoegen, naam wijzigen, volgorde (▲ Omhoog / ▼ Omlaag),
+//   - Werkgroepen: toevoegen, naam wijzigen, volgorde (knoppen ▲ en ▼),
 //     uitzetten en weer aanzetten.
 //   - Plekken: toevoegen, naam en standaardwerkgroep wijzigen, volgorde van
-//     de knoppen (▲ Omhoog / ▼ Omlaag), uitzetten en weer aanzetten.
+//     de knoppen (▲ en ▼), uitzetten en weer aanzetten.
 //   Verwijderen kan niet: er hangen taken, meldingen en mensen aan. Een
 //   uitgezette werkgroep of plek verdwijnt uit de keuzes; oude taken en
 //   meldingen houden de naam.
@@ -18,27 +20,53 @@
 
 // Welk deel van het beheerscherm open staat
 let beheerTab = "gebruikers";
-const BEHEER_TABS = { gebruikers: "Gebruikers", werkgroepen: "Werkgroepen", plekken: "Plekken" };
+const BEHEER_TABS = {
+  gebruikers: "Gebruikers", werkgroepen: "Werkgroepen", plekken: "Plekken", backup: "Back-up"
+};
 
 // De werkgroepen en plekken zoals laatst opgehaald (ook de uitgezette)
 let beheerLijsten = { werkgroepen: [], plekken: [] };
 
-// De drie keuzeknoppen bovenaan het beheerscherm
+// Wanneer de laatste back-up is gemaakt (null = nooit, of niet op te halen).
+// Wordt bij elk beheerscherm opnieuw opgehaald, voor de waarschuwing bovenaan.
+let laatsteBackupDatum = null;
+
+// De vier keuzeknoppen bovenaan het beheerscherm
 function maakBeheerTabs() {
   const kiezer = document.createElement("div");
-  kiezer.className = "kiezer";
+  kiezer.className = "kiezer beheer-tabs";
   Object.entries(BEHEER_TABS).forEach(([tab, tekst]) => {
     const knop = document.createElement("button");
     knop.textContent = tekst;
     knop.setAttribute("aria-pressed", tab === beheerTab);
     knop.addEventListener("click", () => {
       beheerTab = tab;
+      window.scrollTo(0, 0);   // ander beheerscherm: begin bovenaan
       toonBeheer();
     });
     kiezer.append(knop);
   });
   return kiezer;
 }
+
+// Bovenkant van elk beheerscherm: de keuzeknoppen en, als de laatste back-up
+// te oud is, de waarschuwing. Gebruik: inhoud.replaceChildren(...maakBeheerBovenkant())
+// (de drie puntjes zetten de delen uit de lijst één voor één neer).
+function maakBeheerBovenkant() {
+  const delen = [maakBeheerTabs()];
+  const waarschuwing = maakBackupWaarschuwing(laatsteBackupDatum);
+  if (waarschuwing) delen.push(waarschuwing);
+  return delen;
+}
+
+// De keuzeknoppen blijven net ONDER de groene kopbalk staan. Die kopbalk is
+// niet altijd even hoog (een lange titel past soms niet op één regel), dus
+// meten we hem en zetten we de hoogte in --kopbalk-hoogte (gebruikt in stijl.css).
+// Een ResizeObserver meldt zich elke keer als de kopbalk van grootte verandert.
+new ResizeObserver(() => {
+  const hoogte = document.querySelector("header").offsetHeight;
+  document.documentElement.style.setProperty("--kopbalk-hoogte", hoogte + "px");
+}).observe(document.querySelector("header"));
 
 // Opent het tabblad Werkgroepen of Plekken (toonBeheer in beheer.js roept dit aan)
 async function toonLijstenBeheer() {
@@ -49,7 +77,8 @@ async function toonLijstenBeheer() {
   inhoud.replaceChildren(maakBeheerTabs(), laden);
 
   try {
-    beheerLijsten = await haalBeheerLijstenOp();
+    // Tegelijk: de lijsten en de datum van de laatste back-up (voor de waarschuwing)
+    [beheerLijsten, laatsteBackupDatum] = await Promise.all([haalBeheerLijstenOp(), haalLaatsteBackupOp()]);
   } catch (fout) {
     console.warn("Werkgroepen en plekken ophalen mislukt:", fout);
     if (huidigScherm !== "beheer") return;
@@ -105,7 +134,7 @@ function maakBeheerKop(tekst) {
 
 function toonWerkgroepenLijst() {
   const inhoud = document.getElementById("inhoud");
-  inhoud.replaceChildren(maakBeheerTabs());
+  inhoud.replaceChildren(...maakBeheerBovenkant());
   inhoud.append(maakHoofdKnop("+ Werkgroep toevoegen", () => openLijstFormulier("werkgroep", null)));
 
   const aan = beheerLijsten.werkgroepen.filter(w => w.actief);
@@ -126,11 +155,12 @@ function maakWerkgroepKaart(werkgroep, eerste, laatste) {
   naam.textContent = werkgroep.naam;
   kaart.append(naam);
   if (!werkgroep.actief) kaart.append(maakLabel("Uitgezet"));
-  if (werkgroep.actief) {
-    const pijlen = maakPijlen(eerste, laatste, omhoog => verplaatsWerkgroep(werkgroep, omhoog));
-    if (pijlen) kaart.append(pijlen);
-  }
-  kaart.append(maakTweedeKnop("Wijzigen", () => openLijstFormulier("werkgroep", werkgroep)));
+  // Onderaan één regel: Wijzigen, en (alleen als hij aan staat) ▲ en ▼
+  const wijzigen = maakTweedeKnop("Wijzigen", () => openLijstFormulier("werkgroep", werkgroep));
+  const pijlen = werkgroep.actief
+    ? maakPijlen(eerste, laatste, omhoog => verplaatsWerkgroep(werkgroep, omhoog))
+    : [];
+  kaart.append(maakKnoppenRij(wijzigen, pijlen));
   return kaart;
 }
 
@@ -144,18 +174,30 @@ async function verplaatsWerkgroep(werkgroep, omhoog) {
               () => verplaatsWerkgroep(werkgroep, !omhoog));
 }
 
-// De knoppen ▲ Omhoog en ▼ Omlaag naast elkaar. "bijTik(omhoog)" doet het werk.
-// Geeft niets als er niets te verplaatsen valt (maar één in de lijst).
+// De knoppen ▲ (omhoog) en ▼ (omlaag). "bijTik(omhoog)" doet het werk.
+// Geeft een lege lijst als er niets te verplaatsen valt (maar één in de lijst).
 function maakPijlen(eerste, laatste, bijTik) {
-  if (eerste && laatste) return null;
-  const pijlen = document.createElement("div");
-  pijlen.className = "pijlen";
-  const omhoog = maakTweedeKnop("▲ Omhoog", () => bijTik(true));
-  const omlaag = maakTweedeKnop("▼ Omlaag", () => bijTik(false));
+  if (eerste && laatste) return [];
+  const omhoog = maakTweedeKnop("▲", () => bijTik(true));
+  const omlaag = maakTweedeKnop("▼", () => bijTik(false));
+  // Een schermlezer leest "Omhoog" en "Omlaag" voor in plaats van het teken;
+  // "title" laat die tekst ook zien als je met de muis op de knop blijft staan.
+  for (const [knop, tekst] of [[omhoog, "Omhoog"], [omlaag, "Omlaag"]]) {
+    knop.setAttribute("aria-label", tekst);
+    knop.title = tekst;
+    knop.classList.add("knop-pijl");
+  }
   omhoog.disabled = eerste;    // bovenaan: niet hoger
   omlaag.disabled = laatste;   // onderaan: niet lager
-  pijlen.append(omhoog, omlaag);
-  return pijlen;
+  return [omhoog, omlaag];
+}
+
+// Eén regel met knoppen: de brede knop links, de pijlen er rechts naast
+function maakKnoppenRij(knop, pijlen) {
+  const rij = document.createElement("div");
+  rij.className = "knoppen-rij";
+  rij.append(knop, ...pijlen);
+  return rij;
 }
 
 // Houdt een kaartje op dezelfde hoogte op het scherm terwijl de lijst opnieuw
@@ -184,7 +226,7 @@ function houdInBeeld(sleutel) {
 
 function toonPlekkenLijst() {
   const inhoud = document.getElementById("inhoud");
-  inhoud.replaceChildren(maakBeheerTabs());
+  inhoud.replaceChildren(...maakBeheerBovenkant());
   inhoud.append(maakHoofdKnop("+ Plek toevoegen", () => openLijstFormulier("plek", null)));
 
   const aan = beheerLijsten.plekken.filter(p => p.actief);
@@ -213,12 +255,12 @@ function maakPlekKaart(plek, eerste, laatste) {
   kaart.append(werkgroep);
   if (!plek.actief) kaart.append(maakLabel("Uitgezet"));
 
-  // Volgorde: alleen voor plekken die aan staan
-  if (plek.actief) {
-    const pijlen = maakPijlen(eerste, laatste, omhoog => verplaatsPlek(plek, omhoog));
-    if (pijlen) kaart.append(pijlen);
-  }
-  kaart.append(maakTweedeKnop("Wijzigen", () => openLijstFormulier("plek", plek)));
+  // Onderaan één regel: Wijzigen, en (alleen als de plek aan staat) ▲ en ▼
+  const wijzigen = maakTweedeKnop("Wijzigen", () => openLijstFormulier("plek", plek));
+  const pijlen = plek.actief
+    ? maakPijlen(eerste, laatste, omhoog => verplaatsPlek(plek, omhoog))
+    : [];
+  kaart.append(maakKnoppenRij(wijzigen, pijlen));
   return kaart;
 }
 

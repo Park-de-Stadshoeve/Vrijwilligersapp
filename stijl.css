@@ -68,6 +68,22 @@ main {
 }
 .kiezer button[aria-pressed="true"] { background: var(--groen); color: #ffffff; font-weight: bold; }
 
+/* Keuzeknoppen bovenaan het beheerscherm (Gebruikers, Werkgroepen, Plekken,
+   Back-up). Ze blijven staan als je naar beneden scrollt ("sticky"), net onder
+   de groene kopbalk; --kopbalk-hoogte meet beheer-lijsten.js. Op een telefoon
+   twee rijen van twee, op een breder scherm vier naast elkaar. De achtergrond
+   is dicht, zodat de kaartjes er onderdoor schuiven. */
+.beheer-tabs {
+  position: sticky; top: var(--kopbalk-hoogte, 76px); z-index: 1;
+  display: grid; grid-template-columns: 1fr 1fr;
+  background: var(--achtergrond);
+  margin: -16px 0 16px; padding: 12px 0;   /* -16px: sluit aan op de kopbalk */
+  border-bottom: 1px solid var(--rand);
+}
+@media (min-width: 560px) {
+  .beheer-tabs { grid-template-columns: repeat(4, 1fr); }
+}
+
 /* Eén taak of melding */
 .taak { background: #ffffff; border: 1px solid var(--rand); border-radius: 8px; padding: 16px; margin-bottom: 12px; }
 .taak h2 { margin: 0 0 4px; font-size: 19px; }
@@ -123,9 +139,12 @@ main {
   background: #ffffff; color: var(--tekst);
 }
 
-/* Knoppen ▲ Omhoog en ▼ Omlaag naast elkaar (bij plekken in het beheerscherm) */
-.pijlen { display: flex; gap: 12px; }
-.pijlen .knop-tweede { flex: 1; }
+/* Eén regel knoppen op een kaartje: [ Wijzigen ] [▲] [▼] (beheerscherm,
+   plekken en werkgroepen). De brede knop neemt de ruimte die over is. */
+.knoppen-rij { display: flex; gap: 12px; margin-top: 12px; }
+.knoppen-rij .knop-tweede { margin-top: 0; flex: 1; }
+/* De pijlknoppen: vierkant, groot genoeg voor een duim */
+.knoppen-rij .knop-pijl { flex: 0 0 56px; min-height: 48px; font-size: 20px; }
 .knop-tweede:disabled { opacity: 0.4; }
 
 /* Knop "Laten stoppen": rode rand en tekst, met ruimte erboven (de tekst zegt

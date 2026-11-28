@@ -474,6 +474,16 @@ Klaar (inloggen, taken en meldingen werken met de database):
   (houdInBeeld in beheer-lijsten.js, kaartjes hebben data-kaart, bijv.
   "plek-12"; zonder dit sprong de pagina naar boven tijdens "Laden…").
   Getest op de telefoon via de testversie: goed. Samengevoegd.
+  Indeling beheerscherm (eigen wens, november 2026):
+  (1) ▲ en ▼ als vierkante knoppen (56×48, aria-label Omhoog/Omlaag) naast
+  Wijzigen op één regel (maakKnoppenRij, .knoppen-rij); (2) Back-up is een
+  vierde keuzeknop (toonBackupScherm in beheer.js), waarschuwing bij een te
+  oude back-up nu bovenaan Gebruikers, Werkgroepen en Plekken
+  (maakBeheerBovenkant, laatsteBackupDatum); (3) keuzeknoppen blijven bovenaan
+  staan (.beheer-tabs sticky, 2×2 op de telefoon, 4 naast elkaar vanaf 560 px;
+  --kopbalk-hoogte gemeten met ResizeObserver in beheer-lijsten.js). Getest in
+  de browser met nep-database (telefoon- en laptopbreedte) en op de telefoon
+  via de testversie: goed. Samengevoegd.
 
 - Gebruikershandleiding voor de proef met Klussen: HANDLEIDING.md (installeren,
   inloggen met code, taken, melden, handig om te weten). Zelfde tekst staat in
