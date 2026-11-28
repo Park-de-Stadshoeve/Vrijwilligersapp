@@ -168,8 +168,11 @@ Eenmalig, bij een nieuw project:
 
 ## Het beheerscherm
 Wie het vinkje beheerder heeft (`is_beheerder` in de tabel gebruikers), ziet rechtsboven
-de knop **Beheer**. Daar staan alle gebruikers: naam, rol, werkgroepen en de vinkjes
-"Beheerder" en "Krijgt mail bij gevaar". Wie gestopt is, staat onderaan.
+de knop **Beheer**. Bovenaan staan vier keuzeknoppen: **Gebruikers**, **Werkgroepen**,
+**Plekken** en **Back-up**. Die blijven staan als je naar beneden scrollt, zodat je
+altijd ziet waar je bent en meteen kunt wisselen. Onder **Gebruikers** staan alle
+gebruikers: naam, rol, werkgroepen en de vinkjes "Beheerder" en "Krijgt mail bij
+gevaar". Wie gestopt is, staat onderaan.
 
 - Terug naar de app: tik op een knop in het menu onderaan.
 - Het beheerscherm werkt alleen met bereik. De lijst wordt (expres) niet op de
@@ -266,7 +269,7 @@ elke maand een back-up en zet die op de SharePoint van de stichting.
 
 **Zo maak je een back-up:**
 1. Open de app op een **computer** (niet op de telefoon) en log in als beheerder.
-2. Tik op **Beheer** en scroll naar beneden naar **Back-up**.
+2. Tik op **Beheer** en kies bovenaan **Back-up**.
 3. Klik op **💾 Back-up downloaden**. Onderaan zie je "Foto's ophalen: 37 van 120".
    Laat het scherm open tot er "Back-up gedownload" staat. Met veel foto's kan dat
    een paar minuten duren. Daarna staat er een bestand
@@ -277,8 +280,9 @@ elke maand een back-up en zet die op de SharePoint van de stichting.
 5. Verwijder in die map de oudste back-up, zodat er **3** overblijven.
 6. Verwijder het bestand uit je map **Downloads** (en uit de prullenbak).
 
-Het beheerscherm laat zien wanneer de laatste back-up is gemaakt, en waarschuwt
-bovenaan als dat meer dan 31 dagen geleden is. Tip: zet ook een maandelijkse
+Onder **Back-up** zie je wanneer de laatste back-up is gemaakt. Is dat meer dan 31
+dagen geleden, dan staat er een waarschuwing bovenaan Gebruikers, Werkgroepen en
+Plekken. Tip: zet ook een maandelijkse
 herinnering in je agenda.
 
 **Wat zit erin?** Alle gegevens van de app (werkgroepen, plekken, gebruikers, taken,
@@ -320,7 +324,7 @@ geen taken en meldingen zijn, en jij de enige gebruiker bent.
    een app die niet bij de database kan.)
 6. Zet jezelf met de hand neer (zie "Iemand toevoegen zonder beheerscherm"), met
    **jouw eigen e-mailadres**, rol `bestuur` en `is_beheerder` op `true`.
-7. Open de app, log in en ga naar **Beheer** > **♻️ Back-up terugzetten**.
+7. Open de app, log in en ga naar **Beheer** > **Back-up** > **♻️ Back-up terugzetten**.
 8. Klik op **📁 Kies het back-upbestand**, kies de nieuwste back-up van SharePoint en
    klik op **Terugzetten**. Je ziet de stappen voorbijkomen: gegevens, foto's,
    afronden. Laat het scherm open tot er "Klaar!" staat.
@@ -455,12 +459,13 @@ Tik op **Beheer** en kies bovenaan **Werkgroepen** of **Plekken**.
 
 - **Toevoegen:** tik op **+ Werkgroep toevoegen** of **+ Plek toevoegen**, vul de naam
   in (bij een plek ook de standaard werkgroep) en tik op **Toevoegen**. Een nieuwe
-  plek komt onderaan; zet hem met **▲ Omhoog** op de goede plek (bijvoorbeeld boven
+  plek komt onderaan; zet hem met **▲** (omhoog) op de goede plek (bijvoorbeeld boven
   "Overig").
 - **Naam of standaard werkgroep wijzigen:** tik op **Wijzigen**. Een nieuwe naam staat
   ook bij oude taken en meldingen.
 - **Volgorde** van plekken en werkgroepen (zo staan de knoppen bij Melden, bij taken
-  en op het scherm Werkgroep): tik op **▲ Omhoog** of **▼ Omlaag**. Een nieuwe
+  en op het scherm Werkgroep): tik op **▲** (omhoog) of **▼** (omlaag), naast
+  **Wijzigen**. Het kaartje blijft in beeld, dus je kunt meteen nog eens tikken. Een nieuwe
   werkgroep komt ook onderaan.
 - **Niet meer gebruiken:** tik op **Wijzigen** en helemaal onderaan op **Uitzetten**.
   De werkgroep of plek verdwijnt uit de keuzes; oude taken en meldingen houden de

@@ -28,14 +28,15 @@ async function toonBeheer() {
   document.getElementById("titel").textContent = "Beheer";
   markeerMenu("beheer");   // geen knop in het menu onderaan is dan gekleurd
 
-  // Werkgroepen en Plekken staan in beheer-lijsten.js
+  // Back-up staat verderop in dit bestand, Werkgroepen en Plekken in beheer-lijsten.js
+  if (beheerTab === "backup") { await toonBackupScherm(); return; }
   if (beheerTab !== "gebruikers") { await toonLijstenBeheer(); return; }
 
   const inhoud = document.getElementById("inhoud");
   const laden = document.createElement("p");
   laden.className = "leeg";
   laden.textContent = "Gebruikers laden…";
-  inhoud.replaceChildren(laden);
+  inhoud.replaceChildren(maakBeheerTabs(), laden);
 
   let gebruikers;
   try {
@@ -49,12 +50,12 @@ async function toonBeheer() {
     melding.textContent = isVerbindingsFout(fout)
       ? "📶 Geen verbinding. Het beheerscherm werkt alleen als je bereik hebt. Probeer het opnieuw."
       : "Er ging iets mis (" + fout.message + "). Probeer het opnieuw.";
-    inhoud.replaceChildren(melding, maakTweedeKnop("Opnieuw proberen", toonBeheer));
+    inhoud.replaceChildren(maakBeheerTabs(), melding, maakTweedeKnop("Opnieuw proberen", toonBeheer));
     return;
   }
-  const laatsteBackup = await haalLaatsteBackupOp();   // lukt dit niet: null
+  laatsteBackupDatum = await haalLaatsteBackupOp();   // lukt dit niet: null
   if (huidigScherm !== "beheer") return;   // intussen een ander scherm gekozen
-  toonGebruikersLijst(gebruikers, laatsteBackup);
+  toonGebruikersLijst(gebruikers);
 }
 
 // Vraagt alle gebruikers en hun werkgroepen op bij de database.
@@ -108,13 +109,10 @@ async function haalGebruikersOp() {
 }
 
 // Zet de lijst op het scherm: eerst wie meedoet, onderaan wie gestopt is
-function toonGebruikersLijst(gebruikers, laatsteBackup) {
+function toonGebruikersLijst(gebruikers) {
   const inhoud = document.getElementById("inhoud");
-  inhoud.replaceChildren(maakBeheerTabs());   // Gebruikers | Werkgroepen | Plekken
-
-  // Te lang geen back-up? Dan bovenaan een waarschuwing.
-  const waarschuwing = maakBackupWaarschuwing(laatsteBackup);
-  if (waarschuwing) inhoud.append(waarschuwing);
+  // Keuzeknoppen, en bij een te oude back-up de waarschuwing (beheer-lijsten.js)
+  inhoud.replaceChildren(...maakBeheerBovenkant());
 
   const actief = gebruikers.filter(g => g.actief);
   const gestopt = gebruikers.filter(g => !g.actief);
@@ -134,8 +132,6 @@ function toonGebruikersLijst(gebruikers, laatsteBackup) {
     inhoud.append(kopGestopt);
     gestopt.forEach(gebruiker => inhoud.append(maakGebruikerKaart(gebruiker)));
   }
-
-  inhoud.append(maakBackupDeel(laatsteBackup));
 }
 
 // Eén kaartje per persoon: naam, rol, werkgroepen en de vinkjes
@@ -693,12 +689,26 @@ function maakBackupWaarschuwing(laatsteBackup) {
   melding.className = "uitleg-bovenaan";
   melding.setAttribute("role", "status");
   melding.textContent = laatsteBackup
-    ? "⚠️ De laatste back-up is " + dagenGeleden(laatsteBackup) + " dagen oud. Maak een nieuwe (knop onderaan)."
-    : "⚠️ Er is nog geen back-up gemaakt. Maak er een (knop onderaan).";
+    ? "⚠️ De laatste back-up is " + dagenGeleden(laatsteBackup) + " dagen oud. Maak een nieuwe (knop Back-up hierboven)."
+    : "⚠️ Er is nog geen back-up gemaakt. Maak er een (knop Back-up hierboven).";
   return melding;
 }
 
-// Onderaan het beheerscherm: wanneer de laatste back-up was, en de knop
+// Het scherm Back-up (vierde keuzeknop bovenaan het beheerscherm)
+async function toonBackupScherm() {
+  const inhoud = document.getElementById("inhoud");
+  const laden = document.createElement("p");
+  laden.className = "leeg";
+  laden.textContent = "Laden…";
+  inhoud.replaceChildren(maakBeheerTabs(), laden);
+
+  laatsteBackupDatum = await haalLaatsteBackupOp();   // lukt dit niet: null
+  if (huidigScherm !== "beheer" || beheerTab !== "backup") return;   // intussen iets anders gekozen
+  // Geen waarschuwing bovenaan: hier staat de datum al, met de knop eronder
+  inhoud.replaceChildren(maakBeheerTabs(), maakBackupDeel(laatsteBackupDatum));
+}
+
+// Wanneer de laatste back-up was, en de knoppen
 function maakBackupDeel(laatsteBackup) {
   const deel = document.createElement("section");
   const kop = document.createElement("h2");
