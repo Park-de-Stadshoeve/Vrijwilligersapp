@@ -501,7 +501,7 @@ Klaar (inloggen, taken en meldingen werken met de database):
   knop in index.html, titel in toonWerkgroep, HANDLEIDING.md, BEHEER.md en
   commentaar. Intern blijft het scherm "werkgroep" (data-scherm, huidigScherm,
   hulp.js). Het deelbare Claude-document met de handleiding moet ook mee.
-  Nog testen op de telefoon via de testversie.
+  Getest op de telefoon via de testversie: goed. Samengevoegd.
 
 - Gebruikershandleiding voor de proef met Klussen: HANDLEIDING.md (installeren,
   inloggen met code, taken, melden, handig om te weten). Zelfde tekst staat in
