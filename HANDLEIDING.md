@@ -23,7 +23,7 @@ Onderaan het scherm staan vier knoppen:
 | Knop       | Wat zie je                                            |
 | ---------- | ----------------------------------------------------- |
 | Mijn taken | De klussen die jij doet. Dit is het startscherm.      |
-| Werkgroep  | Alle klussen van Klussen, ook die nog niemand doet.   |
+| Alle taken | Alle klussen van Klussen, ook die nog niemand doet.   |
 | Melden     | Een gebrek melden met een foto.                       |
 | Meldingen  | Wat jij gemeld hebt, en wat ermee gebeurt.            |
 
@@ -64,7 +64,7 @@ Een taak is altijd van één persoon. Zo is het duidelijk wie wat doet.
 
 ### Een klus oppakken
 
-1. Tik onderaan op **Werkgroep**.
+1. Tik onderaan op **Alle taken**.
 2. Kies een taak waar nog niemand bij staat.
 3. Tik op **Ik doe dit**. De taak staat nu ook onder **Mijn taken**.
 
@@ -125,8 +125,8 @@ Per ongeluk verstuurd? Tik direct op **Ongedaan maken**.
   bezoekers of cliënten van Frion. Foto's blijven 12 maanden in de app.
 - **Wie ziet wat?** Je ziet de taken van je eigen werkgroep en je eigen
   meldingen. Het bestuur ziet alles.
-- **Lijst bijwerken.** Tik op **Mijn taken** of **Werkgroep** om de nieuwste
-  lijst te zien. Taken die niet meer nodig zijn, staan onderaan **Werkgroep**
+- **Lijst bijwerken.** Tik op **Mijn taken** of **Alle taken** om de nieuwste
+  lijst te zien. Taken die niet meer nodig zijn, staan onderaan **Alle taken**
   onder **Vervallen**.
 - **Uitloggen** hoeft niet. Doe het alleen als je je telefoon aan een ander
   geeft.
@@ -137,7 +137,7 @@ Dit deel zie je alleen als je in het bestuur zit of coördinator bent.
 
 ### Taken maken en wijzigen
 
-- **Nieuwe taak.** Tik bovenaan **Mijn taken** of **Werkgroep** op
+- **Nieuwe taak.** Tik bovenaan **Mijn taken** of **Alle taken** op
   **+ Nieuwe taak**. De knop blijft staan als je naar beneden scrollt. Vul de
   titel in, kies de plek en de werkgroep, en tik op **Taak aanmaken**.
 - **Wie doet het?** Kies bij een taak bij **Toegewezen aan** een persoon. De
@@ -146,7 +146,7 @@ Dit deel zie je alleen als je in het bestuur zit of coördinator bent.
   tik op **Wijzigingen opslaan**.
 - **Niet meer nodig?** Tik op **Wijzigen** en helemaal onderaan op
   **Laten vervallen**. Schrijf er kort bij waarom. De taak staat dan onderaan
-  **Werkgroep** onder **Vervallen**.
+  **Alle taken** onder **Vervallen**.
 
 ### Meldingen afhandelen
 
