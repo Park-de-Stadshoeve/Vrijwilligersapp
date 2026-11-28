@@ -531,8 +531,8 @@ Klaar (inloggen, taken en meldingen werken met de database):
   openen" (zetProjectLopend, update actief, Ongedaan maken, melding noemt het
   aantal open taken). Geen databasewijziging (regels uit 19). HANDLEIDING.md:
   bullet Project bij Handig om te weten en "Project klaar?" bij het bestuur.
-  Het deelbare Claude-document krijgt de bullet Project pas als projecten in
-  PROD staan. Getest in de browser met nep-database (filter op beide schermen,
+  Het deelbare Claude-document heeft de bullet Project ook (sinds projecten in
+  PROD staan). Getest in de browser met nep-database (filter op beide schermen,
   afronden met Ongedaan, vrijwilliger ziet geen knop). Getest op de telefoon
   via de testversie: goed.
   Stap 3 gebouwd (branch projecten): Edge Function beheer: projecten in
@@ -551,7 +551,9 @@ Klaar (inloggen, taken en meldingen werken met de database):
   naar het codescherm (verbetering voorgesteld).
   PROD (volgorde): (1) 19 + 20 in PROD: gedaan, (2) functie beheer in PROD
   opnieuw plakken: gedaan, (3) branch projecten samengevoegd met main, (4) verse
-  back-up van PROD, (5) deelbaar Claude-document: bullet Project.
+  back-up van PROD: gemaakt, (5) deelbaar Claude-document: bullet Project
+  bij Handig om te weten: gedaan. App in PROD gecontroleerd (taken, project
+  kiezen, filter, afronden): goed. Projecten zijn klaar (28 november 2026).
 
 - Gebruikershandleiding voor de proef met Klussen: HANDLEIDING.md (installeren,
   inloggen met code, taken, melden, handig om te weten). Zelfde tekst staat in
