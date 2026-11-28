@@ -137,9 +137,9 @@ Dit deel zie je alleen als je in het bestuur zit of coördinator bent.
 
 ### Taken maken en wijzigen
 
-- **Nieuwe taak.** Tik onderaan op **Werkgroep** en dan bovenaan op
-  **+ Nieuwe taak**. Vul de titel in, kies de plek en de werkgroep, en tik op
-  **Taak aanmaken**.
+- **Nieuwe taak.** Tik bovenaan **Mijn taken** of **Werkgroep** op
+  **+ Nieuwe taak**. De knop blijft staan als je naar beneden scrollt. Vul de
+  titel in, kies de plek en de werkgroep, en tik op **Taak aanmaken**.
 - **Wie doet het?** Kies bij een taak bij **Toegewezen aan** een persoon. De
   taak staat dan bij die persoon onder **Mijn taken**.
 - **Wijzigen.** Tik bij een open taak op **Wijzigen**. Pas aan wat nodig is en

@@ -59,15 +59,6 @@ function maakBeheerBovenkant() {
   return delen;
 }
 
-// De keuzeknoppen blijven net ONDER de groene kopbalk staan. Die kopbalk is
-// niet altijd even hoog (een lange titel past soms niet op één regel), dus
-// meten we hem en zetten we de hoogte in --kopbalk-hoogte (gebruikt in stijl.css).
-// Een ResizeObserver meldt zich elke keer als de kopbalk van grootte verandert.
-new ResizeObserver(() => {
-  const hoogte = document.querySelector("header").offsetHeight;
-  document.documentElement.style.setProperty("--kopbalk-hoogte", hoogte + "px");
-}).observe(document.querySelector("header"));
-
 // Opent het tabblad Werkgroepen of Plekken (toonBeheer in beheer.js roept dit aan)
 async function toonLijstenBeheer() {
   const inhoud = document.getElementById("inhoud");

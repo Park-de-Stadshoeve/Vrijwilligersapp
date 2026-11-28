@@ -484,6 +484,17 @@ Klaar (inloggen, taken en meldingen werken met de database):
   --kopbalk-hoogte gemeten met ResizeObserver in beheer-lijsten.js). Getest in
   de browser met nep-database (telefoon- en laptopbreedte) en op de telefoon
   via de testversie: goed. Samengevoegd.
+- Knop "+ Nieuwe taak" beter vindbaar (later-lijst 18, november 2026): ook
+  bovenaan Mijn taken (alleen magAllesZien), en op Mijn taken en Werkgroep
+  blijft hij bij het scrollen bovenaan staan (maakNieuweTaakKnop in app.js,
+  .vaste-knop in stijl.css). openNieuweTaak(terugScherm): na opslaan of
+  annuleren terug naar het scherm waar je begon; vanuit Werkgroep is de
+  bekeken werkgroep alvast ingevuld, vanuit Mijn taken niet. Meten van
+  --kopbalk-hoogte verhuisd van beheer-lijsten.js naar app.js. HANDLEIDING.md
+  bijgewerkt (alleen het bestuursdeel, staat niet in het deelbare document).
+  Getest in de browser (proefpagina, telefoonbreedte): knop blijft onder de
+  kopbalk, terug naar Mijn taken, vrijwilliger ziet geen knop. Nog testen op
+  de telefoon via de testversie.
 
 - Gebruikershandleiding voor de proef met Klussen: HANDLEIDING.md (installeren,
   inloggen met code, taken, melden, handig om te weten). Zelfde tekst staat in
@@ -697,7 +708,7 @@ Eerder gedaan (voor de proef met Klussen):
     met "voornaam is genoeg" (AVG). Alleen met toestemming: ieder kiest zelf wat
     zichtbaar is (bijv. telefoonnummer ja/nee). Vooraf privacyafweging en besluit
     van het bestuur.
-18. Knop "+ Nieuwe taak" beter vindbaar maken (eigen ervaring, november 2026). De
+18. GEBOUWD (zie stand van zaken). Knop "+ Nieuwe taak" beter vindbaar maken (eigen ervaring, november 2026). De
     knop bestaat al (bovenaan Werkgroep, alleen bestuur en coördinator), maar werd
     over het hoofd gezien: het leek alsof taken alleen uit een melding konden.
     In de proef navragen bij het bestuur of ze hem vinden. Mogelijke oplossing:

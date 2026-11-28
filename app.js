@@ -1153,17 +1153,19 @@ async function zetGeenActie(melding, reden) {
 
 let taakFormulier = null;   // wat er is ingevuld in het formulier
 
-// Nieuwe taak zonder melding (knop "+ Nieuwe taak" onder Werkgroep)
-function openNieuweTaak() {
+// Nieuwe taak zonder melding (knop "+ Nieuwe taak" onder Mijn taken en Werkgroep).
+// "terugScherm" = waar je na opslaan of annuleren weer uitkomt ("mijn" of "werkgroep").
+function openNieuweTaak(terugScherm) {
   taakFormulier = {
     modus: "nieuw",
     melding: null,
     taak: null,
-    terugScherm: "werkgroep",
+    terugScherm,
     titel: "",
     omschrijving: "",
     plek: "",
-    werkgroep: gekozenWerkgroep === "Alles" ? "" : gekozenWerkgroep,
+    // Vanuit Werkgroep: de werkgroep die je daar bekijkt alvast invullen
+    werkgroep: terugScherm === "werkgroep" && gekozenWerkgroep !== "Alles" ? gekozenWerkgroep : "",
     toegewezenAanId: "",
     deadline: datumOver(DAGEN_NORMAAL)
   };
@@ -1812,6 +1814,16 @@ document.getElementById("knop-ongedaan").addEventListener("click", () => {
 
 let huidigScherm = "mijn";   // onthoudt welk scherm open is
 
+// Sommige knoppen blijven bij het scrollen net ONDER de groene kopbalk staan
+// (+ Nieuwe taak, de keuzeknoppen bij Beheer). De kopbalk is niet altijd even
+// hoog (een lange titel past soms niet op één regel), dus meten we hem en zetten
+// we de hoogte in --kopbalk-hoogte (gebruikt in stijl.css). Een ResizeObserver
+// meldt zich elke keer als de kopbalk van grootte verandert.
+new ResizeObserver(() => {
+  const hoogte = document.querySelector("header").offsetHeight;
+  document.documentElement.style.setProperty("--kopbalk-hoogte", hoogte + "px");
+}).observe(document.querySelector("header"));
+
 // Opent het scherm dat bij een naam hoort
 function toonScherm(scherm) {
   if (scherm === "mijn") toonMijnTaken();
@@ -1864,10 +1876,22 @@ function toonLijst(lijst) {
   lijst.forEach(taak => inhoud.append(maakTaakKaart(taak)));
 }
 
+// Knop "+ Nieuwe taak" voor bestuur en coördinator, bovenaan Mijn taken en
+// Werkgroep. Hij staat in een eigen vakje dat bovenaan blijft staan als je naar
+// beneden scrollt (stijl.css, .vaste-knop).
+function maakNieuweTaakKnop(terugScherm) {
+  const vak = document.createElement("div");
+  vak.className = "vaste-knop";
+  vak.append(maakHoofdKnop("+ Nieuwe taak", () => openNieuweTaak(terugScherm)));
+  return vak;
+}
+
 function toonMijnTaken() {
   huidigScherm = "mijn";
   document.getElementById("titel").textContent = "Mijn taken";
-  document.getElementById("inhoud").replaceChildren(); // scherm leegmaken
+  const inhoud = document.getElementById("inhoud");
+  inhoud.replaceChildren(); // scherm leegmaken
+  if (ingelogdeGebruiker.magAllesZien) inhoud.append(maakNieuweTaakKnop("mijn"));
   toonLijst(taken.filter(taak => isMijnTaak(taak) && taak.status !== "vervallen"));
   markeerMenu("mijn");
 }
@@ -1908,10 +1932,8 @@ function toonWerkgroep() {
     inhoud.append(kiezer);
   }
 
-  // NIEUW: bestuur en coördinator kunnen hier een nieuwe taak maken
-  if (ingelogdeGebruiker.magAllesZien) {
-    inhoud.append(maakHoofdKnop("+ Nieuwe taak", openNieuweTaak));
-  }
+  // Bestuur en coördinator kunnen hier een nieuwe taak maken
+  if (ingelogdeGebruiker.magAllesZien) inhoud.append(maakNieuweTaakKnop("werkgroep"));
 
   const lijst = gekozenWerkgroep === "Alles"
     ? [...taken]
