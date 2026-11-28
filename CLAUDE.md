@@ -470,6 +470,10 @@ Klaar (inloggen, taken en meldingen werken met de database):
   test_17 lokaal (5 tests), 13/16 goed, browser. 17 uitgevoerd, test_17
   goed; getest op de telefoon (volgorde overal, Maak taak met uitgezette
   standaardwerkgroep): alles goed.
+  Daarna: na ▲/▼ blijft het verplaatste kaartje op dezelfde hoogte in beeld
+  (houdInBeeld in beheer-lijsten.js, kaartjes hebben data-kaart, bijv.
+  "plek-12"; zonder dit sprong de pagina naar boven tijdens "Laden…").
+  Getest op de telefoon via de testversie: goed. Samengevoegd.
 
 - Gebruikershandleiding voor de proef met Klussen: HANDLEIDING.md (installeren,
   inloggen met code, taken, melden, handig om te weten). Zelfde tekst staat in
