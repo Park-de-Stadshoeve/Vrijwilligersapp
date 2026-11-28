@@ -6,8 +6,8 @@
 --   !!!  NOOIT UITVOEREN IN HET ECHTE PROJECT                 !!!
 --
 -- Wat doet dit bestand?
---   Het haalt alle taken, meldingen, gebruikers, inlogaccounts en
---   back-up-regels weg. Werkgroepen en plekken blijven staan. Daarna kun
+--   Het haalt alle taken, projecten, meldingen, gebruikers, inlogaccounts
+--   en back-up-regels weg. Werkgroepen en plekken blijven staan. Daarna kun
 --   je testen of "Back-up terugzetten" alles weer terugzet.
 --   Dit kun je NIET ongedaan maken. Maak eerst een verse back-up!
 --
@@ -28,6 +28,7 @@ begin
   update meldingen set taak = null;
   delete from meldingen;
   delete from taken;
+  delete from projecten;   -- sinds 19_projecten.sql
   delete from back_ups;
   delete from lidmaatschappen;
   -- De bewaker "altijd een beheerder" heel even uit, anders mag de laatste

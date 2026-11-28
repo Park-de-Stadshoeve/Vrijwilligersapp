@@ -533,8 +533,20 @@ Klaar (inloggen, taken en meldingen werken met de database):
   bullet Project bij Handig om te weten en "Project klaar?" bij het bestuur.
   Het deelbare Claude-document krijgt de bullet Project pas als projecten in
   PROD staan. Getest in de browser met nep-database (filter op beide schermen,
-  afronden met Ongedaan, vrijwilliger ziet geen knop). Nog testen op de
-  telefoon via de testversie.
+  afronden met Ongedaan, vrijwilliger ziet geen knop). Getest op de telefoon
+  via de testversie: goed.
+  Stap 3 gebouwd (branch projecten): Edge Function beheer: projecten in
+  BACKUP_TABELLEN, BACKUP_VERSIE 3. database/20_herstel_projecten.sql
+  (create or replace herstel_backup: versie 1/2/3, delete projecten, insert
+  projecten vóór taken met coalesce(…,'[]') voor oude back-ups, setval,
+  aantal projecten in het antwoord) en test_20 (4 tests, verandert niets).
+  herstel_leegmaken.sql haalt ook projecten weg. beheer.js: stappenlijst bij
+  terugzetten noemt het aantal projecten. BEHEER.md (wat zit erin, 01 t/m 20)
+  en LEESMIJ.md bijgewerkt. Nog: in DEV 20 + test_20, functie beheer opnieuw
+  plakken, back-up maken (LEESMIJ.txt noemt projecten), hersteltest in DEV.
+  Daarna PROD (volgorde): (1) 19 + 20 in PROD, (2) functie beheer in PROD
+  opnieuw plakken, (3) branch projecten samenvoegen met main, (4) verse
+  back-up van PROD, (5) deelbaar Claude-document: bullet Project.
 
 - Gebruikershandleiding voor de proef met Klussen: HANDLEIDING.md (installeren,
   inloggen met code, taken, melden, handig om te weten). Zelfde tekst staat in
@@ -617,7 +629,7 @@ zaterdag 12 december 2026, de eerstvolgende klusochtend. De verwerkersovereenkom
 Besluit DEV en PROD (november 2026): er komt een nieuw, schoon Supabase-project
 voor echt gebruik (PROD). Het testproject "vrijwilligersapp-test" blijft bestaan
 als DEV: nieuwe functies en nieuwe SQL eerst daar uitproberen, daarna pas in PROD.
-In PROD alleen de SQL-bestanden 01 t/m 18 (19 pas na stap 3 van projecten), nooit test_-, voorbeeld_- of
+In PROD alleen de SQL-bestanden 01 t/m 20 (19 en 20 pas samen met de projecten), nooit test_-, voorbeeld_- of
 herstel_leegmaken-bestanden. De DEV-versie van de app draait op
 https://park-de-stadshoeve.github.io/Vrijwilligersapp-test/ (aparte openbare
 repository Vrijwilligersapp-test met alleen een workflow die een branch naar keuze

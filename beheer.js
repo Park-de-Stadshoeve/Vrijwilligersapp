@@ -951,7 +951,9 @@ async function zetBackupTerug(bestand, knop) {
       return;
     }
     const a = deel1.data.aantallen;
-    stap1.textContent = "✓ Gegevens terug: " + a.taken + " taken, " + a.meldingen + " meldingen, " +
+    // (het aantal projecten geeft de database pas sinds 20_herstel_projecten.sql)
+    const projecten = a.projecten !== undefined ? a.projecten + " projecten, " : "";
+    stap1.textContent = "✓ Gegevens terug: " + projecten + a.taken + " taken, " + a.meldingen + " meldingen, " +
       a.gebruikers + " gebruikers. " + deel1.data.accountsTerug + " inlogaccounts terug.";
     if (deel1.data.nietGelukt.length > 0) {
       herstelStap("⚠️ Deze inlogaccounts konden niet terug: " + deel1.data.nietGelukt.join(", ") +
