@@ -350,11 +350,19 @@ function maakTaakKaart(taak) {
   titel.textContent = taak.titel;
   kaart.append(titel);
 
-  // NIEUW: de plek
+  // De plek
   const plek = document.createElement("p");
   plek.className = "details";
   plek.textContent = "📍 " + taak.plek;
   kaart.append(plek);
+
+  // Het project (als de taak bij een project hoort)
+  if (taak.projectId) {
+    const project = document.createElement("p");
+    project.className = "details";
+    project.textContent = "📁 " + projectNaam(taak.projectId);
+    kaart.append(project);
+  }
 
   const omschrijving = document.createElement("p");
   omschrijving.textContent = taak.omschrijving;
@@ -1166,6 +1174,7 @@ function openNieuweTaak(terugScherm) {
     plek: "",
     // Vanuit Alle taken: de werkgroep die je daar bekijkt alvast invullen
     werkgroep: terugScherm === "werkgroep" && gekozenWerkgroep !== "Alles" ? gekozenWerkgroep : "",
+    projectId: null,   // null = geen project
     toegewezenAanId: "",
     deadline: datumOver(DAGEN_NORMAAL)
   };
@@ -1184,6 +1193,7 @@ function openTaakUitMelding(melding) {
     // Doet de plek niet meer mee? Dan moet je zelf een plek kiezen.
     plek: plekNummer[melding.plek] ? melding.plek : "",
     werkgroep: werkgroepBijPlek[melding.plek] || "",   // "" als er geen vaste werkgroep is
+    projectId: null,
     toegewezenAanId: "",
     deadline: datumOver(melding.gevaarlijk ? DAGEN_GEVAARLIJK : DAGEN_NORMAAL)
   };
@@ -1201,6 +1211,7 @@ function openTaakWijzigen(taak) {
     omschrijving: taak.omschrijving,
     plek: taak.plek || "",
     werkgroep: taak.werkgroep,
+    projectId: taak.projectId || null,
     toegewezenAanId: taak.toegewezenAanId || "",
     toegewezenAan: taak.toegewezenAan,   // naam, voor als iemand niet meer in de lijst staat
     deadline: taak.deadline,
@@ -1248,6 +1259,9 @@ function toonTaakFormulier() {
     verversScherm();   // de keuzelijst hieronder zet de leden van deze werkgroep bovenaan
   }));
 
+  // Bij welk project hoort de taak? (niet verplicht)
+  inhoud.append(maakProjectVeld(formulier));
+
   // Persoon kiezen kan pas als de werkgroep bekend is
   if (formulier.werkgroep) {
     const veld = document.createElement("div");
@@ -1283,6 +1297,115 @@ function toonTaakFormulier() {
   }
 
   markeerMenu(formulier.terugScherm);   // in het menu blijft het vorige scherm oplichten
+}
+
+// ===== PROJECT KIEZEN (in het taakformulier) =====
+// Een taak hoort bij hooguit één project, bijvoorbeeld "Nieuw varkenshok"
+// (database/19_projecten.sql). Keuzeknoppen: "Geen", de lopende projecten
+// en "+ Nieuw project". Na een tik op "+ Nieuw project" verschijnt een
+// tekstvak met de knop "Project toevoegen". Alleen bestuur en coördinator
+// zien dit formulier; de database controleert dat ook.
+
+const PROJECT_NAAM_MAX = 60;   // tekens; de database bewaakt dit ook
+
+function maakProjectVeld(formulier) {
+  // De lopende projecten. Hoort deze taak bij een afgerond project? Dan
+  // staat dat er ook tussen, anders lijkt het alsof er geen project is.
+  const keuzes = (lijsten.projecten || []).filter(p => p.actief);
+  if (formulier.projectId && !keuzes.some(p => p.id === formulier.projectId)) {
+    keuzes.push({ id: formulier.projectId, naam: projectNaam(formulier.projectId) + " (afgerond)" });
+  }
+  const gekozen = keuzes.find(p => p.id === formulier.projectId);
+
+  const veld = maakKeuzeVeld("Bij welk project? (niet verplicht)",
+    ["Geen", ...keuzes.map(p => p.naam)],
+    gekozen ? gekozen.naam : "Geen",
+    naam => {
+      const project = keuzes.find(p => p.naam === naam);
+      formulier.projectId = project ? project.id : null;
+      formulier.nieuwProjectOpen = false;
+      verversScherm();
+    });
+
+  // Knop "+ Nieuw project" achter de andere keuzes
+  const nieuw = document.createElement("button");
+  nieuw.textContent = "+ Nieuw project";
+  nieuw.setAttribute("aria-pressed", !!formulier.nieuwProjectOpen);
+  nieuw.addEventListener("click", () => {
+    formulier.nieuwProjectOpen = !formulier.nieuwProjectOpen;
+    verversScherm();
+  });
+  veld.querySelector(".kiezer").append(nieuw);
+
+  // Het tekstvak voor de naam, alleen als "+ Nieuw project" open staat
+  if (formulier.nieuwProjectOpen) {
+    veld.append(maakInvoerVeld("Naam van het nieuwe project", "tekst", formulier.nieuwProjectNaam || "",
+      waarde => { formulier.nieuwProjectNaam = waarde; }));
+    veld.append(maakTweedeKnop("Project toevoegen", () => voegProjectToe(formulier)));
+  }
+  return veld;
+}
+
+// ➕ Nieuw project in de database, en meteen kiezen voor deze taak.
+// "Ongedaan maken" haalt het project weer weg.
+async function voegProjectToe(formulier) {
+  const naam = (formulier.nieuwProjectNaam || "").trim();
+  if (!naam) { toonMelding("Vul eerst de naam van het project in."); return; }
+  if (naam.length > PROJECT_NAAM_MAX) {
+    toonMelding("De naam is te lang (hooguit " + PROJECT_NAAM_MAX + " tekens). Maak hem korter.");
+    return;
+  }
+  // Bestaat er al een project met deze naam (ook met andere hoofdletters)?
+  const bestaand = (lijsten.projecten || []).find(p => p.naam.trim().toLowerCase() === naam.toLowerCase());
+  if (bestaand && bestaand.actief) {
+    formulier.projectId = bestaand.id;
+    formulier.nieuwProjectOpen = false;
+    formulier.nieuwProjectNaam = "";
+    verversScherm();
+    toonMelding("Dit project bestaat al. Het is nu gekozen.");
+    return;
+  }
+  if (bestaand) {
+    toonMelding("Er is al een afgerond project met deze naam. Kies een andere naam.");
+    return;
+  }
+
+  // insert = nieuwe rij; select(...).single() = stuur het nieuwe project terug
+  const antwoord = await stuurNaarDatabase(signaal =>
+    database.from("projecten").insert({ naam }).select("id, naam, actief").single().abortSignal(signaal));
+  if (!antwoord.gelukt) return;   // de melding onderaan zegt wat er mis is
+
+  const project = antwoord.data;
+  if (!lijsten.projecten) lijsten.projecten = [];
+  lijsten.projecten.push(project);
+  lijsten.projecten.sort((a, b) => a.naam.localeCompare(b.naam, "nl"));
+  formulier.projectId = project.id;
+  formulier.nieuwProjectOpen = false;
+  formulier.nieuwProjectNaam = "";
+  bewaarTakenOpToestel();
+  if (huidigScherm === "taak-formulier") verversScherm();
+  toonMelding("Project " + project.naam + " toegevoegd", () => verwijderProject(project, formulier));
+}
+
+// Haalt een project weg dat net is toegevoegd (alleen voor "Ongedaan maken").
+// Dat kan alleen zolang er nog geen taak aan hangt.
+async function verwijderProject(project, formulier) {
+  if (taken.some(taak => taak.projectId === project.id)) {
+    toonMelding("Er hangt al een taak aan dit project. Het blijft staan.");
+    return;
+  }
+  const antwoord = await stuurNaarDatabase(signaal =>
+    database.from("projecten").delete().eq("id", project.id).select("id").abortSignal(signaal));
+  if (!antwoord.gelukt) return;
+  if (antwoord.data.length === 0) {
+    toonMelding("Dit project kon niet worden weggehaald. Ververs het scherm.");
+    return;
+  }
+  lijsten.projecten = lijsten.projecten.filter(p => p.id !== project.id);
+  if (formulier.projectId === project.id) formulier.projectId = null;
+  bewaarTakenOpToestel();
+  if (huidigScherm === "taak-formulier") verversScherm();
+  toonMelding("Project weggehaald");
 }
 
 // ===== LATEN VERVALLEN =====
@@ -1382,6 +1505,7 @@ async function slaTaakOp() {
     omschrijving: formulier.omschrijving,
     plek: formulier.plek,
     werkgroep: formulier.werkgroep,
+    projectId: formulier.projectId,
     toegewezenAanId: formulier.toegewezenAanId,
     toegewezenAan: naamVanPersoon(formulier.toegewezenAanId) || formulier.toegewezenAan || "",
     deadline: formulier.deadline
@@ -1420,6 +1544,7 @@ function taakNaarRij(waarden) {
     omschrijving: waarden.omschrijving.trim() || null,
     plek: plekNummer[waarden.plek],
     werkgroep: werkgroepNummer[waarden.werkgroep],
+    project: waarden.projectId || null,
     toegewezen_aan: waarden.toegewezenAanId || null,
     deadline: waarden.deadline || null
   };
@@ -1481,9 +1606,20 @@ async function maakTaakUitMelding(waarden, melding) {
     }).abortSignal(signaal));
   if (!antwoord.gelukt) return false;
 
+  // Het project gaat niet mee in de vaste actie; dat zetten we er meteen
+  // achteraan. Lukt dat niet, dan bestaat de taak wel, maar zonder project.
+  let projectId = waarden.projectId;
+  if (projectId) {
+    const metProject = await stuurNaarDatabase(signaal =>
+      database.from("taken").update({ project: projectId }).eq("id", antwoord.data)
+        .select("id").abortSignal(signaal));
+    if (!metProject.gelukt || metProject.data.length === 0) projectId = null;
+  }
+
   const taak = {
     id: antwoord.data,   // het nummer van de nieuwe taak
     ...waarden,
+    projectId,
     status: "open",
     gereedGemeldDoor: "",
     fotoPad: "",
@@ -1494,7 +1630,10 @@ async function maakTaakUitMelding(waarden, melding) {
   taken.push(taak);
   melding.taakId = taak.id;
   melding.status = waarden.toegewezenAanId ? "Toegewezen" : "Taak gemaakt";
-  toonMelding("Taak gemaakt van de melding", async () => {
+  const tekst = waarden.projectId && !projectId
+    ? "Taak gemaakt, maar zonder project. Kies het project via Wijzigen."
+    : "Taak gemaakt van de melding";
+  toonMelding(tekst, async () => {
     if (await verwijderTaak(taak)) {
       melding.taakId = null;
       melding.status = "Nieuw";
@@ -1512,6 +1651,7 @@ async function wijzigTaak(taak, waarden) {
     omschrijving: taak.omschrijving,
     plek: taak.plek,
     werkgroep: taak.werkgroep,
+    projectId: taak.projectId || null,
     toegewezenAanId: taak.toegewezenAanId || "",
     toegewezenAan: taak.toegewezenAan,
     deadline: taak.deadline
@@ -1591,8 +1731,14 @@ function bewaarTakenOpToestel() {
   });
 }
 
-// Werkgroepen en plekken zoals laatst opgehaald (met hun nummers)
-let lijsten = { werkgroepen: [], plekken: [] };
+// Werkgroepen, plekken en projecten zoals laatst opgehaald (met hun nummers)
+let lijsten = { werkgroepen: [], plekken: [], projecten: [] };
+
+// Naam van een project bij zijn nummer (ook van een afgerond project)
+function projectNaam(id) {
+  const project = (lijsten.projecten || []).find(p => p.id === id);
+  return project ? project.naam : "Onbekend project";
+}
 
 // Haalt de taken opnieuw op en tekent het scherm opnieuw, als je nog op
 // hetzelfde scherm bent. Gebruikt bij een tik op "Mijn taken" of "Alle taken".
@@ -1625,8 +1771,8 @@ function zetLijsten(lijsten) {
 // Opzoektabel: nummer van een plek → naam (ook van plekken die niet meer meedoen)
 let plekNaamVan = {};
 
-// Het echte werk: vijf vragen aan de database (zes voor bestuur), voor taken,
-// meldingen, namen, werkgroepen en plekken.
+// Het echte werk: zes vragen aan de database (zeven voor bestuur), voor taken,
+// meldingen, namen, werkgroepen, plekken en projecten.
 // De database geeft alleen de taken die jij mag zien (regels in 03_rechten.sql).
 async function vraagTakenOpBijDatabase() {
   // Stopt het wachten na WACHTTIJD_DATABASE, zodat de app niet blijft hangen
@@ -1638,7 +1784,7 @@ async function vraagTakenOpBijDatabase() {
     const takenVraag = database
       .from("taken")
       .select("id, titel, omschrijving, deadline, status, toegewezen_aan, gereed_gemeld_door, foto_na_afloop, " +
-              "opmerking, opmerking_door, vervallen_door, vervallen_op, " +
+              "opmerking, opmerking_door, vervallen_door, vervallen_op, project, " +
               "plek_naam:plekken(naam), werkgroep_naam:werkgroepen(naam), " +
               // de melding waar de taak uit komt (als die er is)
               "melding:meldingen(id, foto, toelichting, gemeld_door)")
@@ -1686,17 +1832,26 @@ async function vraagTakenOpBijDatabase() {
     }
     meldingenVraag = meldingenVraag.abortSignal(stopper.signal);
 
+    // 7. Alle projecten (ook afgeronde: oude taken hebben hun naam nodig),
+    //    op alfabet. Zie database/19_projecten.sql.
+    const projectenVraag = database
+      .from("projecten")
+      .select("id, naam, actief")
+      .order("naam")
+      .abortSignal(stopper.signal);
+
     // Alle vragen tegelijk versturen, en wachten tot ze allemaal klaar zijn
     const antwoorden = await Promise.all(
-      [takenVraag, namenVraag, ledenVraag, werkgroepenVraag, plekkenVraag, meldingenVraag]);
+      [takenVraag, namenVraag, ledenVraag, werkgroepenVraag, plekkenVraag, meldingenVraag, projectenVraag]);
     for (const antwoord of antwoorden) {
       if (antwoord.error) throw antwoord.error;
     }
     const [takenAntwoord, namenAntwoord, ledenAntwoord, werkgroepenAntwoord, plekkenAntwoord,
-           meldingenAntwoord] = antwoorden;
+           meldingenAntwoord, projectenAntwoord] = antwoorden;
 
-    // Werkgroepen en plekken, in een eenvoudige vorm
+    // Werkgroepen, plekken en projecten, in een eenvoudige vorm
     const lijsten = {
+      projecten: projectenAntwoord.data.map(p => ({ id: p.id, naam: p.naam, actief: p.actief })),
       werkgroepen: werkgroepenAntwoord.data.map(w => ({ id: w.id, naam: w.naam })),
       plekken: plekkenAntwoord.data.map(p => ({
         id: p.id,
@@ -1737,6 +1892,7 @@ async function vraagTakenOpBijDatabase() {
         omschrijving: rij.omschrijving || "",
         plek: rij.plek_naam.naam,
         werkgroep: rij.werkgroep_naam.naam,
+        projectId: rij.project || null,                     // nummer van het project (null = geen)
         toegewezenAanId: rij.toegewezen_aan || "",          // nummer, om te vergelijken
         toegewezenAan: naamVan[rij.toegewezen_aan] || "",   // naam, om te laten zien
         deadline: rij.deadline || "",
@@ -1876,6 +2032,87 @@ function toonLijst(lijst) {
   lijst.forEach(taak => inhoud.append(maakTaakKaart(taak)));
 }
 
+// ===== FILTER OP PROJECT =====
+// Bovenaan Mijn taken en Alle taken: een keuzelijst "Project". Je ziet dan
+// alleen de taken van dat project. De keuze geldt voor beide schermen.
+// Bestuur en coördinator kunnen het gekozen project daar ook afronden
+// (of weer openen).
+
+let gekozenProjectId = null;   // null = alle projecten
+
+// Alleen de taken van het gekozen project (of alles, als er niets gekozen is)
+function filterOpProject(lijst) {
+  if (!gekozenProjectId) return lijst;
+  return lijst.filter(taak => taak.projectId === gekozenProjectId);
+}
+
+// De keuzelijst. "takenOpScherm" = de taken van dit scherm, vóór het filter.
+// Geeft null als geen van die taken bij een project hoort (dan is er niets te kiezen).
+function maakProjectFilter(takenOpScherm) {
+  // De projecten die op dit scherm voorkomen (elk één keer)
+  const ids = [...new Set(takenOpScherm.map(taak => taak.projectId).filter(Boolean))];
+  if (gekozenProjectId && !ids.includes(gekozenProjectId)) ids.push(gekozenProjectId);
+  if (ids.length === 0) return null;
+  const projecten = ids
+    .map(id => ({ id, naam: projectNaam(id), actief: projectLoopt(id) }))
+    .sort((a, b) => a.naam.localeCompare(b.naam, "nl"));
+
+  const vak = document.createElement("div");
+  vak.className = "project-filter";
+  const label = document.createElement("label");
+  label.className = "toewijzen";
+  label.textContent = "Project";
+  const keuze = document.createElement("select");
+  keuze.append(maakOptie("", "Alle projecten", gekozenProjectId ? String(gekozenProjectId) : ""));
+  projecten.forEach(p => keuze.append(
+    maakOptie(String(p.id), p.naam + (p.actief ? "" : " (afgerond)"), String(gekozenProjectId || ""))));
+  keuze.addEventListener("change", () => {
+    gekozenProjectId = keuze.value ? Number(keuze.value) : null;
+    verversScherm();
+  });
+  label.append(keuze);
+  vak.append(label);
+
+  // Bestuur en coördinator: het gekozen project afronden of weer openen
+  if (gekozenProjectId && ingelogdeGebruiker.magAllesZien) {
+    const loopt = projectLoopt(gekozenProjectId);
+    const id = gekozenProjectId;
+    vak.append(maakTweedeKnop(loopt ? "Project afronden" : "Project weer openen",
+      () => zetProjectLopend(id, !loopt)));
+  }
+  return vak;
+}
+
+// Loopt dit project nog? (false = afgerond)
+function projectLoopt(id) {
+  const project = (lijsten.projecten || []).find(p => p.id === id);
+  return project ? project.actief : false;
+}
+
+// ✓ Project afronden (loopt = false) of weer openen (loopt = true).
+// Een afgerond project staat niet meer bij de keuzes in het taakformulier;
+// de taken houden hun project. "Ongedaan maken" doet het omgekeerde.
+async function zetProjectLopend(id, loopt) {
+  const antwoord = await stuurNaarDatabase(signaal =>
+    database.from("projecten").update({ actief: loopt }).eq("id", id).select("id").abortSignal(signaal));
+  if (!antwoord.gelukt) return;
+  if (antwoord.data.length === 0) {
+    toonMelding("Dit project kon niet worden gewijzigd. Ververs het scherm.");
+    return;
+  }
+  const project = (lijsten.projecten || []).find(p => p.id === id);
+  if (project) project.actief = loopt;
+  bewaarTakenOpToestel();
+  verversScherm();
+
+  const naam = projectNaam(id);
+  let tekst = "Project " + naam + (loopt ? " loopt weer." : " is afgerond.");
+  // Afgerond terwijl er nog open taken zijn? Zeg dat erbij.
+  const nogOpen = taken.filter(taak => taak.projectId === id && taak.status === "open").length;
+  if (!loopt && nogOpen > 0) tekst += " Let op: nog " + nogOpen + (nogOpen === 1 ? " open taak." : " open taken.");
+  toonMelding(tekst, () => zetProjectLopend(id, !loopt));
+}
+
 // Knop "+ Nieuwe taak" voor bestuur en coördinator, bovenaan Mijn taken en
 // Alle taken. Hij staat in een eigen vakje dat bovenaan blijft staan als je naar
 // beneden scrollt (stijl.css, .vaste-knop).
@@ -1892,7 +2129,10 @@ function toonMijnTaken() {
   const inhoud = document.getElementById("inhoud");
   inhoud.replaceChildren(); // scherm leegmaken
   if (ingelogdeGebruiker.magAllesZien) inhoud.append(maakNieuweTaakKnop("mijn"));
-  toonLijst(taken.filter(taak => isMijnTaak(taak) && taak.status !== "vervallen"));
+  const mijn = taken.filter(taak => isMijnTaak(taak) && taak.status !== "vervallen");
+  const filter = maakProjectFilter(mijn);   // alleen als er taken met een project zijn
+  if (filter) inhoud.append(filter);
+  toonLijst(filterOpProject(mijn));
   markeerMenu("mijn");
 }
 
@@ -1936,9 +2176,14 @@ function toonWerkgroep() {
   // Bestuur en coördinator kunnen hier een nieuwe taak maken
   if (ingelogdeGebruiker.magAllesZien) inhoud.append(maakNieuweTaakKnop("werkgroep"));
 
-  const lijst = gekozenWerkgroep === "Alles"
+  const vanWerkgroep = gekozenWerkgroep === "Alles"
     ? [...taken]
     : taken.filter(taak => taak.werkgroep === gekozenWerkgroep);
+  // Filter op project (alleen als er taken met een project zijn); geldt ook
+  // voor de vervallen taken onderaan
+  const filter = maakProjectFilter(vanWerkgroep);
+  if (filter) inhoud.append(filter);
+  const lijst = filterOpProject(vanWerkgroep);
   toonLijst(lijst.filter(taak => taak.status !== "vervallen"));
   inhoud.append(maakVervallenDeel(lijst.filter(taak => taak.status === "vervallen")));
   markeerMenu("werkgroep");

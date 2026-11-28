@@ -93,6 +93,11 @@ main {
 }
 .vaste-knop .knop-gereed { margin-top: 0; }
 
+/* Keuzelijst "Project" bovenaan Mijn taken en Alle taken (met eronder, voor
+   het bestuur, de knop Project afronden) */
+.project-filter { margin-bottom: 16px; }
+.project-filter .toewijzen { margin-top: 0; }
+
 /* Eén taak of melding */
 .taak { background: #ffffff; border: 1px solid var(--rand); border-radius: 8px; padding: 16px; margin-bottom: 12px; }
 .taak h2 { margin: 0 0 4px; font-size: 19px; }

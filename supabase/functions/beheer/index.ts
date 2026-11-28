@@ -296,12 +296,14 @@ const BACKUP_TABELLEN: Record<string, string[]> = {
   onderdelen: ["id"],
   gebruikers: ["id"],
   lidmaatschappen: ["gebruiker", "werkgroep"],
+  projecten: ["id"],        // sinds 19_projecten.sql
   taken: ["id"],
   meldingen: ["id"],
   back_ups: ["id"],
 };
-const BACKUP_VERSIE = 2;   // verhogen als de opbouw van de back-up verandert
-                           // (1 = zonder foto's, 2 = met foto's)
+const BACKUP_VERSIE = 3;   // verhogen als de opbouw van de back-up verandert
+                           // (1 = zonder foto's, 2 = met foto's,
+                           //  3 = met projecten; terugzetten: 20_herstel_projecten.sql)
 const FOTO_MAP = "fotos";
 const FOTO_LINK_SECONDEN = 60 * 60;   // de links zijn een uur geldig
 
@@ -410,7 +412,8 @@ async function haalHeleTabel(beheer: any, tabel: string, sortering: string[]) {
 // Gaat in drie delen, zodat de app tussendoor de voortgang kan laten zien.
 // Zie BEHEER.md, "Back-up terugzetten".
 
-// Deel 1: de tabellen (vaste actie herstel_backup in database/13_herstel.sql)
+// Deel 1: de tabellen (vaste actie herstel_backup in database/13_herstel.sql,
+// vervangen door de versie met projecten in database/20_herstel_projecten.sql)
 // en daarna de inlogaccounts, met hun oude nummer en e-mailadres.
 // Je eigen account (zelfde e-mailadres als waarmee je nu bent ingelogd)
 // slaan we hier over: dat wisselen we pas in deel 3, anders word je

@@ -22,12 +22,14 @@ werkt in vrijwel elke database.
 werkgroepen ──┬── plekken (standaardwerkgroep) ── onderdelen
               ├── lidmaatschappen ── gebruikers
               └── taken ── gebruikers (toegewezen aan)
-                    │
+                    │  └── projecten (niet verplicht)
                meldingen ── gebruikers (gemeld door)
 ```
 
-Zeven tabellen: **werkgroepen**, **plekken**, **onderdelen**, **gebruikers**,
-**lidmaatschappen**, **taken** en **meldingen**. Foto's staan apart in de foto-opslag; de tabellen bewaren
+Acht tabellen: **werkgroepen**, **plekken**, **onderdelen**, **gebruikers**,
+**lidmaatschappen**, **taken**, **meldingen** en **projecten** (sinds
+`19_projecten.sql`). Daarnaast een paar hulptabellen (back_ups,
+app_instellingen). Foto's staan apart in de foto-opslag; de tabellen bewaren
 alleen waar de foto staat.
 
 ---
@@ -150,6 +152,7 @@ beheerder ziet de tabel zelf nooit. Dezelfde combinatie kan maar één keer voor
 | opmerking_door | nummer uit gebruikers: wie de opmerking schreef | alleen als er een opmerking is |
 | vervallen_door | nummer uit gebruikers: wie de taak liet vervallen | alleen als status vervallen is |
 | vervallen_op | datum en tijd | alleen als status vervallen is |
+| project | nummer uit projecten (hooguit één project per taak) | nee |
 | aangemaakt_door | nummer uit gebruikers | ja |
 | aangemaakt_op | datum en tijd (gaat vanzelf) | ja |
 
@@ -201,6 +204,28 @@ Zo kan de status nooit "vergeten" worden bij te werken.
 De foto bij een taak die uit een melding komt, wordt niet gekopieerd: de taak toont
 de foto van de melding.
 
+## 8. projecten
+
+Een project bundelt taken die bij elkaar horen, bijvoorbeeld "Ren konijnenhok",
+"Nieuw varkenshok" of "Klusochtend 12 december". Een project kan taken van
+verschillende werkgroepen hebben.
+
+| Kolom | Wat | Verplicht |
+|---|---|---|
+| id | nummer | ja |
+| naam | naam van het project, 1 tot 60 tekens | ja |
+| actief | loopt het project nog? (nee = afgerond) | ja (standaard ja) |
+
+**Regels die de database bewaakt**
+- Twee projecten met dezelfde naam mag niet (ook niet met andere hoofdletters).
+- Een project waar taken aan hangen kan niet verwijderd worden. Afronden kan wel
+  (actief = nee): dan verdwijnt het uit de keuzes, en oude taken houden de naam.
+- Een project verandert niet wie wat ziet. Een vrijwilliger ziet alleen de taken
+  van zijn of haar eigen werkgroepen, ook als het project groter is (besluit
+  november 2026).
+- Zet geen namen van mensen in een projectnaam: iedereen die inlogt ziet de namen
+  van alle projecten.
+
 ---
 
 ## Foto's
@@ -233,6 +258,8 @@ de app omzeilt, krijgt niets te zien wat niet mag.
 | Beheerscherm (gebruikers, werkgroepen, plekken, onderdelen) | alleen met vinkje is_beheerder | alleen met vinkje is_beheerder |
 | Taken zien | eigen werkgroepen, en taken die aan hem/haar zijn toegewezen | alle |
 | Taak aanmaken of wijzigen | nee | ja |
+| Namen van projecten zien | ja, alle | ja |
+| Project aanmaken, wijzigen of afronden | nee | ja |
 | Taak oppakken ("Ik doe dit") of teruggeven | alleen voor zichzelf, eigen werkgroepen | ja, aan iedereen |
 | Gereed melden, heropenen, foto aanpassen | taken die hij/zij mag zien | ja |
 | Melding doen | ja | ja |

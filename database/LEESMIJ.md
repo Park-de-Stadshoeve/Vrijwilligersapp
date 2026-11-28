@@ -24,6 +24,8 @@ database opbouwt en bevraagt. Het ontwerp in gewone taal staat in `../DATABASE.m
 | `16_lijsten_beheer.sql` | Voor het beheerscherm: tellen wat er aan een werkgroep hangt, en de volgorde van plekken veranderen | uitgevoerd in testproject |
 | `17_werkgroep_volgorde.sql` | Volgorde van de werkgroepen (kolom volgorde en vaste actie werkgroep_verplaatsen) | uitgevoerd in testproject |
 | `18_tabelrechten.sql` | Wie überhaupt bij de tabellen mag (ingelogd, Edge Functions). Nieuwe Supabase-projecten geven dat niet meer vanzelf. Mag vaker uitgevoerd worden | uitgevoerd in testproject en PROD |
+| `19_projecten.sql` | Projecten bij taken: tabel projecten, kolom project bij taken, wie mag wat. **In PROD pas samen met 20** | uitgevoerd in testproject en PROD |
+| `20_herstel_projecten.sql` | Nieuwe versie van "terugzetten" (vervangt die uit 13): zet ook de projecten terug, kent back-ups van versie 3. Uitvoeren na 19. De Edge Function **beheer** moet daarna opnieuw geplakt worden (back-up versie 3) | uitgevoerd in testproject en PROD |
 
 ## Testbestanden
 Deze mag je zo vaak uitvoeren als je wilt. Ze ruimen hun eigen testgegevens op.
@@ -46,6 +48,8 @@ Gebruik ze na een wijziging, om te zien of alles nog werkt.
 | `test_15_vervallen.sql` | Laten vervallen en weer openen: wie mag het, melding weer Nieuw, gereed taak blijft, gestopte persoon (10 tests). Getest: alles goed. |
 | `test_16_lijsten_beheer.sql` | Tellen en verplaatsen, en wie het mag (6 tests). Draait alles terug. Getest: alles goed. |
 | `test_17_werkgroep_volgorde.sql` | Werkgroepen verplaatsen, uitgezette overslaan, wie het mag (5 tests). Draait alles terug. Getest: alles goed. |
+| `test_19_projecten.sql` | Projecten zien, aanmaken, dubbele en lege naam, koppelen aan een taak, verwijderen, wie het mag (9 tests). Draait alles terug. Getest: alles goed. |
+| `test_20_herstel_projecten.sql` | Terugzetten kent versie 3, weigert versie 4, weigert een volle database en de app, en zet projecten terug (4 tests). Verandert niets. |
 
 Let op: na `08_beheer.sql` heeft het project minstens één echte beheerder nodig om de
 tests uit te voeren. Anders houdt de bewaker het opruimen van de testgebruikers tegen.

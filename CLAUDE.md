@@ -502,6 +502,56 @@ Klaar (inloggen, taken en meldingen werken met de database):
   commentaar. Intern blijft het scherm "werkgroep" (data-scherm, huidigScherm,
   hulp.js). Ook het deelbare Claude-document met de handleiding is bijgewerkt.
   Getest op de telefoon via de testversie: goed. Samengevoegd.
+- Projecten (later-lijst 11, eigen wens, november 2026; vóór de proef). Besluiten:
+  hooguit één project per taak, niet verplicht; een project groepeert alleen,
+  wie wat ziet blijft per werkgroep; bestuur en coördinator maken projecten in
+  het taakformulier (+ Nieuw project); afronden = actief nee. Drie stappen:
+  (1) database + formulier + regel op het kaartje, (2) filter op Mijn taken en
+  Alle taken + afronden, (3) back-up en terugzetten met projecten. VOLGORDE
+  PROD: pas na stap 3 19_projecten.sql in PROD, en pas daarna de app naar main
+  (de app vraagt de tabel projecten op; zonder die tabel laadt hij geen taken).
+  Stap 1 gebouwd (branch projecten): database/19_projecten.sql (tabel projecten
+  id/naam/actief, unieke naam zonder hoofdletters/spaties, kolom taken.project
+  met references, regels: zien is_actief, aanmaken/wijzigen/verwijderen
+  is_bestuur, grants) en test_19_projecten.sql (9 tests, niet lokaal gedraaid:
+  geen Postgres op deze computer). app.js: projecten mee in haalTakenOp
+  (lijsten.projecten, ook afgeronde), taak.projectId, projectNaam(), taakNaarRij
+  met project, maakProjectVeld (keuzeknoppen Geen/lopende/afgerond als het de
+  taak z'n project is, + Nieuw project met tekstvak), voegProjectToe (dubbele
+  naam = bestaande kiezen; Ongedaan = verwijderProject), "Maak taak" zet het
+  project er met een update achteraan; kaartje "📁 naam". Getest in de browser
+  met nep-database (nieuw project, dubbele naam, Ongedaan maken, wijzigen naar
+  Geen en Ongedaan, afgerond project in Wijzigen). 19 en test_19 in DEV:
+  goed; getest op de telefoon via de testversie: goed.
+  Stap 2 gebouwd (branch projecten): keuzelijst "Project" bovenaan Mijn taken
+  en Alle taken (maakProjectFilter, filterOpProject, gekozenProjectId geldt
+  voor beide schermen en ook voor Vervallen); alleen projecten die op dat
+  scherm voorkomen, afgeronde met "(afgerond)"; geen lijst als er geen taken
+  met project zijn. Bestuur: onder de lijst "Project afronden" / "Project weer
+  openen" (zetProjectLopend, update actief, Ongedaan maken, melding noemt het
+  aantal open taken). Geen databasewijziging (regels uit 19). HANDLEIDING.md:
+  bullet Project bij Handig om te weten en "Project klaar?" bij het bestuur.
+  Het deelbare Claude-document krijgt de bullet Project pas als projecten in
+  PROD staan. Getest in de browser met nep-database (filter op beide schermen,
+  afronden met Ongedaan, vrijwilliger ziet geen knop). Getest op de telefoon
+  via de testversie: goed.
+  Stap 3 gebouwd (branch projecten): Edge Function beheer: projecten in
+  BACKUP_TABELLEN, BACKUP_VERSIE 3. database/20_herstel_projecten.sql
+  (create or replace herstel_backup: versie 1/2/3, delete projecten, insert
+  projecten vóór taken met coalesce(…,'[]') voor oude back-ups, setval,
+  aantal projecten in het antwoord) en test_20 (4 tests, verandert niets).
+  herstel_leegmaken.sql haalt ook projecten weg. beheer.js: stappenlijst bij
+  terugzetten noemt het aantal projecten. BEHEER.md (wat zit erin, 01 t/m 20)
+  en LEESMIJ.md bijgewerkt. In DEV: 20 uitgevoerd, functie beheer opnieuw
+  geplakt, back-up versie 3 gemaakt, hersteltest geslaagd (28 november 2026;
+  leegmaken, jezelf neerzetten, terugzetten, uitloggen en inloggen, taken met
+  project, foto's, gebruikers). Valkuilen bij de hersteltest: na
+  herstel_leegmaken.sql besta je niet meer (stap 6 niet vergeten); twee keer
+  snel een code aanvragen geeft "te veel codes" en de app ging dan niet terug
+  naar het codescherm (verbetering voorgesteld).
+  PROD (volgorde): (1) 19 + 20 in PROD: gedaan, (2) functie beheer in PROD
+  opnieuw plakken: gedaan, (3) branch projecten samengevoegd met main, (4) verse
+  back-up van PROD, (5) deelbaar Claude-document: bullet Project.
 
 - Gebruikershandleiding voor de proef met Klussen: HANDLEIDING.md (installeren,
   inloggen met code, taken, melden, handig om te weten). Zelfde tekst staat in
@@ -584,7 +634,7 @@ zaterdag 12 december 2026, de eerstvolgende klusochtend. De verwerkersovereenkom
 Besluit DEV en PROD (november 2026): er komt een nieuw, schoon Supabase-project
 voor echt gebruik (PROD). Het testproject "vrijwilligersapp-test" blijft bestaan
 als DEV: nieuwe functies en nieuwe SQL eerst daar uitproberen, daarna pas in PROD.
-In PROD alleen de SQL-bestanden 01 t/m 18, nooit test_-, voorbeeld_- of
+In PROD alleen de SQL-bestanden 01 t/m 20, nooit test_-, voorbeeld_- of
 herstel_leegmaken-bestanden. De DEV-versie van de app draait op
 https://park-de-stadshoeve.github.io/Vrijwilligersapp-test/ (aparte openbare
 repository Vrijwilligersapp-test met alleen een workflow die een branch naar keuze
@@ -680,7 +730,7 @@ Eerder gedaan (voor de proef met Klussen):
    oud zijn: foto's worden pas verwijderd nadat ze zijn geëxporteerd.
 10. Frion toevoegen: rol Frion-begeleider (ziet Dieren, Klussen en Tuinen) en taken
     toewijzen aan "Frion" als groep.
-11. Projecten: taken bundelen in een project of groep (bijv. "Opknappen
+11. GEBOUWD (zie stand van zaken). Projecten: taken bundelen in een project of groep (bijv. "Opknappen
     Speelkasteel") en op project kunnen filteren. Hangt samen met punt 6 (filters).
 12. Bericht aan een vrijwilliger als bestuur een taak die hij of zij had opgepakt
     aan iemand anders geeft. Hangt samen met punt 4.

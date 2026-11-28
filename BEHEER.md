@@ -285,10 +285,11 @@ dagen geleden, dan staat er een waarschuwing bovenaan Gebruikers, Werkgroepen en
 Plekken. Tip: zet ook een maandelijkse
 herinnering in je agenda.
 
-**Wat zit erin?** Alle gegevens van de app (werkgroepen, plekken, gebruikers, taken,
-meldingen), de inlogaccounts (e-mailadressen) en alle foto's (map `fotos`). Het
-bestand bevat dus persoonsgegevens: zet het nooit op GitHub, in een mail of op een
-gedeelde plek. De knop om een back-up terug te zetten komt in de volgende stap.
+**Wat zit erin?** Alle gegevens van de app (werkgroepen, plekken, gebruikers,
+projecten, taken, meldingen), de inlogaccounts (e-mailadressen) en alle foto's (map
+`fotos`). Het bestand bevat dus persoonsgegevens: zet het nooit op GitHub, in een
+mail of op een gedeelde plek. Sinds de projecten (november 2026) is het een back-up
+van versie 3; oudere back-ups (versie 1 en 2) kun je nog steeds terugzetten.
 
 **Melding "… foto('s) ontbreken"?** Dan lukte het ophalen van een paar foto's niet,
 meestal door slecht internet. In `LEESMIJ.txt` in het zip-bestand staat welke.
@@ -308,7 +309,7 @@ geen taken en meldingen zijn, en jij de enige gebruiker bent.
 
 **Stappenplan (op een computer):**
 1. Maak bij Supabase een nieuw project (regio Frankfurt, Free).
-2. Voer in de SQL Editor de bestanden `01` tot en met `18` uit de map `database` uit,
+2. Voer in de SQL Editor de bestanden `01` tot en met `20` uit de map `database` uit,
    in volgorde (zie `database/LEESMIJ.md`). Niet de test- en voorbeeldbestanden.
    Zet vóór `14` eerst `pg_net` aan (zie "E-mail bij een gevaarlijke melding").
    Vergeet `18` niet: zonder dat bestand kan na het inloggen niemand bij de
