@@ -128,6 +128,9 @@ Per ongeluk verstuurd? Tik direct op **Ongedaan maken**.
 - **Lijst bijwerken.** Tik op **Mijn taken** of **Alle taken** om de nieuwste
   lijst te zien. Taken die niet meer nodig zijn, staan onderaan **Alle taken**
   onder **Vervallen**.
+- **Project.** Sommige taken horen bij een project, bijvoorbeeld een klusochtend.
+  Je ziet dat op de taak (📁). Kies bovenaan bij **Project** een project om alleen
+  die taken te zien. Kies **Alle projecten** om weer alles te zien.
 - **Uitloggen** hoeft niet. Doe het alleen als je je telefoon aan een ander
   geeft.
 
@@ -145,6 +148,9 @@ Dit deel zie je alleen als je in het bestuur zit of coördinator bent.
   nog niet bij, tik dan op **+ Nieuw project**, typ de naam en tik op
   **Project toevoegen**. Een project mag taken van meer werkgroepen hebben.
   Zet geen namen van mensen in de naam van een project.
+- **Project klaar?** Kies het bovenaan bij **Project** en tik op **Project
+  afronden**. Het staat dan niet meer bij de keuzes; de taken houden hun project.
+  Per ongeluk? Tik op **Project weer openen**.
 - **Wie doet het?** Kies bij een taak bij **Toegewezen aan** een persoon. De
   taak staat dan bij die persoon onder **Mijn taken**.
 - **Wijzigen.** Tik bij een open taak op **Wijzigen**. Pas aan wat nodig is en

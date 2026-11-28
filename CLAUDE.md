@@ -521,8 +521,20 @@ Klaar (inloggen, taken en meldingen werken met de database):
   naam = bestaande kiezen; Ongedaan = verwijderProject), "Maak taak" zet het
   project er met een update achteraan; kaartje "📁 naam". Getest in de browser
   met nep-database (nieuw project, dubbele naam, Ongedaan maken, wijzigen naar
-  Geen en Ongedaan, afgerond project in Wijzigen). Nog: 19 + test_19 in DEV,
-  testen op de telefoon via de testversie.
+  Geen en Ongedaan, afgerond project in Wijzigen). 19 en test_19 in DEV:
+  goed; getest op de telefoon via de testversie: goed.
+  Stap 2 gebouwd (branch projecten): keuzelijst "Project" bovenaan Mijn taken
+  en Alle taken (maakProjectFilter, filterOpProject, gekozenProjectId geldt
+  voor beide schermen en ook voor Vervallen); alleen projecten die op dat
+  scherm voorkomen, afgeronde met "(afgerond)"; geen lijst als er geen taken
+  met project zijn. Bestuur: onder de lijst "Project afronden" / "Project weer
+  openen" (zetProjectLopend, update actief, Ongedaan maken, melding noemt het
+  aantal open taken). Geen databasewijziging (regels uit 19). HANDLEIDING.md:
+  bullet Project bij Handig om te weten en "Project klaar?" bij het bestuur.
+  Het deelbare Claude-document krijgt de bullet Project pas als projecten in
+  PROD staan. Getest in de browser met nep-database (filter op beide schermen,
+  afronden met Ongedaan, vrijwilliger ziet geen knop). Nog testen op de
+  telefoon via de testversie.
 
 - Gebruikershandleiding voor de proef met Klussen: HANDLEIDING.md (installeren,
   inloggen met code, taken, melden, handig om te weten). Zelfde tekst staat in
