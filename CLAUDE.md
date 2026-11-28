@@ -569,8 +569,9 @@ Klaar (inloggen, taken en meldingen werken met de database):
   niet meteen nog een keer"; BEHEER.md: melding bij afronden en "na leegmaken
   besta je niet meer". Getest in de browser met nep-Supabase (te veel codes,
   onbekend adres, afronden mislukt, opnieuw proberen na herladen). De
-  noodstap in de functie zelf is niet te testen zonder een echte fout. Nog:
-  functie beheer in DEV plakken, inloggen testen via de testversie.
+  noodstap in de functie zelf is niet te testen zonder een echte fout. Functie
+  beheer in DEV geplakt, getest via de testversie: goed. Samengevoegd. Nog:
+  functie beheer in PROD opnieuw plakken.
 
 - Gebruikershandleiding voor de proef met Klussen: HANDLEIDING.md (installeren,
   inloggen met code, taken, melden, handig om te weten). Zelfde tekst staat in
