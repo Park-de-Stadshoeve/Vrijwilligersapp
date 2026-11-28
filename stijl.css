@@ -70,7 +70,7 @@ main {
 
 /* Keuzeknoppen bovenaan het beheerscherm (Gebruikers, Werkgroepen, Plekken,
    Back-up). Ze blijven staan als je naar beneden scrollt ("sticky"), net onder
-   de groene kopbalk; --kopbalk-hoogte meet beheer-lijsten.js. Op een telefoon
+   de groene kopbalk; --kopbalk-hoogte meet app.js. Op een telefoon
    twee rijen van twee, op een breder scherm vier naast elkaar. De achtergrond
    is dicht, zodat de kaartjes er onderdoor schuiven. */
 .beheer-tabs {
@@ -83,6 +83,15 @@ main {
 @media (min-width: 560px) {
   .beheer-tabs { grid-template-columns: repeat(4, 1fr); }
 }
+
+/* Knop "+ Nieuwe taak" (Mijn taken en Werkgroep, alleen bestuur en
+   coördinator): blijft net onder de kopbalk staan als je naar beneden scrollt.
+   De dichte achtergrond zorgt dat de kaartjes er netjes onderdoor schuiven. */
+.vaste-knop {
+  position: sticky; top: var(--kopbalk-hoogte, 76px); z-index: 1;
+  background: var(--achtergrond); padding: 8px 0; margin-bottom: 4px;
+}
+.vaste-knop .knop-gereed { margin-top: 0; }
 
 /* Eén taak of melding */
 .taak { background: #ffffff; border: 1px solid var(--rand); border-radius: 8px; padding: 16px; margin-bottom: 12px; }
