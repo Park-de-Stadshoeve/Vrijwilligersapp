@@ -25,7 +25,7 @@ database opbouwt en bevraagt. Het ontwerp in gewone taal staat in `../DATABASE.m
 | `17_werkgroep_volgorde.sql` | Volgorde van de werkgroepen (kolom volgorde en vaste actie werkgroep_verplaatsen) | uitgevoerd in testproject |
 | `18_tabelrechten.sql` | Wie überhaupt bij de tabellen mag (ingelogd, Edge Functions). Nieuwe Supabase-projecten geven dat niet meer vanzelf. Mag vaker uitgevoerd worden | uitgevoerd in testproject en PROD |
 | `19_projecten.sql` | Projecten bij taken: tabel projecten, kolom project bij taken, wie mag wat. **In PROD pas samen met 20** | uitgevoerd in testproject |
-| `20_herstel_projecten.sql` | Nieuwe versie van "terugzetten" (vervangt die uit 13): zet ook de projecten terug, kent back-ups van versie 3. Uitvoeren na 19. De Edge Function **beheer** moet daarna opnieuw geplakt worden (back-up versie 3) | nog uitvoeren in testproject |
+| `20_herstel_projecten.sql` | Nieuwe versie van "terugzetten" (vervangt die uit 13): zet ook de projecten terug, kent back-ups van versie 3. Uitvoeren na 19. De Edge Function **beheer** moet daarna opnieuw geplakt worden (back-up versie 3) | uitgevoerd in testproject |
 
 ## Testbestanden
 Deze mag je zo vaak uitvoeren als je wilt. Ze ruimen hun eigen testgegevens op.

@@ -288,7 +288,7 @@ herinnering in je agenda.
 **Wat zit erin?** Alle gegevens van de app (werkgroepen, plekken, gebruikers,
 projecten, taken, meldingen), de inlogaccounts (e-mailadressen) en alle foto's (map
 `fotos`). Het bestand bevat dus persoonsgegevens: zet het nooit op GitHub, in een
-mail of op een gedeelde plek. Sinds de projecten (december 2026) is het een back-up
+mail of op een gedeelde plek. Sinds de projecten (november 2026) is het een back-up
 van versie 3; oudere back-ups (versie 1 en 2) kun je nog steeds terugzetten.
 
 **Melding "… foto('s) ontbreken"?** Dan lukte het ophalen van een paar foto's niet,

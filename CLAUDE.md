@@ -542,8 +542,13 @@ Klaar (inloggen, taken en meldingen werken met de database):
   aantal projecten in het antwoord) en test_20 (4 tests, verandert niets).
   herstel_leegmaken.sql haalt ook projecten weg. beheer.js: stappenlijst bij
   terugzetten noemt het aantal projecten. BEHEER.md (wat zit erin, 01 t/m 20)
-  en LEESMIJ.md bijgewerkt. Nog: in DEV 20 + test_20, functie beheer opnieuw
-  plakken, back-up maken (LEESMIJ.txt noemt projecten), hersteltest in DEV.
+  en LEESMIJ.md bijgewerkt. In DEV: 20 uitgevoerd, functie beheer opnieuw
+  geplakt, back-up versie 3 gemaakt, hersteltest geslaagd (28 november 2026;
+  leegmaken, jezelf neerzetten, terugzetten, uitloggen en inloggen, taken met
+  project, foto's, gebruikers). Valkuilen bij de hersteltest: na
+  herstel_leegmaken.sql besta je niet meer (stap 6 niet vergeten); twee keer
+  snel een code aanvragen geeft "te veel codes" en de app ging dan niet terug
+  naar het codescherm (verbetering voorgesteld).
   Daarna PROD (volgorde): (1) 19 + 20 in PROD, (2) functie beheer in PROD
   opnieuw plakken, (3) branch projecten samenvoegen met main, (4) verse
   back-up van PROD, (5) deelbaar Claude-document: bullet Project.
