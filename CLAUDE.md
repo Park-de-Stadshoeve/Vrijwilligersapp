@@ -157,7 +157,8 @@ Klaar (inloggen, taken en meldingen werken met de database):
   installeren, inloggen met code, taken, foto, melden): alles goed. Wie de app
   al had: eerst uitloggen, oude app verwijderen, opnieuw installeren. Afzender voor de test:
   een eigen adres op het domein; voor echt gebruik een algemeen adres (bijv. gedeelde mailbox app@).
-- Menu onderaan: Mijn taken, Werkgroep, Melden, Meldingen.
+- Menu onderaan: Mijn taken, Alle taken (heette eerst Werkgroep; intern nog
+  "werkgroep"), Melden, Meldingen.
 - Elke actie heeft "Ongedaan maken" (6 seconden).
 - De status van een melding wordt afgeleid van de gekoppelde taak (taakId), niet
   apart opgeslagen.
@@ -496,6 +497,11 @@ Klaar (inloggen, taken en meldingen werken met de database):
   kopbalk, terug naar Mijn taken, vrijwilliger ziet geen knop. Getest op de
   telefoon via de testversie: goed. Samengevoegd. In de proef nog navragen of
   het bestuur de knop nu vindt.
+- Menu "Werkgroep" hernoemd naar "Alle taken" (eigen wens, november 2026):
+  knop in index.html, titel in toonWerkgroep, HANDLEIDING.md, BEHEER.md en
+  commentaar. Intern blijft het scherm "werkgroep" (data-scherm, huidigScherm,
+  hulp.js). Het deelbare Claude-document met de handleiding moet ook mee.
+  Nog testen op de telefoon via de testversie.
 
 - Gebruikershandleiding voor de proef met Klussen: HANDLEIDING.md (installeren,
   inloggen met code, taken, melden, handig om te weten). Zelfde tekst staat in
@@ -572,7 +578,7 @@ In de eerste week van de proef meekijken bij 2–3 vrijwilligers van Klussen.
 
 Besluit van het bestuur (november 2026): de proef is goedgekeurd. Proef van 8
 weken met werkgroep Klussen en het bestuur (samen ongeveer 8 mensen). Start op
-zaterdag 13 december 2026, de eerstvolgende klusochtend. De verwerkersovereenkomsten
+zaterdag 12 december 2026, de eerstvolgende klusochtend. De verwerkersovereenkomsten
 (Supabase, Brevo) regelt de eigenaar van dit project zelf.
 
 Besluit DEV en PROD (november 2026): er komt een nieuw, schoon Supabase-project
@@ -589,7 +595,7 @@ kiest per adres: app.parkdestadshoeve.nl = PROD, elk ander adres = DEV
 Stadshoeve". Wakker houden pingt PROD en DEV (matrix). Werkwijze: branch ->
 testversie -> main.
 
-Volgende stappen (vóór 13 december):
+Volgende stappen (vóór 12 december):
 1. PROD-project "vrijwilligersapp" (november 2026, organisatie Park de
    Stadshoeve, Frankfurt, Free): KLAAR. pg_net, SQL 01 t/m 17 en gevaar_mail_adres
    gedaan, controle gelijk aan testproject; Edge Functions beheer en
@@ -631,7 +637,7 @@ Volgende stappen (vóór 13 december):
    de ontvangers; verse back-up gemaakt met de echte accounts. Privacytekst
    in HANDLEIDING.md (kopje Privacy; contact info@, dat wordt gelezen), door
    eigenaar goedgekeurd; ook in het deelbare Claude-document gezet.
-6. Uitnodiging met handleiding een paar dagen vóór 13 december; op de
+6. Uitnodiging met handleiding een paar dagen vóór 12 december; op de
    klusochtend helpen met installeren. Eerste week meekijken bij 2–3 mensen.
 
 Eerder gedaan (voor de proef met Klussen):

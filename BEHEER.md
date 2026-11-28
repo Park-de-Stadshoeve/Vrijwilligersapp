@@ -20,7 +20,7 @@ nodig).
 Lukt een knop niet, dan staat onderaan wat er mis is. Bijvoorbeeld "Iemand anders
 heeft deze taak al opgepakt" (de app haalt dan de nieuwste lijst op) of "Geen
 verbinding. Er is niets veranderd." De app onthoudt een mislukte tik niet: probeer
-het opnieuw als je bereik hebt. Bij een tik op "Mijn taken" of "Werkgroep" haalt de
+het opnieuw als je bereik hebt. Bij een tik op "Mijn taken" of "Alle taken" haalt de
 app de nieuwste taken op.
 
 ## Waar staat de app?
@@ -406,7 +406,7 @@ niet doorging (ook later in het archief).
   **Laten vervallen**. Vergist? Tik meteen op **Ongedaan maken**.
 - **Komt de taak uit een melding?** Dan staat de melding daarna weer op "Nieuw". Je
   kunt er opnieuw een taak van maken of hem op "Geen actie nodig" zetten.
-- **Waar staan vervallen taken?** Onderaan **Werkgroep**, onder het kopje
+- **Waar staan vervallen taken?** Onderaan **Alle taken**, onder het kopje
   "Vervallen". Tik erop om ze te zien. Iedereen uit de werkgroep ziet ze, en kan een
   vervallen taak met **↺ Weer openen** terughalen. Stond de taak op naam van iemand
   die intussen gestopt is, dan is hij daarna weer vrij.
@@ -431,7 +431,7 @@ versie online heeft. Daarna laadt de app de nieuwe versie vanzelf, de volgende k
 dat iemand de app weer voor zich haalt (ook als hij nog op de achtergrond openstond).
 Is iemand op dat moment iets aan het invullen, dan verschijnt "Er is een nieuwe
 versie van de app. Die wordt geladen als je klaar bent", en gebeurt het zodra die
-persoon weer op Mijn taken, Werkgroep, Meldingen of Beheer is. Na het laden staat de
+persoon weer op Mijn taken, Alle taken, Meldingen of Beheer is. Na het laden staat de
 app op Mijn taken. Zie je de nieuwe versie na een paar minuten nog niet? Sluit de app
 helemaal af en open hem opnieuw.
 - **Nieuw bestand toegevoegd** (bijvoorbeeld een extra plaatje)? Zet de naam erbij in
@@ -464,7 +464,7 @@ Tik op **Beheer** en kies bovenaan **Werkgroepen** of **Plekken**.
 - **Naam of standaard werkgroep wijzigen:** tik op **Wijzigen**. Een nieuwe naam staat
   ook bij oude taken en meldingen.
 - **Volgorde** van plekken en werkgroepen (zo staan de knoppen bij Melden, bij taken
-  en op het scherm Werkgroep): tik op **▲** (omhoog) of **▼** (omlaag), naast
+  en op het scherm Alle taken): tik op **▲** (omhoog) of **▼** (omlaag), naast
   **Wijzigen**. Het kaartje blijft in beeld, dus je kunt meteen nog eens tikken. Een nieuwe
   werkgroep komt ook onderaan.
 - **Niet meer gebruiken:** tik op **Wijzigen** en helemaal onderaan op **Uitzetten**.
@@ -473,14 +473,14 @@ Tik op **Beheer** en kies bovenaan **Werkgroepen** of **Plekken**.
   taken er zijn en welke plekken hem als standaard hebben. Zet die mensen en plekken
   daarna over (beheerscherm > Gebruikers of Plekken > Wijzigen) en geef de open
   taken een andere werkgroep (taak > Wijzigen) of laat ze vervallen. Tot die tijd
-  zien de leden de werkgroep nog bij Werkgroep en kunnen ze lopende taken afmaken;
+  zien de leden de werkgroep nog bij Alle taken en kunnen ze lopende taken afmaken;
   nieuwe taken kunnen niet meer in die werkgroep. Een plek met een uitgezette
   werkgroep als standaard krijgt bij "Maak taak" geen werkgroep ingevuld.
 - **Weer gebruiken:** onder "Uitgezet" > **Wijzigen** > **Weer aanzetten**.
 - **Verwijderen** kan niet, omdat taken, meldingen en mensen eraan vastzitten.
 - Vergist? Tik meteen op **Ongedaan maken**.
 - Vrijwilligers zien een nieuwe plek of werkgroep de volgende keer dat hun lijst
-  wordt ververst (bij een tik op Mijn taken of Werkgroep).
+  wordt ververst (bij een tik op Mijn taken of Alle taken).
 - **Onderdelen** (bijv. Hummelhoeve > Nestschommel) zitten nog niet in de app.
 
 ## Knop "Hulp" en de handleiding

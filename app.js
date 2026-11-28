@@ -1101,7 +1101,7 @@ function maakMeldingKaart(melding) {
     } else if (status === "Geen actie nodig") {
       kaart.append(maakTweedeKnop("↺ Weer openen", () => zetGeenActie(melding, false, "")));
     }
-    // Is er een taak? Dan regel je de rest bij de taak zelf (onder "Werkgroep").
+    // Is er een taak? Dan regel je de rest bij de taak zelf (onder "Alle taken").
   }
   return kaart;
 }
@@ -1153,7 +1153,7 @@ async function zetGeenActie(melding, reden) {
 
 let taakFormulier = null;   // wat er is ingevuld in het formulier
 
-// Nieuwe taak zonder melding (knop "+ Nieuwe taak" onder Mijn taken en Werkgroep).
+// Nieuwe taak zonder melding (knop "+ Nieuwe taak" onder Mijn taken en Alle taken).
 // "terugScherm" = waar je na opslaan of annuleren weer uitkomt ("mijn" of "werkgroep").
 function openNieuweTaak(terugScherm) {
   taakFormulier = {
@@ -1164,7 +1164,7 @@ function openNieuweTaak(terugScherm) {
     titel: "",
     omschrijving: "",
     plek: "",
-    // Vanuit Werkgroep: de werkgroep die je daar bekijkt alvast invullen
+    // Vanuit Alle taken: de werkgroep die je daar bekijkt alvast invullen
     werkgroep: terugScherm === "werkgroep" && gekozenWerkgroep !== "Alles" ? gekozenWerkgroep : "",
     toegewezenAanId: "",
     deadline: datumOver(DAGEN_NORMAAL)
@@ -1289,7 +1289,7 @@ function toonTaakFormulier() {
 // Een taak die niet meer nodig is, wordt niet weggegooid maar krijgt de
 // status "vervallen" (database/15_vervallen.sql). Alleen bestuur en
 // coördinator kunnen een taak laten vervallen; iedereen die de taak mag
-// bewerken kan hem weer openen. Vervallen taken staan onderaan "Werkgroep".
+// bewerken kan hem weer openen. Vervallen taken staan onderaan "Alle taken".
 
 let vervallenOpen = false;   // staat het kopje "Vervallen" open?
 
@@ -1350,7 +1350,7 @@ async function zetVervallenTaakTerug(taak, meldingId = null) {
     ingelogdeGebruiker.magAllesZien ? () => laatTaakVervallen(taak, reden) : null);
 }
 
-// Onderaan "Werkgroep": de vervallen taken, dichtgeklapt
+// Onderaan "Alle taken": de vervallen taken, dichtgeklapt
 function maakVervallenDeel(vervallen) {
   const deel = document.createElement("section");
   if (vervallen.length === 0) return deel;
@@ -1402,7 +1402,7 @@ async function slaTaakOp() {
     return;
   }
 
-  // Gelukt: terug naar het vorige scherm. Kom je terug op "Werkgroep"?
+  // Gelukt: terug naar het vorige scherm. Kom je terug op "Alle taken"?
   // Toon dan de werkgroep van deze taak, zodat je hem ziet.
   taakFormulier = null;
   if (formulier.terugScherm === "werkgroep" && gekozenWerkgroep !== "Alles") {
@@ -1595,7 +1595,7 @@ function bewaarTakenOpToestel() {
 let lijsten = { werkgroepen: [], plekken: [] };
 
 // Haalt de taken opnieuw op en tekent het scherm opnieuw, als je nog op
-// hetzelfde scherm bent. Gebruikt bij een tik op "Mijn taken" of "Werkgroep".
+// hetzelfde scherm bent. Gebruikt bij een tik op "Mijn taken" of "Alle taken".
 async function ververs(scherm) {
   await haalTakenOp();
   if (huidigScherm === scherm) verversScherm();
@@ -1877,7 +1877,7 @@ function toonLijst(lijst) {
 }
 
 // Knop "+ Nieuwe taak" voor bestuur en coördinator, bovenaan Mijn taken en
-// Werkgroep. Hij staat in een eigen vakje dat bovenaan blijft staan als je naar
+// Alle taken. Hij staat in een eigen vakje dat bovenaan blijft staan als je naar
 // beneden scrollt (stijl.css, .vaste-knop).
 function maakNieuweTaakKnop(terugScherm) {
   const vak = document.createElement("div");
@@ -1900,7 +1900,8 @@ let gekozenWerkgroep = "";   // leeg = de eerste keuze (zie hieronder)
 
 function toonWerkgroep() {
   huidigScherm = "werkgroep";
-  document.getElementById("titel").textContent = "Taken werkgroep";
+  // Op het scherm heet dit "Alle taken" (intern nog "werkgroep", zie index.html)
+  document.getElementById("titel").textContent = "Alle taken";
   const inhoud = document.getElementById("inhoud");
   inhoud.replaceChildren();
 
