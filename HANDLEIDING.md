@@ -51,8 +51,8 @@ Open de app daarna altijd via het icoon op je beginscherm.
 Je logt één keer in op je telefoon. Daarna blijf je ingelogd.
 
 1. Vul je e-mailadres in en tik op **Stuur mij een code**.
-2. Je krijgt een mail met een code van 6 cijfers. Zie je niets? Kijk ook bij
-   ongewenste mail.
+2. Je krijgt een mail met een code van 6 cijfers. Die kan een minuut duren: tik
+   niet meteen nog een keer. Zie je niets? Kijk ook bij ongewenste mail.
 3. Vul de code in en tik op **Inloggen**.
 
 Alleen e-mailadressen die het bestuur heeft toegevoegd kunnen inloggen. Lukt het

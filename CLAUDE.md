@@ -554,6 +554,23 @@ Klaar (inloggen, taken en meldingen werken met de database):
   back-up van PROD: gemaakt, (5) deelbaar Claude-document: bullet Project
   bij Handig om te weten: gedaan. App in PROD gecontroleerd (taken, project
   kiezen, filter, afronden): goed. Projecten zijn klaar (28 november 2026).
+- Inloggen en terugzetten robuuster (na de hersteltest, november 2026; branch
+  inlog-en-herstel): (1) inloggen.js: bij "te veel codes" (isTeVeelCodes,
+  status 429 / rate_limit) toch naar het codescherm met de zin "Er is net al
+  een code naar je gestuurd …" (toonCodeScherm kreeg een melding); codescherm
+  zegt "De mail kan een minuut duren". (2) Edge Function beheer, afronden:
+  eerst tijdelijke gebruiker en werkgroepen onthouden; mislukt deleteUser of
+  createUser met het oude nummer, dan zetTijdelijkAccountTerug (inlogaccount
+  met hetzelfde nummer, gebruiker, werkgroepen) en melding "Afronden is niet
+  gelukt. Je tijdelijke account is teruggezet." (3) beheer.js: rondHerstelAf
+  apart, oud nummer op het toestel (stadshoeve-herstel-afronden) tot afronden
+  lukt; knop "Afronden opnieuw proberen" onder de stappen, ook na opnieuw
+  inloggen op het terugzetscherm. HANDLEIDING.md en deelbaar document: "tik
+  niet meteen nog een keer"; BEHEER.md: melding bij afronden en "na leegmaken
+  besta je niet meer". Getest in de browser met nep-Supabase (te veel codes,
+  onbekend adres, afronden mislukt, opnieuw proberen na herladen). De
+  noodstap in de functie zelf is niet te testen zonder een echte fout. Nog:
+  functie beheer in DEV plakken, inloggen testen via de testversie.
 
 - Gebruikershandleiding voor de proef met Klussen: HANDLEIDING.md (installeren,
   inloggen met code, taken, melden, handig om te weten). Zelfde tekst staat in

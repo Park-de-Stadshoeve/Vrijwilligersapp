@@ -919,6 +919,15 @@ function toonHerstelScherm() {
   stappen.id = "herstel-stappen";
   inhoud.append(stappen);
 
+  // Was afronden de vorige keer niet gelukt? Dan hier meteen de knop om het
+  // opnieuw te proberen (de gegevens en foto's staan er al).
+  const halfKlaar = leesOpslag(OPSLAG_HERSTEL_AFRONDEN);
+  if (halfKlaar && halfKlaar.mijnOudeId) {
+    herstelStap("⚠️ De vorige keer is het afronden niet gelukt. De gegevens en foto's staan er al. " +
+      "Klik op Afronden opnieuw proberen.");
+    voegKnopOpnieuwAfrondenToe(halfKlaar.mijnOudeId);
+  }
+
   inhoud.append(maakTweedeKnop("Terug naar Beheer", toonBeheer));
   markeerMenu("beheer");
 }
@@ -971,26 +980,53 @@ async function zetBackupTerug(bestand, knop) {
       herstelStap("⚠️ Deze foto's konden niet terug: " + ontbreekt.join(", "));
     }
 
-    // Deel 3: afronden
-    const stap3 = herstelStap("Afronden…");
-    const deel3 = await roepBeheerFunctieAan({ actie: "herstel_afronden", mijnOudeId: deel1.data.mijnOudeId });
-    if (!deel3.gelukt) {
-      stap3.textContent = "⚠️ Afronden is niet gelukt. Lees de melding onderaan en kijk in BEHEER.md.";
-      return;
-    }
-    if (deel3.data.uitloggen) {
-      stap3.textContent = "✓ Klaar! Log nu uit en log opnieuw in met je eigen e-mailadres.";
-      document.getElementById("herstel-stappen").after(maakHoofdKnop("Uitloggen", uitloggen));
-      toonMelding("Back-up teruggezet. Log opnieuw in.");
-    } else {
-      stap3.textContent = "✓ Klaar!";
-      toonMelding("Back-up teruggezet.");
-    }
+    // Deel 3: afronden. Het oude nummer eerst op het toestel bewaren: lukt
+    // afronden niet, dan kun je het later opnieuw proberen (zie hieronder).
+    if (deel1.data.mijnOudeId) schrijfOpslag(OPSLAG_HERSTEL_AFRONDEN, { mijnOudeId: deel1.data.mijnOudeId });
+    await rondHerstelAf(deel1.data.mijnOudeId);
   } catch (fout) {
     console.warn("Terugzetten mislukt:", fout);
     herstelStap("⚠️ Gestopt: " + fout.message + ".");
     toonMelding("Terugzetten is gestopt (" + fout.message + ").");
   }
+}
+
+// Op het toestel: je oude nummer uit de back-up, zolang afronden nog niet
+// gelukt is. Alleen een nummer, geen naam of e-mailadres.
+const OPSLAG_HERSTEL_AFRONDEN = "stadshoeve-herstel-afronden";
+
+// Deel 3: je tijdelijke account wordt je eigen account uit de back-up.
+// Mislukt het, dan zet de Edge Function je tijdelijke account terug en
+// verschijnt de knop "Afronden opnieuw proberen".
+async function rondHerstelAf(mijnOudeId) {
+  const stap3 = herstelStap("Afronden…");
+  const deel3 = await roepBeheerFunctieAan({ actie: "herstel_afronden", mijnOudeId });
+  if (!deel3.gelukt) {
+    stap3.textContent = "⚠️ Afronden is niet gelukt. Lees de melding onderaan. Werkt de knop hieronder " +
+      "niet? Log uit, log opnieuw in en ga naar Beheer > Back-up > Back-up terugzetten; daar staat hij ook.";
+    voegKnopOpnieuwAfrondenToe(mijnOudeId);
+    return;
+  }
+  verwijderOpslag(OPSLAG_HERSTEL_AFRONDEN);
+  if (deel3.data.uitloggen) {
+    stap3.textContent = "✓ Klaar! Log nu uit en log opnieuw in met je eigen e-mailadres.";
+    document.getElementById("herstel-stappen").after(maakHoofdKnop("Uitloggen", uitloggen));
+    toonMelding("Back-up teruggezet. Log opnieuw in.");
+  } else {
+    stap3.textContent = "✓ Klaar!";
+    toonMelding("Back-up teruggezet.");
+  }
+}
+
+// Knop "Afronden opnieuw proberen", onder de stappenlijst
+function voegKnopOpnieuwAfrondenToe(mijnOudeId) {
+  document.getElementById("knop-opnieuw-afronden")?.remove();
+  const knop = maakHoofdKnop("Afronden opnieuw proberen", async () => {
+    knop.remove();
+    await rondHerstelAf(mijnOudeId);
+  });
+  knop.id = "knop-opnieuw-afronden";
+  document.getElementById("herstel-stappen").after(knop);
 }
 
 // Zet de foto's uit het zip-bestand terug, een paar tegelijk.

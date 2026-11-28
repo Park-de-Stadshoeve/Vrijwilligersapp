@@ -495,12 +495,54 @@ async function rondHerstelAf(beheer: any, vraag: any, vrager: any) {
   const { data: bestaand } = await beheer.auth.admin.getUserById(oudeId);
   if (bestaand?.user) throw new BeheerFout("Je oude account bestaat al. Log uit en log opnieuw in.");
 
+  // Eerst onthouden hoe je tijdelijke account eruitziet (gegevens en
+  // werkgroepen). Gaat het hieronder mis, dan zetten we dat precies zo terug,
+  // zodat je nooit buitengesloten raakt (gebeurde bijna bij een hersteltest).
+  const { data: tijdelijk } = await beheer.from("gebruikers").select("*").eq("id", vrager.id).maybeSingle();
+  const { data: tijdelijkeLeden } = await beheer.from("lidmaatschappen").select("*").eq("gebruiker", vrager.id);
+
+  // 1. Je tijdelijke gegevens weg (lukt dit niet, dan is er niets veranderd)
   const { error: wegFout } = await beheer.rpc("herstel_tijdelijke_gebruiker_weg", { hersteller: vrager.id });
   if (wegFout) throw vertaalDatabaseFout(wegFout);
-  await beheer.auth.admin.deleteUser(vrager.id);
+
+  // 2. Je tijdelijke inlogaccount weg
+  const { error: deleteFout } = await beheer.auth.admin.deleteUser(vrager.id);
+  if (deleteFout) {
+    console.error(deleteFout);
+    await zetTijdelijkAccountTerug(beheer, vrager, tijdelijk, tijdelijkeLeden, false);
+    throw new BeheerFout("Afronden is niet gelukt. Je tijdelijke account is teruggezet. " +
+      "Klik op Afronden opnieuw proberen.");
+  }
+
+  // 3. Je eigen account uit de back-up, met je oude nummer
   const { error } = await beheer.auth.admin.createUser({ id: oudeId, email: vrager.email, email_confirm: true });
-  if (error) throw vertaalAccountFout(error);
+  if (error) {
+    console.error(error);
+    await zetTijdelijkAccountTerug(beheer, vrager, tijdelijk, tijdelijkeLeden, true);
+    throw new BeheerFout("Afronden is niet gelukt. Je tijdelijke account is teruggezet. " +
+      "Klik op Afronden opnieuw proberen.");
+  }
   return { gelukt: true, uitloggen: true };
+}
+
+// Noodstap bij afronden: je tijdelijke account precies zo terugzetten als
+// het was. ookInlogaccount = true: ook het inlogaccount opnieuw aanmaken
+// (met hetzelfde nummer, zodat je ingelogd blijft). Lukt ook dit niet, dan
+// staat in de Logs wat er mis ging (zie BEHEER.md, "Back-up terugzetten").
+// deno-lint-ignore no-explicit-any
+async function zetTijdelijkAccountTerug(beheer: any, vrager: any, tijdelijk: any, leden: any, ookInlogaccount: boolean) {
+  if (ookInlogaccount) {
+    const { error } = await beheer.auth.admin.createUser({ id: vrager.id, email: vrager.email, email_confirm: true });
+    if (error) console.error("Tijdelijk inlogaccount terugzetten mislukt:", error);
+  }
+  if (tijdelijk) {
+    const { error } = await beheer.from("gebruikers").insert(tijdelijk);
+    if (error) console.error("Tijdelijke gebruiker terugzetten mislukt:", error);
+  }
+  if (leden && leden.length > 0) {
+    const { error } = await beheer.from("lidmaatschappen").insert(leden);
+    if (error) console.error("Tijdelijke werkgroepen terugzetten mislukt:", error);
+  }
 }
 
 

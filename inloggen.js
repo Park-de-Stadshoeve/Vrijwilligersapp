@@ -98,6 +98,15 @@ function toonEmailScherm(fouttekst) {
       }
     });
 
+    // Te snel een nieuwe code gevraagd? Dan is er net al een code gestuurd,
+    // en die werkt nog. Ga dus gewoon door naar het scherm om hem in te vullen
+    // (anders zit je vast: de code die je hebt, kun je nergens kwijt).
+    if (error && isTeVeelCodes(error)) {
+      schrijfOpslag(OPSLAG_WACHT_OP_CODE, { email, tijd: Date.now() });
+      toonCodeScherm(email, "Er is net al een code naar je gestuurd. Gebruik de code uit die mail. " +
+        "Geen mail? Wacht een paar minuten en vraag dan een nieuwe code aan.");
+      return;
+    }
     if (error) {
       fout.textContent = vertaalFout(error);
       knop.disabled = false;
@@ -113,12 +122,23 @@ function toonEmailScherm(fouttekst) {
 }
 
 // ===== SCHERM 2: code uit de mail =====
-function toonCodeScherm(email) {
+// "melding" (niet verplicht) = een extra zin bovenaan, bijv. als er te snel
+// een nieuwe code is gevraagd.
+function toonCodeScherm(email, melding) {
   const inhoud = maakInlogScherm("Code invullen");
+
+  if (melding) {
+    const extra = document.createElement("p");
+    extra.className = "uitleg-bovenaan";
+    extra.setAttribute("role", "status");
+    extra.textContent = melding;
+    inhoud.append(extra);
+  }
 
   const uitleg = document.createElement("p");
   uitleg.textContent = "We hebben een mail gestuurd naar " + email +
-    ". Vul de code van 6 cijfers uit die mail in. Geen mail? Kijk ook in je map met ongewenste mail.";
+    ". Vul de code van 6 cijfers uit die mail in. De mail kan een minuut duren. " +
+    "Geen mail? Kijk ook in je map met ongewenste mail.";
 
   const label = document.createElement("label");
   label.className = "veld-titel";
@@ -269,6 +289,11 @@ function maakFoutRegel(tekst) {
   return fout;
 }
 
+// Zegt Supabase "te veel codes aangevraagd"? (status 429 = te vaak gevraagd)
+function isTeVeelCodes(error) {
+  return error.status === 429 || (error.code || "").includes("rate_limit");
+}
+
 // Zet een foutmelding van Supabase om in gewone taal: wat is er mis, wat moet je doen.
 function vertaalFout(error) {
   const code = error.code || "";
@@ -280,7 +305,7 @@ function vertaalFout(error) {
   if (code === "otp_expired" || bericht.includes("expired") || bericht.includes("invalid")) {
     return "Deze code klopt niet of is verlopen. Controleer de code, of vraag een nieuwe aan.";
   }
-  if (error.status === 429 || code.includes("rate_limit")) {
+  if (isTeVeelCodes(error)) {
     return "Er zijn te veel codes aangevraagd. Wacht een paar minuten en probeer het opnieuw.";
   }
   if (bericht.includes("fetch") || bericht.includes("network")) {
