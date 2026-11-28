@@ -493,8 +493,9 @@ Klaar (inloggen, taken en meldingen werken met de database):
   --kopbalk-hoogte verhuisd van beheer-lijsten.js naar app.js. HANDLEIDING.md
   bijgewerkt (alleen het bestuursdeel, staat niet in het deelbare document).
   Getest in de browser (proefpagina, telefoonbreedte): knop blijft onder de
-  kopbalk, terug naar Mijn taken, vrijwilliger ziet geen knop. Nog testen op
-  de telefoon via de testversie.
+  kopbalk, terug naar Mijn taken, vrijwilliger ziet geen knop. Getest op de
+  telefoon via de testversie: goed. Samengevoegd. In de proef nog navragen of
+  het bestuur de knop nu vindt.
 
 - Gebruikershandleiding voor de proef met Klussen: HANDLEIDING.md (installeren,
   inloggen met code, taken, melden, handig om te weten). Zelfde tekst staat in
