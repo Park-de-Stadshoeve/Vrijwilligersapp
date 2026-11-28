@@ -140,6 +140,11 @@ Dit deel zie je alleen als je in het bestuur zit of coördinator bent.
 - **Nieuwe taak.** Tik bovenaan **Mijn taken** of **Alle taken** op
   **+ Nieuwe taak**. De knop blijft staan als je naar beneden scrollt. Vul de
   titel in, kies de plek en de werkgroep, en tik op **Taak aanmaken**.
+- **Project.** Hoort de taak bij een project, zoals "Nieuw varkenshok" of
+  "Klusochtend 12 december"? Kies het bij **Bij welk project?**. Staat het er
+  nog niet bij, tik dan op **+ Nieuw project**, typ de naam en tik op
+  **Project toevoegen**. Een project mag taken van meer werkgroepen hebben.
+  Zet geen namen van mensen in de naam van een project.
 - **Wie doet het?** Kies bij een taak bij **Toegewezen aan** een persoon. De
   taak staat dan bij die persoon onder **Mijn taken**.
 - **Wijzigen.** Tik bij een open taak op **Wijzigen**. Pas aan wat nodig is en

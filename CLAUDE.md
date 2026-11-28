@@ -502,6 +502,27 @@ Klaar (inloggen, taken en meldingen werken met de database):
   commentaar. Intern blijft het scherm "werkgroep" (data-scherm, huidigScherm,
   hulp.js). Ook het deelbare Claude-document met de handleiding is bijgewerkt.
   Getest op de telefoon via de testversie: goed. Samengevoegd.
+- Projecten (later-lijst 11, eigen wens, november 2026; vóór de proef). Besluiten:
+  hooguit één project per taak, niet verplicht; een project groepeert alleen,
+  wie wat ziet blijft per werkgroep; bestuur en coördinator maken projecten in
+  het taakformulier (+ Nieuw project); afronden = actief nee. Drie stappen:
+  (1) database + formulier + regel op het kaartje, (2) filter op Mijn taken en
+  Alle taken + afronden, (3) back-up en terugzetten met projecten. VOLGORDE
+  PROD: pas na stap 3 19_projecten.sql in PROD, en pas daarna de app naar main
+  (de app vraagt de tabel projecten op; zonder die tabel laadt hij geen taken).
+  Stap 1 gebouwd (branch projecten): database/19_projecten.sql (tabel projecten
+  id/naam/actief, unieke naam zonder hoofdletters/spaties, kolom taken.project
+  met references, regels: zien is_actief, aanmaken/wijzigen/verwijderen
+  is_bestuur, grants) en test_19_projecten.sql (9 tests, niet lokaal gedraaid:
+  geen Postgres op deze computer). app.js: projecten mee in haalTakenOp
+  (lijsten.projecten, ook afgeronde), taak.projectId, projectNaam(), taakNaarRij
+  met project, maakProjectVeld (keuzeknoppen Geen/lopende/afgerond als het de
+  taak z'n project is, + Nieuw project met tekstvak), voegProjectToe (dubbele
+  naam = bestaande kiezen; Ongedaan = verwijderProject), "Maak taak" zet het
+  project er met een update achteraan; kaartje "📁 naam". Getest in de browser
+  met nep-database (nieuw project, dubbele naam, Ongedaan maken, wijzigen naar
+  Geen en Ongedaan, afgerond project in Wijzigen). Nog: 19 + test_19 in DEV,
+  testen op de telefoon via de testversie.
 
 - Gebruikershandleiding voor de proef met Klussen: HANDLEIDING.md (installeren,
   inloggen met code, taken, melden, handig om te weten). Zelfde tekst staat in
@@ -584,7 +605,7 @@ zaterdag 12 december 2026, de eerstvolgende klusochtend. De verwerkersovereenkom
 Besluit DEV en PROD (november 2026): er komt een nieuw, schoon Supabase-project
 voor echt gebruik (PROD). Het testproject "vrijwilligersapp-test" blijft bestaan
 als DEV: nieuwe functies en nieuwe SQL eerst daar uitproberen, daarna pas in PROD.
-In PROD alleen de SQL-bestanden 01 t/m 18, nooit test_-, voorbeeld_- of
+In PROD alleen de SQL-bestanden 01 t/m 18 (19 pas na stap 3 van projecten), nooit test_-, voorbeeld_- of
 herstel_leegmaken-bestanden. De DEV-versie van de app draait op
 https://park-de-stadshoeve.github.io/Vrijwilligersapp-test/ (aparte openbare
 repository Vrijwilligersapp-test met alleen een workflow die een branch naar keuze
@@ -680,7 +701,7 @@ Eerder gedaan (voor de proef met Klussen):
    oud zijn: foto's worden pas verwijderd nadat ze zijn geëxporteerd.
 10. Frion toevoegen: rol Frion-begeleider (ziet Dieren, Klussen en Tuinen) en taken
     toewijzen aan "Frion" als groep.
-11. Projecten: taken bundelen in een project of groep (bijv. "Opknappen
+11. IN AANBOUW (zie stand van zaken). Projecten: taken bundelen in een project of groep (bijv. "Opknappen
     Speelkasteel") en op project kunnen filteren. Hangt samen met punt 6 (filters).
 12. Bericht aan een vrijwilliger als bestuur een taak die hij of zij had opgepakt
     aan iemand anders geeft. Hangt samen met punt 4.
