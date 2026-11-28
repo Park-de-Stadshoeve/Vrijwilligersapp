@@ -54,8 +54,7 @@ zet je op de later-lijst onderaan dit bestand.
 ## Leerdoel
 Ik bouw deze app zelf om te leren hoe je een app maakt. Claude schrijft code, maar:
 - Leg bij elke stap uit wat de code doet en waarom, in gewone taal.
-- Laat me zelf kleine aanpassingen doen en geef me opdrachten om te oefenen,
-  met tips en een oplossing om achteraf te controleren.
+- Geen oefenopdrachten meer geven (besluit eigenaar, november 2026).
 - Doe niet meer dan nodig voor de stap waar we zijn. Eén stap tegelijk.
 - Vertel vóór je bestanden wijzigt wat je gaat doen en welke bestanden het raakt.
   Vat na afloop samen wat er veranderd is.
