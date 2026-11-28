@@ -570,8 +570,8 @@ Klaar (inloggen, taken en meldingen werken met de database):
   besta je niet meer". Getest in de browser met nep-Supabase (te veel codes,
   onbekend adres, afronden mislukt, opnieuw proberen na herladen). De
   noodstap in de functie zelf is niet te testen zonder een echte fout. Functie
-  beheer in DEV geplakt, getest via de testversie: goed. Samengevoegd. Nog:
-  functie beheer in PROD opnieuw plakken.
+  beheer in DEV geplakt, getest via de testversie: goed. Samengevoegd. Functie
+  beheer ook in PROD geplakt (28 november 2026). Klaar.
 
 - Gebruikershandleiding voor de proef met Klussen: HANDLEIDING.md (installeren,
   inloggen met code, taken, melden, handig om te weten). Zelfde tekst staat in
