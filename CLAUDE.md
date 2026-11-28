@@ -549,8 +549,8 @@ Klaar (inloggen, taken en meldingen werken met de database):
   herstel_leegmaken.sql besta je niet meer (stap 6 niet vergeten); twee keer
   snel een code aanvragen geeft "te veel codes" en de app ging dan niet terug
   naar het codescherm (verbetering voorgesteld).
-  Daarna PROD (volgorde): (1) 19 + 20 in PROD, (2) functie beheer in PROD
-  opnieuw plakken, (3) branch projecten samenvoegen met main, (4) verse
+  PROD (volgorde): (1) 19 + 20 in PROD: gedaan, (2) functie beheer in PROD
+  opnieuw plakken: gedaan, (3) branch projecten samengevoegd met main, (4) verse
   back-up van PROD, (5) deelbaar Claude-document: bullet Project.
 
 - Gebruikershandleiding voor de proef met Klussen: HANDLEIDING.md (installeren,
@@ -634,7 +634,7 @@ zaterdag 12 december 2026, de eerstvolgende klusochtend. De verwerkersovereenkom
 Besluit DEV en PROD (november 2026): er komt een nieuw, schoon Supabase-project
 voor echt gebruik (PROD). Het testproject "vrijwilligersapp-test" blijft bestaan
 als DEV: nieuwe functies en nieuwe SQL eerst daar uitproberen, daarna pas in PROD.
-In PROD alleen de SQL-bestanden 01 t/m 20 (19 en 20 pas samen met de projecten), nooit test_-, voorbeeld_- of
+In PROD alleen de SQL-bestanden 01 t/m 20, nooit test_-, voorbeeld_- of
 herstel_leegmaken-bestanden. De DEV-versie van de app draait op
 https://park-de-stadshoeve.github.io/Vrijwilligersapp-test/ (aparte openbare
 repository Vrijwilligersapp-test met alleen een workflow die een branch naar keuze
@@ -730,7 +730,7 @@ Eerder gedaan (voor de proef met Klussen):
    oud zijn: foto's worden pas verwijderd nadat ze zijn geëxporteerd.
 10. Frion toevoegen: rol Frion-begeleider (ziet Dieren, Klussen en Tuinen) en taken
     toewijzen aan "Frion" als groep.
-11. IN AANBOUW (zie stand van zaken). Projecten: taken bundelen in een project of groep (bijv. "Opknappen
+11. GEBOUWD (zie stand van zaken). Projecten: taken bundelen in een project of groep (bijv. "Opknappen
     Speelkasteel") en op project kunnen filteren. Hangt samen met punt 6 (filters).
 12. Bericht aan een vrijwilliger als bestuur een taak die hij of zij had opgepakt
     aan iemand anders geeft. Hangt samen met punt 4.
