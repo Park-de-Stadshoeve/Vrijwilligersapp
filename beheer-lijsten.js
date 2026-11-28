@@ -121,6 +121,7 @@ function toonWerkgroepenLijst() {
 function maakWerkgroepKaart(werkgroep, eerste, laatste) {
   const kaart = document.createElement("article");
   kaart.className = "taak";
+  kaart.dataset.kaart = "werkgroep-" + werkgroep.id;   // om het kaartje terug te vinden (houdInBeeld)
   const naam = document.createElement("h2");
   naam.textContent = werkgroep.naam;
   kaart.append(naam);
@@ -135,8 +136,10 @@ function maakWerkgroepKaart(werkgroep, eerste, laatste) {
 
 // ▲▼ Een werkgroep één plaats verschuiven (vaste actie werkgroep_verplaatsen), met Ongedaan maken
 async function verplaatsWerkgroep(werkgroep, omhoog) {
+  const terugInBeeld = houdInBeeld("werkgroep-" + werkgroep.id);
   if (!await vraagDatabase("werkgroep_verplaatsen", { werkgroep_id: werkgroep.id, omhoog })) return;
   await naLijstWijziging();
+  terugInBeeld();
   toonMelding(werkgroep.naam + (omhoog ? " staat een plaats hoger" : " staat een plaats lager"),
               () => verplaatsWerkgroep(werkgroep, !omhoog));
 }
@@ -153,6 +156,27 @@ function maakPijlen(eerste, laatste, bijTik) {
   omlaag.disabled = laatste;   // onderaan: niet lager
   pijlen.append(omhoog, omlaag);
   return pijlen;
+}
+
+// Houdt een kaartje op dezelfde hoogte op het scherm terwijl de lijst opnieuw
+// getekend wordt. Zonder dit spring je na ▲/▼ naar de bovenkant van de pagina,
+// want tijdens het laden is de pagina even heel kort.
+// Gebruik: eerst "const terug = houdInBeeld(sleutel)", dan de lijst opnieuw
+// tekenen, dan "terug()". De sleutel staat in data-kaart, bijv. "plek-12".
+function houdInBeeld(sleutel) {
+  const zoek = () => document.querySelector('[data-kaart="' + sleutel + '"]');
+  const kaart = zoek();
+  // Hoe ver staat het kaartje nu van de bovenkant van het scherm?
+  const hoogteOpScherm = kaart ? kaart.getBoundingClientRect().top : null;
+  return function terugInBeeld() {
+    const nieuweKaart = zoek();
+    if (!nieuweKaart) return;   // intussen een ander scherm gekozen
+    if (hoogteOpScherm === null) {
+      nieuweKaart.scrollIntoView({ block: "center" });   // bijv. bij Ongedaan maken van elders
+    } else {
+      window.scrollBy(0, nieuweKaart.getBoundingClientRect().top - hoogteOpScherm);
+    }
+  };
 }
 
 
@@ -176,6 +200,7 @@ function toonPlekkenLijst() {
 function maakPlekKaart(plek, eerste, laatste) {
   const kaart = document.createElement("article");
   kaart.className = "taak";
+  kaart.dataset.kaart = "plek-" + plek.id;   // om het kaartje terug te vinden (houdInBeeld)
   const naam = document.createElement("h2");
   naam.textContent = plek.naam;
   kaart.append(naam);
@@ -199,8 +224,10 @@ function maakPlekKaart(plek, eerste, laatste) {
 
 // ▲▼ Een plek één plaats verschuiven (vaste actie plek_verplaatsen), met Ongedaan maken
 async function verplaatsPlek(plek, omhoog) {
+  const terugInBeeld = houdInBeeld("plek-" + plek.id);
   if (!await vraagDatabase("plek_verplaatsen", { plek_id: plek.id, omhoog })) return;
   await naLijstWijziging();
+  terugInBeeld();
   toonMelding(plek.naam + (omhoog ? " staat een plaats hoger" : " staat een plaats lager"),
               () => verplaatsPlek(plek, !omhoog));
 }
