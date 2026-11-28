@@ -339,6 +339,12 @@ geen taken en meldingen zijn, en jij de enige gebruiker bent.
   andere gebruikers in. Er is niets veranderd.
 - "Deze inlogaccounts konden niet terug": laat die personen in het beheerscherm
   stoppen en daarna weer meedoen.
+- "Afronden is niet gelukt. Je tijdelijke account is teruggezet": de gegevens en
+  foto's staan er al; alleen je eigen account is nog niet omgezet. Klik op
+  **Afronden opnieuw proberen**. Werkt die knop niet, log dan uit, log opnieuw in
+  en ga naar **Beheer** > **Back-up** > **♻️ Back-up terugzetten**: daar staat de
+  knop ook. Lukt het steeds niet, kijk dan bij **Edge Functions** > **beheer** >
+  **Logs**.
 - "Deze foto's konden niet terug": nog een keer op Terugzetten klikken werkt dan niet
   meer (de database is niet meer leeg). Zet de foto's met de hand terug via
   Supabase > Storage > fotos, in het mapje met dezelfde naam als in het zip-bestand.
@@ -348,7 +354,9 @@ geen taken en meldingen zijn, en jij de enige gebruiker bent.
 2. Supabase > **Storage** > **fotos**: alle mapjes selecteren en verwijderen.
 3. Open `database/herstel_leegmaken.sql`, controleer dat je in het **testproject**
    zit, haal de regel met `VEILIGHEIDSSLOT` weg en voer het uit.
-4. Ga verder bij stap 6 van het stappenplan hierboven.
+4. Ga verder bij stap 6 van het stappenplan hierboven. Let op: na stap 3 besta je
+   niet meer en ben je uitgelogd (ook je eigen account is weg). Dat hoort zo;
+   met stap 6 zet je jezelf weer neer.
 
 ## Edge Function "beheer" (bij Supabase)
 Toevoegen, e-mailadressen wijzigen, laten stoppen, weer laten meedoen en de back-up
