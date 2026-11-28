@@ -500,7 +500,7 @@ Klaar (inloggen, taken en meldingen werken met de database):
 - Menu "Werkgroep" hernoemd naar "Alle taken" (eigen wens, november 2026):
   knop in index.html, titel in toonWerkgroep, HANDLEIDING.md, BEHEER.md en
   commentaar. Intern blijft het scherm "werkgroep" (data-scherm, huidigScherm,
-  hulp.js). Het deelbare Claude-document met de handleiding moet ook mee.
+  hulp.js). Ook het deelbare Claude-document met de handleiding is bijgewerkt.
   Getest op de telefoon via de testversie: goed. Samengevoegd.
 
 - Gebruikershandleiding voor de proef met Klussen: HANDLEIDING.md (installeren,
